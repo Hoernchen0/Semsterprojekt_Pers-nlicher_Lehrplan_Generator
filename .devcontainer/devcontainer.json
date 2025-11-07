@@ -1,22 +1,22 @@
 {
-"name": "Devcontainer - .NET & SQLite",
-"build": {
-"dockerfile": "Containerfile"
-},
-"workspaceFolder": "/workspace",
-"shutdownAction": "stopContainer",
-
- "mounts": [
-    //"type=bind,source=${localWorkspaceFolder},target=/work",
-    "type=bind,source=/home/${localEnv:USER}/.ssh,target=/root/.ssh,readonly"
+  "name": "Devcontainer - .NET & SQLite",
+  "build": {
+    "dockerfile": "Containerfile"
+  },
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopContainer",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "mounts": [
+   // "type=bind,source=${localWorkspaceFolder},target=/work",
+   "type=bind,source=/home/${localEnv:USER}/.ssh,target=/root/.ssh,readonly"
   ],
-
-"extensions": [
-"ms-dotnettools.csharp",
-"ms-azuretools.vscode-docker",
-"ms-vscode.sqlite",
-"tintoy.msbuild-project-tools"
-],
-"postCreateCommand": "dotnet tool restore || true",
-//"remoteUser": "vscode"
+  "extensions": [
+    "ms-dotnettools.csharp",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.sqlite",
+    "tintoy.msbuild-project-tools"
+  ],
+  "postCreateCommand": "eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519 || true && dotnet tool restore || true"
+  //"postCreateCommand": "dotnet tool restore || true",
+  //"remoteUser": "vscode"
 }
