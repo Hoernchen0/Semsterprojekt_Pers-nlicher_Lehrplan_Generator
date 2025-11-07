@@ -1,0 +1,20 @@
+{
+    "name": "Python + Avalonia Dev",
+    "build": {
+      "dockerfile": "Containerfile"
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-python.python",
+          "ms-dotnettools.csharp",
+          "ms-dotnettools.vscode-dotnet-runtime",
+          "ms-azuretools.vscode-docker"
+        ]
+      }
+    },
+    "postCreateCommand": "pip install -r backend/requirements.txt || true",
+    "forwardPorts": [8000],
+    "remoteUser": "vscode"
+  }
+  

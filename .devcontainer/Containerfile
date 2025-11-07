@@ -1,0 +1,15 @@
+# Basis-Image mit .NET SDK
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+
+
+
+# SQLite installieren
+RUN apt-get update && \
+apt-get install -y sqlite3 libsqlite3-dev && \
+rm -rf /var/lib/apt/lists/*
+
+
+# Benutzer & Arbeitsverzeichnis einrichten
+#USER vscode
+WORKDIR /workspace
