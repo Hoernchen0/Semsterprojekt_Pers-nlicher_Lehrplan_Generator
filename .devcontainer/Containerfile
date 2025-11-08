@@ -1,27 +1,22 @@
 # Basis-Image mit .NET SDK
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-#  Root User für Installation 
+# Root User für Installation
 USER root
 
-#  Grundpakete & Essentials 
+# Grundpakete & Essentials
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    unzip \
-    zip \
-    git \
-    gnupg \
-    ca-certificates \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    curl unzip zip git gnupg ca-certificates python3-pip wget && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Java 17 via SDKMAN 
+# Java 17 via SDKMAN
 RUN curl -s "https://get.sdkman.io" | bash && \
     bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install java 17.0.9-tem && sdk flush archives"
 
 ENV JAVA_HOME="/root/.sdkman/candidates/java/current"
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
-# .NET SDK für Avalonia 
+# .NET SDK (bereits im Basisimage, aber hier optional aktualisiert)
 ARG DOTNET_VERSION=8.0
 RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
@@ -30,30 +25,57 @@ RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
 
 ENV PATH="$PATH:/root/.dotnet:/root/.dotnet/tools"
 
-# Android SDK (optional für Avalonia Android) 
-RUN mkdir -p /usr/lib/android-sdk && \
+# 🛠️ Android SDK (für Avalonia Android Build)
+#RUN mkdir -p /usr/lib/android-sdk/cmdline-tools && \
+#    cd /usr/lib/android-sdk/cmdline-tools && \
+#    wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip && \
+#    unzip tools.zip -d tools && \
+#    rm tools.zip && \
+#    mv tools /usr/lib/android-sdk/cmdline-tools/latest && \
+#    yes | /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/lib/android-sdk --licenses && \
+#    /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/lib/android-sdk \
+#    "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+# 🛠️ Android SDK (für Avalonia Android Build)
+RUN mkdir -p /usr/lib/android-sdk/cmdline-tools && \
     cd /usr/lib/android-sdk && \
-    wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip && \
-    unzip commandlinetools-linux-11076708_latest.zip -d cmdline-tools && \
-    yes | cmdline-tools/bin/sdkmanager --sdk_root=/usr/lib/android-sdk --licenses && \
-    cmdline-tools/bin/sdkmanager --sdk_root=/usr/lib/android-sdk \
-    "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+    wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip && \
+    unzip cmdline-tools.zip -d cmdline-tools-temp && \
+    rm cmdline-tools.zip && \
+    mkdir -p /usr/lib/android-sdk/cmdline-tools/latest && \
+    mv cmdline-tools-temp/cmdline-tools/* /usr/lib/android-sdk/cmdline-tools/latest/ && \
+    rm -rf cmdline-tools-temp && \
+    chmod +x /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager && \
+    yes | /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/lib/android-sdk --licenses && \
+    yes | /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/lib/android-sdk \
+        "platform-tools" \
+        "platforms;android-34" \
+        "build-tools;34.0.0"
+
 
 ENV ANDROID_HOME="/usr/lib/android-sdk"
-ENV PATH="$PATH:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/cmdline-tools/bin"
+ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
 
-# Python-Tools 
-RUN pip install --no-cache-dir poetry openai fastapi uvicorn
+# Umgebungsvariablen setzen
+#ENV ANDROID_HOME="/usr/lib/android-sdk"
+#ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
 
-# SQLite installieren
-RUN apt-get update && \
-    apt-get install -y sqlite3 libsqlite3-dev && \
-    rm -rf /var/lib/apt/lists/*
+# Java-Umgebung muss in separatem RUN-Schritt verfügbar sein
+#RUN echo "Installing Android SDK components..." && \
+#    bash -c "yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses" && \
+#    bash -c \"sdkmanager --sdk_root=${ANDROID_HOME} 'platform-tools' 'platforms;android-34' 'build-tools;34.0.0'\"
 
-RUN apt-get update && \
-    apt-get install -y openssh-client && \
-    rm -rf /var/lib/apt/lists/*
+#ENV ANDROID_HOME="/usr/lib/android-sdk"
+#ENV PATH="$PATH:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/cmdline-tools/latest/bin"
 
-# Benutzer & Arbeitsverzeichnis einrichten
-#USER vscode
+#  SQLite installieren
+RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev && rm -rf /var/lib/apt/lists/*
+
+#  SSH & Git
+RUN apt-get update && apt-get install -y openssh-client && rm -rf /var/lib/apt/lists/*
+
+#  Python Tools (für OpenAI, FastAPI etc.)
+#RUN pip install --no-cache-dir poetry openai fastapi uvicorn
+RUN pip install --no-cache-dir --break-system-packages poetry openai fastapi uvicorn
+# Arbeitsverzeichnis
 WORKDIR /workspace
