@@ -1,4 +1,3 @@
-```mermaid
 classDiagram
     %% UI Layer
     class MainWindowViewModel {
@@ -55,6 +54,7 @@ classDiagram
         + Task~string~ HoleXmlAusChatGptAsync(string prompt)
     }
 
+
     class UserSettingsService {
         - SqliteRepository repository
         + Task~UserData~ LoadUserAsync()
@@ -80,6 +80,15 @@ classDiagram
         + LoadLernplanAsync(Guid id)
         + LoadAllLernplaeneAsync()
     }
+
+    %%class SqliteRepository {
+    %%    - SQLiteConnection connection
+    %%   + SaveUserAsync()
+    %%    + LoadUserAsync()
+    %%    + SaveLernplanAsync()
+    %%    + LoadLernplanAsync()
+    %%    + LoadAllLernplaeneAsync()
+    %%}
 
     class USER {
         + UserId PK
@@ -108,6 +117,15 @@ classDiagram
         + TEXT LernplanEintragId FK
         + TEXT GoogleEventId
     }
+    class ChatLog {
+        + ChatLog string
+        + FileLog xml 
+        + UploadDate date
+    }
+
+    class Database {
+        + FileLog string
+    }
 
     %% Relationships
     MainWindowViewModel --> AiService
@@ -126,7 +144,7 @@ classDiagram
     UserData --> Database
     LernplanEintrag --> Database
     Lernplan --> Database
-
+    ChatLog --> Database
     LernplanViewModel --> MainWindowViewModel
 
     USER --o LERNPLAN : führt
