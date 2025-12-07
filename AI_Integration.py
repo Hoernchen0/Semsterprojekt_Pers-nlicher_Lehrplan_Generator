@@ -2,10 +2,10 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 import time as time_module
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import List
 from dict2xml import dict2xml
-from datetime import time, datetime
+from datetime import time, datetime, date
 
 
 client = OpenAI(
@@ -18,14 +18,14 @@ input_text="Platzhalter"
 conversation = [
     {"role": "system", "content": "Hilf dem Nutzer einen Lernplan zu erstellen und"
                                                     "seine Fragen zu Themen zu beantworten. "
-                                  "Du sollst im nicht einfach im Chat den Lernplan ausgeben,..."
+                                  "Du sollst im nicht einfach im Chat den Lernplan ausgeben..."
                                   "Du kannst den Nutzer auch fragen ob du im selbst von dir erstellte Praxisübungen"
                                   "erstellen sollst. Du kannst ihn auch fragen welche Themen er besonders "
                                   "intensiv wiederholen will, das ist sehr wichtig für die richtige Zeitaufteilung"
                                   "im Lernplan. Für die Erstellung ist auch wichtig zu fragen zu welchen Zeiten"
                                   "der Nutzer lernen möchte. Plane die Themen über die 2 Wochen so, "
                                   "dass Wiederholungen für schwierige Themen vorgesehen sind. Lege zuerst die Themen an,"
-                                  " die für das Verständnis der anderen Themen am wichtigsten sind"}
+                                  " die für das Verständnis der anderen Themen am wichtigsten sind."}
 ]
 
 def ask_gpt(user_input):
@@ -69,20 +69,37 @@ class Task(BaseModel):
     end_time: str
     description: str
 
+    @field_validator("start_time", "end_time", mode="before")
+    def validate_time_format(cls, v):
+        try:
+            datetime.strptime(v, "%H:%M")  # nur prüfen, nicht konvertieren
+        except Exception:
+            raise ValueError(f"Time must be in format HH:MM, got '{v}'")
+        return v
 
 class DayPlan(BaseModel):
     day: str
     tasks: List[Task]
 
+    @field_validator("day", mode="before")
+    def validate_date_format(cls, v):
+        try:
+            datetime.strptime(v, "%d.%m.%Y")
+        except Exception:
+            raise ValueError(f"Date must be in format dd.mm.yyyy, got '{v}'")
+        return v
+
 class StudyPlan(BaseModel):
     topic: str
     days: List[DayPlan]
 
+heute = datetime.now().strftime("%d.%m.%Y")
 def create_xml():
     response = client.beta.chat.completions.parse(
         model="gpt-5-chat",
         messages=[{"role": "system", "content": "Erstelle einen Lernplan und gib ihn NUR als XML zurück. day soll das Format"
-                                                "%d.%m.%Y haben und start_time und end_time das Format: %H:%M"},
+                                                "%d.%m.%Y haben und start_time und end_time das Format: %H:%M"
+                                                f"Der erste Tag darf nicht vor dem heutigen Datum liegen: {heute} "},
         *conversation],
         response_format=StudyPlan
     )
@@ -90,8 +107,9 @@ def create_xml():
 
     study_plan_dict = study_plan.model_dump()
     xml_string = dict2xml(study_plan_dict, wrap="Lernplan", indent="  ")
+    with open("lernplan.xml", "w", encoding="utf-8") as f: #with gibt nach Codeblock automatisch wieder Ressourcen frei
+        f.write(xml_string)
     print(xml_string)
-
 
 
 if __name__ == "__main__":
