@@ -1,0 +1,6 @@
+/workspace/database_setup/obj/Debug/net8.0/database_setup.csproj.AssemblyReference.cache
+/workspace/database_setup/obj/Debug/net8.0/database_setup.GeneratedMSBuildEditorConfig.editorconfig
+/workspace/database_setup/obj/Debug/net8.0/database_setup.AssemblyInfoInputs.cache
+/workspace/database_setup/obj/Debug/net8.0/database_setup.AssemblyInfo.cs
+/workspace/database_setup/obj/Debug/net8.0/database_setup.csproj.CoreCompileInputs.cache
+/workspace/database_setup/obj/Debug/net8.0/database_setup.sourcelink.json
