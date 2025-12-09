@@ -1,5 +1,8 @@
+using System;
+
 namespace LehrplanGenerator.Logic.Models;
 
-public record UserModel(
+public record User(
+    Guid UserId,
     string Name
 );
