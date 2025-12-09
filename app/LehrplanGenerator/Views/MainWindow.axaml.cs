@@ -9,6 +9,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         RegisterBtn.Click += (_, _) => SetView(new RegisterView());
+        LoginBtn.Click += (_, _) => SetView(new LoginView());
     }
 
     private void SetView(Control view)
