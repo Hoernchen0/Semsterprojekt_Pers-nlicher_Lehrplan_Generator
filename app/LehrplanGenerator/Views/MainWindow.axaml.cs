@@ -1,7 +1,4 @@
 using Avalonia.Controls;
-using LehrplanGenerator.Logic.Models;
-using System;
-using System.Collections.Generic;
 
 namespace LehrplanGenerator.Views;
 
@@ -11,9 +8,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        RegisterBtn.Click += (_, _) => SetView(new RegisterView());
+    }
 
-        //Testmodel 
-        var user = new UserModel("TestUser");
-        Console.WriteLine(user);
+    private void SetView(Control view)
+    {
+        MainContent.Content = view;
     }
 }
