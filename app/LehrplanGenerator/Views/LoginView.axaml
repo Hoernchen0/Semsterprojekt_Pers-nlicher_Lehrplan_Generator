@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LehrplanGenerator.ViewModels"
+             x:Class="LehrplanGenerator.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+
+    <StackPanel Margin="20" Spacing="12">
+        <TextBlock Text="Login" FontSize="28"/>
+        <TextBox Watermark="Username" Width="250"/>
+        <TextBox Watermark="Passwort" PasswordChar="*" Width="250"/>
+        <Button Content="Login" Width="160"/>
+    </StackPanel>
+
+</UserControl>
