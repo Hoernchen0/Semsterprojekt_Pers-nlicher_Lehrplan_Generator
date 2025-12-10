@@ -1,0 +1,25 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="LehrplanGenerator.Views.Shell.ShellView">
+
+    <DockPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    DockPanel.Dock="Top"
+                    Spacing="10"
+                    Margin="10">
+
+            <Button x:Name="MenuBtn" Content="Menu" Width="100" />
+            <Button x:Name="ChatBtn" Content="Chat" Width="100" />
+            <Button x:Name="CalendarBtn" Content="Kalender" Width="100" />
+
+            <Button x:Name="SettingsBtn" Content="Einstellungen" Width="100" HorizontalAlignment="Right"/>
+
+        </StackPanel>
+
+        <ContentControl x:Name="ShellContent"/>
+
+    </DockPanel>
+
+</UserControl>

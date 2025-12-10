@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LehrplanGenerator.ViewModels"
+             x:Class="LehrplanGenerator.Views.Auth.RegisterView"
+             x:DataType="vm:RegisterViewModel">
+
+     <StackPanel Margin="20" Spacing="12">
+        <TextBlock Text="Registrierung" FontSize="28" />
+
+        <TextBox Text="{Binding Username}" Watermark="Username" Width="250"/>
+        <TextBox Text="{Binding Password}" Watermark="Passwort" PasswordChar="*" Width="250"/>
+
+        <Button Content="Registrieren"
+                Width="160"
+                Command="{Binding RegisterCommand}" />
+
+        <Button Content="Zurück zum Menu"
+                Width="160"
+                Command="{Binding MenuCommand}" />
+    </StackPanel>
+
+</UserControl>

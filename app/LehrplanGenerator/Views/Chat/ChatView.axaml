@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LehrplanGenerator.ViewModels.Chat"
+             xmlns:model="using:LehrplanGenerator.Models.Chat"
+             x:Class="LehrplanGenerator.Views.Chat.ChatView"
+             x:DataType="vm:ChatViewModel">
+
+    <DockPanel Margin="16">
+
+        <TextBlock DockPanel.Dock="Top"
+                   Text="Chat"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Margin="0 0 0 12"/>
+
+        <Border BorderThickness="1"
+                BorderBrush="#aaa"
+                CornerRadius="6"
+                Padding="8"
+                Background="#F5F5F5">
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <ItemsControl ItemsSource="{Binding Messages}">
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate x:DataType="model:ChatMessage">
+                            <StackPanel Margin="0 10">
+
+                                <TextBlock Text="{Binding Sender}"
+                                           FontWeight="Bold"
+                                           Foreground="Black"/>
+
+                                <TextBlock Text="{Binding Text}"
+                                           TextWrapping="Wrap"
+                                           Foreground="Black"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </ScrollViewer>
+        </Border>
+
+        <DockPanel DockPanel.Dock="Bottom" Margin="0 12 0 0">
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+
+                <Button Grid.Column="0"
+                        Content="📎"
+                        Width="40"
+                        Command="{Binding UploadCommand}" />
+
+                <TextBox Grid.Column="1"
+                         Text="{Binding InputText}"
+                         Watermark="Nachricht…"
+                         Margin="8 0"/>
+
+                <Button Grid.Column="2"
+                        Content="Senden"
+                        Width="100"
+                        Command="{Binding SendCommand}" />
+
+            </Grid>
+        </DockPanel>
+
+    </DockPanel>
+
+</UserControl>
