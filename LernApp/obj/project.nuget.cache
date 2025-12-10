@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Rt9W3mRYYu0=",
+  "dgSpecHash": "tkS7qNgEF4M=",
   "success": true,
   "projectFilePath": "/workspace/LernApp/LernApp.csproj",
   "expectedPackageFiles": [
@@ -14,6 +14,7 @@
     "/root/.nuget/packages/avalonia.reactiveui/11.0.5/avalonia.reactiveui.11.0.5.nupkg.sha512",
     "/root/.nuget/packages/avalonia.remote.protocol/11.0.5/avalonia.remote.protocol.11.0.5.nupkg.sha512",
     "/root/.nuget/packages/avalonia.skia/11.0.5/avalonia.skia.11.0.5.nupkg.sha512",
+    "/root/.nuget/packages/avalonia.themes.fluent/11.0.5/avalonia.themes.fluent.11.0.5.nupkg.sha512",
     "/root/.nuget/packages/avalonia.win32/11.0.5/avalonia.win32.11.0.5.nupkg.sha512",
     "/root/.nuget/packages/avalonia.x11/11.0.5/avalonia.x11.11.0.5.nupkg.sha512",
     "/root/.nuget/packages/dynamicdata/7.9.5/dynamicdata.7.9.5.nupkg.sha512",

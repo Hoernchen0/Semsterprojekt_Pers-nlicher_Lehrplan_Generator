@@ -163,6 +163,18 @@
           "lib/net6.0/Avalonia.Skia.dll": {}
         }
       },
+      "Avalonia.Themes.Fluent/11.0.5": {
+        "type": "package",
+        "dependencies": {
+          "Avalonia": "11.0.5"
+        },
+        "compile": {
+          "lib/net6.0/Avalonia.Themes.Fluent.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Avalonia.Themes.Fluent.dll": {}
+        }
+      },
       "Avalonia.Win32/11.0.5": {
         "type": "package",
         "dependencies": {
@@ -1240,6 +1252,20 @@
         "avalonia.skia.nuspec",
         "lib/net6.0/Avalonia.Skia.dll",
         "lib/netstandard2.0/Avalonia.Skia.dll"
+      ]
+    },
+    "Avalonia.Themes.Fluent/11.0.5": {
+      "sha512": "/sEz05Hiu20OuUm5e2LSn/Hnzz4OvnG7jLA+NvWMIBBzdaz0a7Kr4QqDJmcpyK6x/a3l+xw4HDpWxMsn3nSBGg==",
+      "type": "package",
+      "path": "avalonia.themes.fluent/11.0.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "avalonia.themes.fluent.11.0.5.nupkg.sha512",
+        "avalonia.themes.fluent.nuspec",
+        "lib/net6.0/Avalonia.Themes.Fluent.dll",
+        "lib/netstandard2.0/Avalonia.Themes.Fluent.dll"
       ]
     },
     "Avalonia.Win32/11.0.5": {
@@ -2552,9 +2578,11 @@
       "Avalonia.Controls.DataGrid >= 11.0.5",
       "Avalonia.Desktop >= 11.0.5",
       "Avalonia.ReactiveUI >= 11.0.5",
+      "Avalonia.Themes.Fluent >= 11.0.5",
       "Microsoft.EntityFrameworkCore >= 9.0.10",
       "Microsoft.EntityFrameworkCore.Sqlite >= 9.0.10",
       "Microsoft.EntityFrameworkCore.Tools >= 10.0.0",
+      "Microsoft.Extensions.DependencyInjection >= 9.0.10",
       "sqlite-net-pcl >= 1.9.172"
     ]
   },
@@ -2616,6 +2644,10 @@
             "target": "Package",
             "version": "[11.0.5, )"
           },
+          "Avalonia.Themes.Fluent": {
+            "target": "Package",
+            "version": "[11.0.5, )"
+          },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
             "version": "[9.0.10, )"
@@ -2629,6 +2661,10 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[10.0.0, )"
+          },
+          "Microsoft.Extensions.DependencyInjection": {
+            "target": "Package",
+            "version": "[9.0.10, )"
           },
           "sqlite-net-pcl": {
             "target": "Package",

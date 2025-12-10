@@ -15,6 +15,7 @@
 /root/.nuget/packages/avalonia.reactiveui/11.0.5/lib/net6.0/Avalonia.ReactiveUI.dll
 /root/.nuget/packages/avalonia.remote.protocol/11.0.5/lib/net6.0/Avalonia.Remote.Protocol.dll
 /root/.nuget/packages/avalonia.skia/11.0.5/lib/net6.0/Avalonia.Skia.dll
+/root/.nuget/packages/avalonia.themes.fluent/11.0.5/lib/net6.0/Avalonia.Themes.Fluent.dll
 /root/.nuget/packages/avalonia.win32/11.0.5/lib/net6.0/Avalonia.Win32.dll
 /root/.nuget/packages/avalonia.x11/11.0.5/lib/net6.0/Avalonia.X11.dll
 /root/.nuget/packages/dynamicdata/7.9.5/lib/net6.0/DynamicData.dll

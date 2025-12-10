@@ -59,6 +59,10 @@
               "target": "Package",
               "version": "[11.0.5, )"
             },
+            "Avalonia.Themes.Fluent": {
+              "target": "Package",
+              "version": "[11.0.5, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.10, )"
@@ -72,6 +76,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[10.0.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.10, )"
             },
             "sqlite-net-pcl": {
               "target": "Package",

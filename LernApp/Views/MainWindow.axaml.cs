@@ -14,8 +14,9 @@ public partial class MainWindow : Window
     {
         if (DataContext is LernplanViewModel vm)
         {
-            vm.NeueEinheit(FachBox.Text ?? "", ThemaBox.Text ?? "");
-            //vm.NeueEinheit(FachBox.Text, ThemaBox.Text);
+            vm.SelectedFach = FachBox.Text ?? "";
+            vm.NeuesThema = ThemaBox.Text ?? "";
+            _ = vm.ErzeugeNeueLernEinheitCommand.Execute();
             FachBox.Text = "";
             ThemaBox.Text = "";
         }

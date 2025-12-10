@@ -12,9 +12,11 @@
           "Avalonia.Controls.DataGrid": "11.0.5",
           "Avalonia.Desktop": "11.0.5",
           "Avalonia.ReactiveUI": "11.0.5",
+          "Avalonia.Themes.Fluent": "11.0.5",
           "Microsoft.EntityFrameworkCore": "9.0.10",
           "Microsoft.EntityFrameworkCore.Sqlite": "9.0.10",
           "Microsoft.EntityFrameworkCore.Tools": "10.0.0",
+          "Microsoft.Extensions.DependencyInjection": "9.0.10",
           "sqlite-net-pcl": "1.9.172"
         },
         "runtime": {
@@ -181,6 +183,17 @@
         },
         "runtime": {
           "lib/net6.0/Avalonia.Skia.dll": {
+            "assemblyVersion": "11.0.5.0",
+            "fileVersion": "11.0.5.0"
+          }
+        }
+      },
+      "Avalonia.Themes.Fluent/11.0.5": {
+        "dependencies": {
+          "Avalonia": "11.0.5"
+        },
+        "runtime": {
+          "lib/net6.0/Avalonia.Themes.Fluent.dll": {
             "assemblyVersion": "11.0.5.0",
             "fileVersion": "11.0.5.0"
           }
@@ -924,6 +937,13 @@
       "sha512": "sha512-1t3yR1t0HOm0jITpn7+Wb2XUlwhbHPTr3i4ZrgYLKmc68fcBgBnQutJNjzLW3Iq8uWB8ymTeB3sKiD/NVkWFNw==",
       "path": "avalonia.skia/11.0.5",
       "hashPath": "avalonia.skia.11.0.5.nupkg.sha512"
+    },
+    "Avalonia.Themes.Fluent/11.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/sEz05Hiu20OuUm5e2LSn/Hnzz4OvnG7jLA+NvWMIBBzdaz0a7Kr4QqDJmcpyK6x/a3l+xw4HDpWxMsn3nSBGg==",
+      "path": "avalonia.themes.fluent/11.0.5",
+      "hashPath": "avalonia.themes.fluent.11.0.5.nupkg.sha512"
     },
     "Avalonia.Win32/11.0.5": {
       "type": "package",
