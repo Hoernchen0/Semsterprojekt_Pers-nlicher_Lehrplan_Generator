@@ -11,6 +11,8 @@
         <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.8" />
         <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.8" />
         <PackageVersion Include="Avalonia.Desktop" Version="11.3.8" />
+        <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.8" />
+        <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.8" />
         <PackageVersion Include="Avalonia.iOS" Version="11.3.8" />
         <PackageVersion Include="Avalonia.Browser" Version="11.3.8" />
         <PackageVersion Include="Avalonia.Android" Version="11.3.8" />
@@ -18,5 +20,14 @@
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 
         <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Entity Framework Core (compatible with .NET 8) -->
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.22" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.22" />
+        <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
     </ItemGroup>
 </Project>
