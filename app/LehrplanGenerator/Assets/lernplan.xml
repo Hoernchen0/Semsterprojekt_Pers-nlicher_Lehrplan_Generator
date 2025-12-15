@@ -1,0 +1,17 @@
+<StudyPlan>
+    <Title>Mein Lernplan</Title>
+    <Entries>
+        <Entry>
+            <Date>2025-12-30</Date>
+            <Hour>9</Hour>
+            <Topic>Software Architektur</Topic>
+            <DurationMinutes>60</DurationMinutes>
+        </Entry>
+        <Entry>
+            <Date>2025-12-31</Date>
+            <Hour>10</Hour>
+            <Topic>Design Pattern</Topic>
+            <DurationMinutes>45</DurationMinutes>
+        </Entry>
+    </Entries>
+</StudyPlan>
