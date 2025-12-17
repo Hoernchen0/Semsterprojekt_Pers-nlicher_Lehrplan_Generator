@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
+             x:Class="LehrplanGenerator.Views.Dashboard.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+    
+    <Grid>
+        <StackPanel VerticalAlignment="Center" 
+                    HorizontalAlignment="Center"
+                    Spacing="30">
+            
+            <TextBlock Text="{Binding WelcomeMessage}" 
+                       FontSize="32"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+            
+            <TextBlock Text="Dein persönlicher Lehrplan-Generator" 
+                       FontSize="18"
+                       Foreground="Gray"
+                       HorizontalAlignment="Center"/>
+            
+        </StackPanel>
+    </Grid>
+    
+</UserControl>

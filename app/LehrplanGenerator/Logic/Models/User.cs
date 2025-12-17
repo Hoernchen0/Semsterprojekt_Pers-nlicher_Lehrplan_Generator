@@ -4,5 +4,9 @@ namespace LehrplanGenerator.Logic.Models;
 
 public record User(
     Guid UserId,
-    string Name
-);
+    string FirstName,
+    string LastName
+)
+{
+    public string DisplayName => $"{FirstName} {LastName}";
+}
