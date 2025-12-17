@@ -6,12 +6,8 @@ namespace LehrplanGenerator.Views.Chat;
 
 public partial class ChatView : UserControl
 {
-    private readonly MainWindow _main;
-
-    public ChatView(MainWindow mainWindow)
+    public ChatView()
     {
         InitializeComponent();
-        _main = mainWindow;
-        DataContext = new ChatViewModel(mainWindow);
     }
 }
