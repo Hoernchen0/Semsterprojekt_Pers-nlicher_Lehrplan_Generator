@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LehrplanGenerator.ViewModels"
+             mc:Ignorable="d"
+             x:Class="LehrplanGenerator.Views.Main.MainView"
+             x:DataType="vm:MainViewModel">
+
+    <Grid>
+
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="20">
+
+            <TextBlock Text="{Binding Greeting}" FontSize="28"/>
+
+            <Button x:Name="LoginBtn" Content="Login" Width="200"/>
+            <Button x:Name="RegisterBtn" Content="Registrieren" Width="200"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>
