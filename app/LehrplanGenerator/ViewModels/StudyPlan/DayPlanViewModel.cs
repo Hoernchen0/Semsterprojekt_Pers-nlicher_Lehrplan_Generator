@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using LehrplanGenerator.Logic.Models;
 
-namespace LehrplanGenerator.ViewModels;
+namespace LehrplanGenerator.ViewModels.StudyPlan;
 
 public class DayPlanViewModel
 {

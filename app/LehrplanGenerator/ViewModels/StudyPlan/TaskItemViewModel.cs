@@ -1,4 +1,4 @@
-namespace LehrplanGenerator.ViewModels;
+namespace LehrplanGenerator.ViewModels.StudyPlan;
 
 public class TaskItemViewModel
 {

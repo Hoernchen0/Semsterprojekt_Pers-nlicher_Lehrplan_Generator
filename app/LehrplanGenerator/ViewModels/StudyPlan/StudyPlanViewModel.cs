@@ -4,22 +4,29 @@ using LehrplanGenerator.Logic.Services;
 using System.Collections.ObjectModel;
 using LehrplanGenerator.Views.Windows;
 using System.Linq;
+using LehrplanGenerator.Logic.State;
+using CommunityToolkit.Mvvm.Input;
+using LehrplanGenerator.ViewModels.Main;
 
+namespace LehrplanGenerator.ViewModels.StudyPlan;
 
-namespace LehrplanGenerator.ViewModels;
-
-public partial class StudyPlanViewModel : ObservableObject
+public partial class StudyPlanViewModel : ViewModelBase
 {
 
-    private readonly MainWindow _mainWindow;
     private readonly StudyPlanService _service;
+
+    private readonly INavigationService _navigationService;
+    private readonly AppState _appState;
 
     public string Topic { get; }
     public ObservableCollection<DayPlanViewModel> Days { get; }
 
-    public StudyPlanViewModel(MainWindow mainWindow)
+
+
+    public StudyPlanViewModel(INavigationService navigationService, AppState appState)
     {
-        _mainWindow = mainWindow;
+        _navigationService = navigationService;
+        _appState = appState;
 
         var demoPlan = StudyPlanFactory.CreateDemoPlan();
         _service = new StudyPlanService(demoPlan);
@@ -30,5 +37,11 @@ public partial class StudyPlanViewModel : ObservableObject
         Days = new ObservableCollection<DayPlanViewModel>(
             plan.Days.Select(d => new DayPlanViewModel(d))
         );
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        _navigationService.NavigateTo<MainViewModel>();
     }
 }
