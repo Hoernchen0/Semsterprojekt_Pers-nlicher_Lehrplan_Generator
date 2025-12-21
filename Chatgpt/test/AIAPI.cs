@@ -1,56 +1,52 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 using OpenAI.Chat;
-using System.Text.RegularExpressions;
 using System.Text.Json.Serialization;
 using OpenAI;
+using System.Collections.Generic;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 namespace LehrplanGenerator.Logic.Services
 {
 public class TaskItem
 {
     [JsonInclude]
     [JsonPropertyName("title")]
-    public string Title { get; private set; }
+    public string Title { get; private set; } = string.Empty;
 
     [JsonInclude]
     [JsonPropertyName("start_time")]
-    public string StartTime { get; private set; }
+    public string StartTime { get; private set; } = string.Empty;
 
     [JsonInclude]
     [JsonPropertyName("end_time")]
-    public string EndTime { get; private set; }
+    public string EndTime { get; private set; } = string.Empty;
 
     [JsonInclude]
     [JsonPropertyName("description")]
-    public string Description { get; private set; }
+    public string Description { get; private set; } = string.Empty;
 }
 
 public class DayPlan
 {
     [JsonInclude]
     [JsonPropertyName("day")]
-    public string Day { get; private set; }
+    public string Day { get; private set; } = string.Empty;
 
     [JsonInclude]
     [JsonPropertyName("tasks")]
-    public List<TaskItem> Tasks { get; private set; }
+    public List<TaskItem> Tasks { get; private set; } = new List<TaskItem>();
 }
 
 public class StudyPlan
 {
     [JsonInclude]
     [JsonPropertyName("topic")]
-    public string Topic { get; private set; }
+    public string Topic { get; private set; } = string.Empty;
 
     [JsonInclude]
     [JsonPropertyName("days")]
-    public List<DayPlan> Days { get; private set; }
+    public List<DayPlan> Days { get; private set; } = new List<DayPlan>();
 }
 
 public class StudyPlanGeneratorService
@@ -72,23 +68,22 @@ public class StudyPlanGeneratorService
         {
             new Message(Role.System, "Hilf dem Nutzer einen Lernplan zu erstellen und"
                                                    + "seine Fragen zu Themen zu beantworten."
-                                 + "Du sollst im nicht einfach im Chat den Lernplan ausgeben..."
+                                 + "Du darfst nicht einfach im Chat den Lernplan ausgeben..."
                                +   "Du kannst den Nutzer auch fragen ob du im selbst von dir erstellte Praxisübungen"
                                 +  "erstellen sollst. Du kannst ihn auch fragen welche Themen er besonders "
                                 +  "intensiv wiederholen will, das ist sehr wichtig für die richtige Zeitaufteilung"
                                 +  "im Lernplan. Für die Erstellung ist auch wichtig zu fragen zu welchen Zeiten"
-                                +  "der Nutzer lernen möchte. Plane die Themen über die 2 Wochen so, "
+                                +  "der Nutzer lernen möchte. Plane die Themen über die Zeit so, "
                                 +  "dass Wiederholungen für schwierige Themen vorgesehen sind. Lege zuerst die Themen an,"
                                +   " die für das Verständnis der anderen Themen am wichtigsten sind.")
         };
     }
 
-    public async Task<StudyPlan?> CreateJsonAsync()
+    public async Task<StudyPlan?> CreateStudyPlanAsync()
     {
         var heute = DateTime.Now.ToString("dd.MM.yyyy");
 
         var systemMessage = new Message(Role.System,
-            "Erstelle einen Lernplan und gib ihn NUR als JSON zurück, der die Struktur StudyPlan hat. " +
             "day soll das Format dd.MM.yyyy haben und start_time und end_time das Format HH:mm. " +
             $"Der erste Tag darf nicht vor dem heutigen Datum liegen: {heute}");
 
@@ -99,7 +94,7 @@ try
     {
             // Typisierte Response abrufen
             var (studyPlan, chatResponse) = await _client.ChatEndpoint.GetCompletionAsync<StudyPlan>(
-                new ChatRequest(messages, model: ModelName)
+                new ChatRequest(messages, model: ModelName) //automatische json deserialisierung
             );
 
             if (studyPlan == null)
@@ -108,6 +103,7 @@ try
                 return null;
             }
                 // direkt in deiner UI verwenden
+               // direkt in deiner UI verwenden
         foreach (var day in studyPlan.Days)
         {
         Console.WriteLine($"Tag: {day.Day}");
@@ -116,7 +112,7 @@ try
             Console.WriteLine($"- {task.Title} ({task.StartTime}-{task.EndTime})");
         }
     }
-        
+
         return studyPlan;
     }    catch (Exception ex){
         Console.WriteLine($"API error: {ex.Message}");
@@ -157,7 +153,6 @@ public async Task<string?> AskGptAsync(string userInput)
         
         // Komplette Message hinzufügen
         _conversation.Add(assistantMessage);
-
         Console.WriteLine(assistantMessage.Content.ToString());
         return assistantMessage.Content.ToString();
     }
