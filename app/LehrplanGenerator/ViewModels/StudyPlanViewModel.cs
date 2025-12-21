@@ -1,44 +1,34 @@
-using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Logic.Services;
 using System.Collections.ObjectModel;
 using LehrplanGenerator.Views.Windows;
+using System.Linq;
 
 
 namespace LehrplanGenerator.ViewModels;
 
 public partial class StudyPlanViewModel : ObservableObject
 {
-    [ObservableProperty] private string title = string.Empty;
-    [ObservableProperty] private ObservableCollection<StudyEntry> _entries = new();
-    [ObservableProperty] private string result = string.Empty;
 
+    private readonly MainWindow _mainWindow;
     private readonly StudyPlanService _service;
-    private readonly MainWindow _main;
+
+    public string Topic { get; }
+    public ObservableCollection<DayPlanViewModel> Days { get; }
 
     public StudyPlanViewModel(MainWindow mainWindow)
     {
-        _main = mainWindow;
-        _service = new StudyPlanService();
-        Load("Assets/lernplan.xml");
+        _mainWindow = mainWindow;
+
+        var demoPlan = StudyPlanFactory.CreateDemoPlan();
+        _service = new StudyPlanService(demoPlan);
+
+        var plan = _service.GetStudyPlan();
+
+        Topic = plan.Topic;
+        Days = new ObservableCollection<DayPlanViewModel>(
+            plan.Days.Select(d => new DayPlanViewModel(d))
+        );
     }
-
-    [RelayCommand]
-    public void Load(string path)
-    {
-        var plan = _service.LoadFromXml(path);
-
-        Title = plan.Title;
-        Entries.Clear();
-
-        foreach (var entry in plan.Entries)
-        {
-            Entries.Add(entry);
-        }
-
-        Result = $"Plan '{Title}' erfolgreich geladen.";
-    }
-
 }
