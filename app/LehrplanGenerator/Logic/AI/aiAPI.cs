@@ -103,16 +103,7 @@ try
                 return null;
             }
                 // direkt in deiner UI verwenden
-               // direkt in deiner UI verwenden
-        foreach (var day in studyPlan.Days)
-        {
-        Console.WriteLine($"Tag: {day.Day}");
-        foreach (var task in day.Tasks)
-        {
-            Console.WriteLine($"- {task.Title} ({task.StartTime}-{task.EndTime})");
-        }
-    }
-
+       
         return studyPlan;
     }    catch (Exception ex){
         Console.WriteLine($"API error: {ex.Message}");
@@ -120,22 +111,38 @@ try
     }
     
     }
-    public async Task UploadPdfAsync(string pdfPath)
+    public async Task<bool> UploadPdfAsync(string pdfPath)
     {
-    if (!File.Exists(pdfPath))
-    {
-        Console.WriteLine("Datei existiert nicht!");
-        return;
-    }
+        if (!File.Exists(pdfPath))
+        {
+            Console.WriteLine("Datei existiert nicht!");
+            return false;
+        }
 
-    // Hinweis: Aktuelles SDK unterstützt noch kein direktes File-Upload wie in Python
-    // Wir fügen die Info zur PDF einfach als Textnachricht in die Konversation ein
-    _conversation.Add(new Message(Role.User, "Hier ist meine PDF."));
-    _conversation.Add(new Message(Role.System, 
-        "Nutze die PDF als Grundlage für Zusammenfassungen und den Lernplan."
-    ));
+        try
+        {
+            string fileName = Path.GetFileName(pdfPath);
 
-    Console.WriteLine("PDF-Hinweis zur Konversation hinzugefügt.");
+            // Lade die Datei über die Files API hoch
+            var uploadedFile = await _client.FilesEndpoint.UploadFileAsync(pdfPath, FilePurpose.Assistants);
+
+            // Füge eine Nachricht mit Dateireferenz hinzu
+            _conversation.Add(new Message(Role.User, 
+                $"Ich habe die PDF-Datei '{fileName}' hochgeladen (File ID: {uploadedFile.Id}). " +
+                "Bitte nutze diese als Grundlage für Zusammenfassungen und den Lernplan."));
+            
+            _conversation.Add(new Message(Role.System, 
+                "Nutze die hochgeladene PDF als Grundlage für Zusammenfassungen und den Lernplan."
+            ));
+
+            Console.WriteLine($"PDF erfolgreich hochgeladen: {uploadedFile.Id}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Hochladen der PDF: {ex.Message}");
+            return false;
+        }
     }
 public async Task<string?> AskGptAsync(string userInput)
 {
@@ -153,7 +160,7 @@ public async Task<string?> AskGptAsync(string userInput)
         
         // Komplette Message hinzufügen
         _conversation.Add(assistantMessage);
-        Console.WriteLine(assistantMessage.Content.ToString());
+
         return assistantMessage.Content.ToString();
     }
     catch (Exception ex)
