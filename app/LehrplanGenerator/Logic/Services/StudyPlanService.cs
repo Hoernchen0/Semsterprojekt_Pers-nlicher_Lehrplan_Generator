@@ -1,46 +1,34 @@
 using System;
-using System.Linq;
-using System.Xml.Linq;
 using LehrplanGenerator.Logic.Models;
+using System.Linq;
 
 namespace LehrplanGenerator.Logic.Services;
 
 public class StudyPlanService
 {
-    public StudyPlan LoadFromXml(string path)
+
+    private readonly StudyPlan _studyPlan;
+
+    public StudyPlanService(StudyPlan studyPlan)
     {
-        var doc = XDocument.Load(path);
-
-        var title = doc.Root?.Element("Title")?.Value ?? "Unbenannt";
-
-        var entries = doc.Descendants("Entry")
-                         .Select(e => new StudyEntry(
-                             Guid.NewGuid(),
-                             Guid.NewGuid(),
-                             DateTime.Parse(e.Element("Date")!.Value),
-                             int.Parse(e.Element("Hour")!.Value),
-                             e.Element("Topic")!.Value,
-                             int.Parse(e.Element("DurationMinutes")!.Value)
-                         ))
-                         .ToList();
-
-        return new StudyPlan(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            title,
-            entries,
-            doc.ToString(),
-            DateTime.Now.ToString("s")
-        );
+        _studyPlan = studyPlan;
     }
 
-    /*
-    public WorkShift GetWorkShift(StudyEntry entry, DateTime day)
+    public StudyPlan GetStudyPlan()
+    {
+        _studyPlan.Days.Sort((a, b) => a.Date.CompareTo(b.Date));
+
+        foreach (var day in _studyPlan.Days)
         {
-            var start = day.Date.AddHours(entry.Hour);
-            var end = start.AddMinutes(entry.DurationMinutes);
-            return new WorkShift(start, end);
+            var sorted = day.Tasks
+                .OrderBy(t => TimeSpan.Parse(t.StartTime))
+                .ToList();
+
+            day.Tasks.Clear();
+            foreach (var t in sorted)
+                day.Tasks.Add(t);
         }
 
-        */
+        return _studyPlan;
+    }
 }
