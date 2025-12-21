@@ -6,12 +6,9 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   
-  <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
-     <Content Include="Assets\lernplan.xml">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </Content>
-  </ItemGroup>
+  
+
+  
 
   <ItemGroup>
     <PackageReference Include="Avalonia" />
