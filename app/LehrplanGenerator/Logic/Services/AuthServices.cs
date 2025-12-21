@@ -1,72 +1,39 @@
 using System;
-using System.IO;
-using System.Text;
-using System.Text.Json;
-using System.Security.Cryptography;
+using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.Logic.Models;
 
 namespace LehrplanGenerator.Logic.Services;
 
 public class AuthService
 {
-    private readonly string _file;
+    private readonly UserCredentialStore _store;
 
-    public User? CurrentUser { get; private set; }
-
-    public AuthService()
+    public AuthService(UserCredentialStore store)
     {
-        _file = Path.Combine(AppContext.BaseDirectory, "login.json");
+        _store = store;
     }
-
-    public bool Login(string username, string password)
+    public bool Register(string firstName, string lastName, string username, string password)
     {
-        if (!File.Exists(_file))
+        if (_store.UsernameExists(username))
             return false;
 
-        var json = File.ReadAllText(_file);
-        var saved = JsonSerializer.Deserialize<LoginData>(json);
+        var user = new UserCredential(
+            Guid.NewGuid(),
+            firstName,
+            lastName,
+            username,
+            PasswordHasher.Hash(password)
+        );
 
-        if (saved == null)
-            return false;
-
-        if (saved.Username == username && saved.PasswordHash == Hash(password))
-        {
-            // Benutzer laden → User erzeugen
-            CurrentUser = new User(
-                saved.UserId,
-                saved.Username
-            );
-
-            return true;
-        }
-
-        return false;
+        _store.Add(user);
+        return true;
     }
-
-    public void Register(string username, string password)
+    public UserCredential? Login(string username, string password)
     {
-        var data = new LoginData
-        {
-            UserId = Guid.NewGuid(),
-            Username = username,
-            PasswordHash = Hash(password)
-        };
+        var cred = _store.GetByUsername(username);
+        if (cred == null) return null;
 
-        File.WriteAllText(_file, JsonSerializer.Serialize(data));
-    }
-
-    private string Hash(string s)
-    {
-        using var sha = SHA256.Create();
-        return Convert.ToHexString(sha.ComputeHash(Encoding.UTF8.GetBytes(s)));
-    }
-
-    private class LoginData
-    {
-        public Guid UserId { get; set; }
-        public required string Username { get; set; }
-        public required string PasswordHash { get; set; }
-
-        public LoginData() { }
+        var hashed = PasswordHasher.Hash(password);
+        return hashed == cred.PasswordHash ? cred : null;
     }
 }

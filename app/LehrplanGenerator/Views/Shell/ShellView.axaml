@@ -1,25 +1,57 @@
 <UserControl
+    x:Class="LehrplanGenerator.Views.Shell.ShellView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    x:Class="LehrplanGenerator.Views.Shell.ShellView">
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Shell"
+    x:DataType="vm:ShellViewModel">
 
     <DockPanel>
+        <!--  Taskleiste (bleibt immer sichtbar)  -->
+        <Border
+            Padding="15"
+            Background="#2c3e50"
+            BoxShadow="0 2 10 0 #40000000"
+            DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal" Spacing="15">
 
-        <StackPanel Orientation="Horizontal"
-                    DockPanel.Dock="Top"
-                    Spacing="10"
-                    Margin="10">
+                <TextBlock
+                    Margin="0,0,20,0"
+                    VerticalAlignment="Center"
+                    FontSize="16"
+                    Foreground="White"
+                    Text="{Binding CurrentUserName}" />
 
-            <Button x:Name="MenuBtn" Content="Menu" Width="100" />
-            <Button x:Name="ChatBtn" Content="Chat" Width="100" />
-            <Button x:Name="CalendarBtn" Content="Kalender" Width="100" />
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding ShowHomeCommand}"
+                    Content="Home"
+                    Foreground="White" />
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Content="Kalender"
+                    Foreground="White" />
 
-            <Button x:Name="SettingsBtn" Content="Einstellungen" Width="100" HorizontalAlignment="Right"/>
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding ShowChatCommand}"
+                    Content="Chat"
+                    Foreground="White" />
 
-        </StackPanel>
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding ShowSettingsCommand}"
+                    Content="Einstellungen"
+                    Foreground="White" />
 
-        <ContentControl x:Name="ShellContent"/>
+            </StackPanel>
+        </Border>
 
+        <!--  Content Area (ändert sich je nach Tab)  -->
+        <ContentControl Content="{Binding CurrentContent}" />
     </DockPanel>
 
 </UserControl>
