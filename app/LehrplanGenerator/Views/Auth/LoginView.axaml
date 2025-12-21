@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LehrplanGenerator.ViewModels"
+             xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
              x:Class="LehrplanGenerator.Views.Auth.LoginView"
              x:DataType="vm:LoginViewModel">
 
@@ -13,6 +13,10 @@
         <Button Content="Login"
                 Width="160"
                 Command="{Binding LoginCommand}"/>
+
+         <Button Content="Abbrechen"
+                Width="160"
+                Command="{Binding CancelCommand}"/>
 
         <TextBlock Text="{Binding Result}" FontSize="18" />
     </StackPanel>

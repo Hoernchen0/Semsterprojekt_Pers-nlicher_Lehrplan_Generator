@@ -1,9 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="using:LehrplanGenerator.Views"
+        xmlns:vm="using:LehrplanGenerator.ViewModels.Windows"
         x:Class="LehrplanGenerator.Views.Windows.MainWindow"
-        Width="1280" Height="720"
-        Title="Lehrplan Generator">
-
-        <ContentControl x:Name="RootContent" />
+        x:DataType="vm:MainWindowViewModel"
+        Title="Lehrplan Generator"
+        Width="800"
+        Height="600">
+    
+    <!-- ContentControl bindet automatisch die richtige View via ViewLocator -->
+    <ContentControl Content="{Binding CurrentViewModel}" />
+    
 </Window>

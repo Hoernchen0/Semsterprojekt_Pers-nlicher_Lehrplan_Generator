@@ -1,8 +1,13 @@
-using LehrplanGenerator.Logic.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace LehrplanGenerator.Logic.State;
 
-public static class AppState
+public partial class AppState : ObservableObject
 {
-    public static User? CurrentUser { get; set; }
+    [ObservableProperty]
+    private Guid? _currentUserId;
+
+    [ObservableProperty]
+    private string? _currentUserDisplayName;
 }
