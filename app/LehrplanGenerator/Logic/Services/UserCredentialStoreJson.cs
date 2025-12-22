@@ -25,8 +25,7 @@ public class UserCredentialStore
         }
 
         var json = File.ReadAllText(FilePath);
-        _cache = JsonSerializer.Deserialize<List<UserCredential>>(json)
-                 ?? new List<UserCredential>();
+        _cache = JsonSerializer.Deserialize<List<UserCredential>>(json) ?? new();
     }
 
     private void Save()
@@ -42,14 +41,14 @@ public class UserCredentialStore
     public bool UsernameExists(string username)
         => _cache.Any(c => c.Username == username);
 
-    public void Add(UserCredential cred)
+    public void Add(UserCredential user)
     {
-        _cache.Add(cred);
+        _cache.Add(user);
         Save();
     }
 
-    public IReadOnlyList<UserCredential> GetAll()
-    {
-        return _cache;
-    }
+    public UserCredential? GetByUsername(string username)
+        => _cache.FirstOrDefault(u => u.Username == username);
+
+    public IReadOnlyList<UserCredential> GetAll() => _cache;
 }
