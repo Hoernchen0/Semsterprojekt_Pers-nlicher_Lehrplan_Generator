@@ -15,6 +15,7 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
 using LehrplanGenerator.ViewModels.Chat;
+using LehrplanGenerator.ViewModels.StudyPlan;
 
 namespace LehrplanGenerator;
 
@@ -48,6 +49,7 @@ public partial class App : Application
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<ChatViewModel>();
+        services.AddTransient<StudyPlanViewModel>();
     }
 
     public override void OnFrameworkInitializationCompleted()

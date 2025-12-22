@@ -30,6 +30,7 @@
                 <Button
                     Background="Transparent"
                     BorderThickness="0"
+                    Command="{Binding ShowStudyPlanCommand}"
                     Content="Kalender"
                     Foreground="White" />
 

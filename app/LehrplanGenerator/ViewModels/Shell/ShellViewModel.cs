@@ -7,6 +7,7 @@ using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
 using Microsoft.Extensions.DependencyInjection;
 using LehrplanGenerator.ViewModels.Chat;
+using LehrplanGenerator.ViewModels.StudyPlan;
 
 namespace LehrplanGenerator.ViewModels.Shell;
 
@@ -58,6 +59,13 @@ public partial class ShellViewModel : ViewModelBase
     {
         SelectedTab = "Chat";
         CurrentContent = App.Services.GetRequiredService<ChatViewModel>();
+    }
+
+    [RelayCommand]
+    private void ShowStudyPlan()
+    {
+        SelectedTab = "Kalender";
+        CurrentContent = App.Services.GetRequiredService<StudyPlanViewModel>();
     }
 
     [RelayCommand]
