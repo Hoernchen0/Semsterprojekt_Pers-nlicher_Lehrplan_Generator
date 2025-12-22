@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace LehrplanGenerator.Views;
 
-public partial class MainWindow : Window
+public partial class LegacyMainWindow : Window
 {
-    public MainWindow()
+    public LegacyMainWindow()
     {
         InitializeComponent();
 

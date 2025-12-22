@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LernApp.Views.MainWindow"
+        Title="LernApp - Persönlicher Lehrplan" Width="800" Height="600">
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="16" Spacing="10">
+            <TextBlock Text="Neue Lerneinheit:" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBox Name="FachBox" Width="120" Watermark="Fach"/>
+            <TextBox Name="ThemaBox" Width="200" Watermark="Thema"/>
+            <Button Content="Hinzufügen" Width="100" Click="Add_Click" IsEnabled="{Binding !IsLoading}"/>
+        </StackPanel>
+
+        <!-- Content -->
+        <ListBox Grid.Row="1" ItemsSource="{Binding LernEinheiten}" Margin="16,0,16,16" Name="LernEinheitenList">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Padding="0,8,0,8">
+                        <Grid ColumnDefinitions="100,200,150,*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Fach}" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Thema}" Margin="10,0,0,0"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Datum, StringFormat=d}" Margin="10,0,0,0" Foreground="Gray"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Beschreibung}" Margin="10,0,0,0" Foreground="DarkGray"/>
+                            <Button Grid.Column="4" Content="🗑️" Margin="10,0,0,0" Command="{Binding Path=DataContext.LöscheLernEinheitCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="WhiteSmoke" Margin="0" Padding="16">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="{Binding IsLoading, StringFormat='Status: {0}'}" VerticalAlignment="Center"/>
+                <ProgressBar IsIndeterminate="{Binding IsLoading}" Width="200" IsVisible="{Binding IsLoading}" Height="20"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

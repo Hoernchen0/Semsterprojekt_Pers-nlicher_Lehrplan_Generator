@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace LehrplanGenerator.Views;
 
-public partial class MainView : UserControl
+public partial class LegacyMainView : UserControl
 {
-    public MainView()
+    public LegacyMainView()
     {
         InitializeComponent();
     }

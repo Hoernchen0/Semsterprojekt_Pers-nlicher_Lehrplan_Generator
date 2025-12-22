@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using LernApp;
 using LernApp.Data;
-using LernApp.Data.Repositories;
+using LernApp.Infrastructure;
 using LernApp.Models;
 using LernApp.Services;
 
@@ -24,32 +24,12 @@ class Program
     {
         var services = new ServiceCollection();
 
-        // DbContext
+        // Konfiguriere alle Application-Services (DbContext, Repositories, Services)
         string dbPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "lernapp.db");
-        
-        services.AddDbContext<LernAppDbContext>(options =>
-            options.UseSqlite($"Data Source={dbPath}"));
 
-        // Repositories
-        services.AddScoped<IRepository<DateiAnalyse>, Repository<DateiAnalyse>>();
-        services.AddScoped<IRepository<GenerierteCSV>, Repository<GenerierteCSV>>();
-        services.AddScoped<IRepository<Prompt>, Repository<Prompt>>();
-        services.AddScoped<IRepository<UserEinstellung>, Repository<UserEinstellung>>();
-        
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<ILernEinheitRepository, LernEinheitRepository>();
-        services.AddScoped<IPromptRepository, PromptRepository>();
-        services.AddScoped<IGenerierteCSVRepository, GenerierteCSVRepository>();
-
-        // Services
-        services.AddScoped<ILernAppLogger, ConsoleLogger>();
-        services.AddScoped<ILernplanService, LernplanService>();
-        services.AddScoped<IAIService, AIService>();
-        services.AddScoped<IDateiAnalyseService, DateiAnalyseService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IUserAppSettingsService, UserAppSettingsService>();
+        services.AddApplicationServices(dbPath);
 
         Services = services.BuildServiceProvider();
 

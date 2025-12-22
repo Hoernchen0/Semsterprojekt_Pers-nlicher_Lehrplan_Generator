@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Security.Cryptography;
 using LehrplanGenerator.Logic.Models;
+using UserAlias = LehrplanGenerator.Logic.Models.User;
 
 namespace LehrplanGenerator.Logic.Services;
 
@@ -11,7 +12,7 @@ public class AuthService
 {
     private readonly string _file;
 
-    public User? CurrentUser { get; private set; }
+    public UserAlias? CurrentUser { get; private set; }
 
     public AuthService()
     {
@@ -32,7 +33,7 @@ public class AuthService
         if (saved.Username == username && saved.PasswordHash == Hash(password))
         {
             // Benutzer laden → User erzeugen
-            CurrentUser = new User(
+            CurrentUser = new UserAlias(
                 saved.UserId,
                 saved.Username
             );

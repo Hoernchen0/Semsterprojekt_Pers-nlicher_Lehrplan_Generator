@@ -4,5 +4,5 @@ namespace LehrplanGenerator.Logic.State;
 
 public static class AppState
 {
-    public static User? CurrentUser { get; set; }
+    public static LehrplanGenerator.Logic.Models.User? CurrentUser { get; set; }
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Models;
+using UserAlias = LehrplanGenerator.Logic.Models.User;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
@@ -47,7 +48,7 @@ public partial class LoginViewModel : ObservableObject
 
         if (hashed == cred.PasswordHash)
         {
-            AppState.CurrentUser = new User(cred.UserId, cred.Username);
+            LehrplanGenerator.Logic.State.AppState.CurrentUser = new LehrplanGenerator.Logic.Models.User(cred.UserId, cred.Username);
             Result = "richtig";
 
 
