@@ -20,7 +20,6 @@ public class AuthService
     {
         if (_store.UsernameExists(username))
             return false;
-
         var user = new UserCredential(
             Guid.NewGuid(),
             firstName,
@@ -29,24 +28,9 @@ public class AuthService
             PasswordHasher.Hash(password)
         );
 
-        if (saved == null)
-            return false;
-
-        if (saved.Username == username && saved.PasswordHash == Hash(password))
-        {
-            // Benutzer laden → User erzeugen
-            CurrentUser = new UserAlias(
-                saved.UserId,
-                saved.Username
-                _store.Add(user);
-            );
-
-            return true;
-        }
-
-        return false;
-        //_store.Add(user);
-        //return true;
+        _store.Add(user);
+        CurrentUser = new UserAlias(user.UserId, user.FirstName, user.LastName);
+        return true;
     }
     public UserCredential? Login(string username, string password)
     {

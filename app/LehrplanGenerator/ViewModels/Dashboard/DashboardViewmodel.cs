@@ -17,14 +17,14 @@ public partial class DashboardViewModel : ViewModelBase
     {
         _appState = appState;
 
-        UserName = _appState.CurrentUserDisplayName ?? "Benutzer";
+        UserName = AppState.CurrentUserDisplayName ?? "Benutzer";
         WelcomeMessage = $"Willkommen zurück, {UserName}!";
 
-        System.Diagnostics.Debug.WriteLine($"CurrentUserDisplayName: '{_appState.CurrentUserDisplayName}'");
+        System.Diagnostics.Debug.WriteLine($"CurrentUserDisplayName: '{AppState.CurrentUserDisplayName}'");
 
         _appState.PropertyChanged += (_, __) =>
         {
-            UserName = _appState.CurrentUserDisplayName ?? "Benutzer";
+            UserName = AppState.CurrentUserDisplayName ?? "Benutzer";
             WelcomeMessage = $"Willkommen zurück, {UserName}!";
         };
     }

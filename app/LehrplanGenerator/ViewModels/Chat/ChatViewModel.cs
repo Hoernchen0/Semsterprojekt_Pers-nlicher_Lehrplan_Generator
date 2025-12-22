@@ -33,7 +33,7 @@ public partial class ChatViewModel : ViewModelBase
 
         Messages.Add(new ChatMessage
         {
-            Sender = _appState.CurrentUserDisplayName ?? "Benutzer",
+            Sender = AppState.CurrentUserDisplayName ?? "Benutzer",
             Text = InputText
         });
 

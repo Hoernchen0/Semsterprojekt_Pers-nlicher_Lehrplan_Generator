@@ -32,9 +32,9 @@ public partial class ShellViewModel : ViewModelBase
         _navigationService = navigationService;
         _appState = appState;
 
-        if (!string.IsNullOrWhiteSpace(_appState.CurrentUserDisplayName))
+        if (!string.IsNullOrWhiteSpace(AppState.CurrentUserDisplayName))
         {
-            CurrentUserName = _appState.CurrentUserDisplayName;
+            CurrentUserName = AppState.CurrentUserDisplayName!;
         }
 
         ShowHome();
@@ -71,8 +71,7 @@ public partial class ShellViewModel : ViewModelBase
     [RelayCommand]
     private void Logout()
     {
-        _appState.CurrentUserId = null;
-        _appState.CurrentUserDisplayName = null;
+        AppState.CurrentUser = null;
 
         _navigationService.NavigateTo<MainViewModel>();
     }

@@ -48,8 +48,7 @@ public partial class RegisterViewModel : ViewModelBase
 
         _store.Add(user);
 
-        _appState.CurrentUserId = user.UserId;
-        _appState.CurrentUserDisplayName = $"{user.FirstName} {user.LastName}";
+        AppState.CurrentUser = new LehrplanGenerator.Logic.Models.User(user.UserId, user.FirstName, user.LastName);
 
         _navigationService.NavigateTo<ShellViewModel>();
     }

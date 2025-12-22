@@ -44,8 +44,7 @@ public partial class LoginViewModel : ViewModelBase
             return;
         }
 
-        _appState.CurrentUserId = cred.UserId;
-        _appState.CurrentUserDisplayName = $"{cred.FirstName} {cred.LastName}";
+        AppState.CurrentUser = new LehrplanGenerator.Logic.Models.User(cred.UserId, cred.FirstName, cred.LastName);
 
         Result = "Login erfolgreich";
 

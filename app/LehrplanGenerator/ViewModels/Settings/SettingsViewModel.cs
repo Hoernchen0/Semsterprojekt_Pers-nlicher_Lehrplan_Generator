@@ -20,8 +20,7 @@ public partial class SettingsViewModel : ViewModelBase
     [RelayCommand]
     private void LogOut()
     {
-        _appState.CurrentUserId = null;
-        _appState.CurrentUserDisplayName = null;
+        AppState.CurrentUser = null;
 
         _navigationService.NavigateTo<MainViewModel>();
     }
