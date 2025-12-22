@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using OpenAI.Files;
 namespace LehrplanGenerator.Logic.Services
 {
 public class TaskItem
