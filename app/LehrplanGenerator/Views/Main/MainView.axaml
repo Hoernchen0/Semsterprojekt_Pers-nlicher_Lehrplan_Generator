@@ -12,8 +12,7 @@
         <Grid.Background>
             <SolidColorBrush Color="#0B1120"/>
         </Grid.Background>
-
-        
+    
         <Border Width="420"
                 Padding="40"
                 Background="#FFFFFF"
