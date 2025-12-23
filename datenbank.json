@@ -5,5 +5,12 @@
     "LastName": "Cayir",
     "Username": "Eraycayir",
     "PasswordHash": "F4BE5637C9C3FE424A54319353A64B4668F0A318D5893E770F0220A42E64877C"
+  },
+  {
+    "UserId": "0c2a17d3-38d7-4470-8b9b-520cb5982462",
+    "FirstName": "Eray",
+    "LastName": "Cayir",
+    "Username": "Eray12345",
+    "PasswordHash": "C9B6A81BAF08D4694FC39E849D44A1B53547B8B1482DD4BF5CA13E352DA4CCE0"
   }
 ]
