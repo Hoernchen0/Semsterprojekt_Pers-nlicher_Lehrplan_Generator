@@ -1,4 +1,5 @@
 using LehrplanGenerator.Logic.Services;
+using LehrplanGenerator.ViewModels.Main;
 
 namespace LehrplanGenerator.ViewModels.Windows;
 
@@ -12,9 +13,11 @@ public class MainWindowViewModel : ViewModelBase
         set => SetProperty(ref _currentViewModel, value);
     }
 
-    public MainWindowViewModel(INavigationService navigationService)
+    public MainWindowViewModel(
+        INavigationService navigationService,
+        MainViewModel mainViewModel)  // ← MainViewModel direkt injecten
     {
         navigationService.SetMainViewModel(this);
-        navigationService.NavigateTo<LehrplanGenerator.ViewModels.Main.MainViewModel>();
+        _currentViewModel = mainViewModel;  // ← Direkt setzen statt navigieren
     }
 }

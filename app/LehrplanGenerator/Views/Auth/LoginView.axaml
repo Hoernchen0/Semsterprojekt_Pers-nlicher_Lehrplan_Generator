@@ -1,24 +1,34 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
-             x:Class="LehrplanGenerator.Views.Auth.LoginView"
-             x:DataType="vm:LoginViewModel">
+<UserControl
+    x:Class="LehrplanGenerator.Views.Auth.LoginView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
+    x:DataType="vm:LoginViewModel">
 
     <StackPanel Margin="20" Spacing="12">
-        <TextBlock Text="Login" FontSize="28"/>
+        <TextBlock FontSize="28" Text="Login" />
 
-        <TextBox Text="{Binding Username}" Watermark="Username" Width="250"/>
-        <TextBox Text="{Binding Password}" Watermark="Passwort" PasswordChar="*" Width="250"/>
+        <TextBox
+            Width="250"
+            Text="{Binding Username}"
+            Watermark="Username" />
+        <TextBox
+            Width="250"
+            PasswordChar="*"
+            Text="{Binding Password}"
+            Watermark="Passwort" />
 
-        <Button Content="Login"
-                Width="160"
-                Command="{Binding LoginCommand}"/>
+        <Button
+            Width="160"
+            Command="{Binding LoginCommand}"
+            Content="Login" />
 
-         <Button Content="Abbrechen"
-                Width="160"
-                Command="{Binding CancelCommand}"/>
+        <Button
+            Width="160"
+            Command="{Binding CancelCommand}"
+            Content="Abbrechen" />
 
-        <TextBlock Text="{Binding Result}" FontSize="18" />
+        <TextBlock FontSize="18" Text="{Binding Result}" />
     </StackPanel>
 
 </UserControl>

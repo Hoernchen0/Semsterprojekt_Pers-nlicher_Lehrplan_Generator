@@ -4,8 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
-using LehrplanGenerator.ViewModels.Shell;
-using LehrplanGenerator.Logic.Utils;
+using LehrplanGenerator.ViewModels.Main;
 
 namespace LehrplanGenerator.ViewModels.Auth;
 
@@ -15,13 +14,11 @@ public partial class LoginViewModel : ViewModelBase
     [ObservableProperty] private string password = string.Empty;
     [ObservableProperty] private string result = string.Empty;
 
-    private readonly UserCredentialStore _store;
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
-    public LoginViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public LoginViewModel(INavigationService navigationService, AppState appState)
     {
-        _store = store;
         _navigationService = navigationService;
         _appState = appState;
     }
@@ -29,27 +26,7 @@ public partial class LoginViewModel : ViewModelBase
     [RelayCommand]
     private void Login()
     {
-        var cred = _store.GetByUsername(Username);
-
-        if (cred == null)
-        {
-            Result = "Benutzername oder Passwort falsch";
-            return;
-        }
-
-        var hashed = PasswordHasher.Hash(Password);
-        if (hashed != cred.PasswordHash)
-        {
-            Result = "Benutzername oder Passwort falsch";
-            return;
-        }
-
-        _appState.CurrentUserId = cred.UserId;
-        _appState.CurrentUserDisplayName = $"{cred.FirstName} {cred.LastName}";
-
-        Result = "Login erfolgreich";
-
-        _navigationService.NavigateTo<ShellViewModel>();
+        _navigationService.NavigateTo<MainViewModel>();
     }
 
     [RelayCommand]

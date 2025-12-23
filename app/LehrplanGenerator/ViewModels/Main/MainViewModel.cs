@@ -21,5 +21,5 @@ public class MainViewModel : ViewModelBase
     public IRelayCommand RegisterCommand { get; }
 
     private void NavigateToLogin() => _navigationService.NavigateTo<LoginViewModel>();
-    private void NavigateToRegister() => _navigationService.NavigateTo<RegisterViewModel>();
+    private void NavigateToRegister() => _navigationService.NavigateTo<LoginViewModel>();
 }

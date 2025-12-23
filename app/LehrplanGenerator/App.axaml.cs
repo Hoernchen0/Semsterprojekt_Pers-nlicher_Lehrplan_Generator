@@ -8,15 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.ViewModels.Windows;
 using LehrplanGenerator.ViewModels.Main;
-using LehrplanGenerator.ViewModels.Auth;
 using LehrplanGenerator.Views.Windows;
-using LehrplanGenerator.ViewModels.Shell;
 using LehrplanGenerator.Logic.State;
-using LehrplanGenerator.ViewModels.Settings;
-using LehrplanGenerator.ViewModels.Dashboard;
-using LehrplanGenerator.ViewModels.Chat;
-using LehrplanGenerator.ViewModels.StudyPlan;
-
+using LehrplanGenerator.ViewModels.Auth;
+using Avalonia.Controls;
 namespace LehrplanGenerator;
 
 public partial class App : Application
@@ -35,7 +30,6 @@ public partial class App : Application
     private void ConfigureServices(IServiceCollection services)
     {
         // Services
-        services.AddSingleton<UserCredentialStore>();
         services.AddSingleton<AppState>();
         services.AddSingleton<ViewLocator>();
         services.AddSingleton<INavigationService, NavigationService>();
@@ -43,13 +37,7 @@ public partial class App : Application
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<MainViewModel>();
-        services.AddTransient<RegisterViewModel>();
         services.AddTransient<LoginViewModel>();
-        services.AddTransient<ShellViewModel>();
-        services.AddTransient<DashboardViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<ChatViewModel>();
-        services.AddTransient<StudyPlanViewModel>();
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -65,10 +53,19 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new Views.Main.MainView
+            var mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
+
+            var contentControl = new ContentControl
             {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
+                DataContext = mainWindowViewModel
             };
+
+            contentControl.Bind(
+                ContentControl.ContentProperty,
+                new Avalonia.Data.Binding("CurrentViewModel")
+            );
+
+            singleViewPlatform.MainView = contentControl;
         }
 
         base.OnFrameworkInitializationCompleted();
