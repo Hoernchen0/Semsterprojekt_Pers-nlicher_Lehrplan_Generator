@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+
+namespace LehrplanGenerator.Logic.Models;
+
 public class TaskItem
 {
 
@@ -27,11 +30,13 @@ public class TaskItem
         Description = description;
     }
 
-    private TaskItem()
+    // Parameterloser Konstruktor muss public sein für JSON-Deserialisierung
+    public TaskItem()
     {
         Title = string.Empty;
         StartTime = string.Empty;
         EndTime = string.Empty;
         Description = string.Empty;
     }
+    
 }

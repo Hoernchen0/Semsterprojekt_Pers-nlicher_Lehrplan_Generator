@@ -8,20 +8,21 @@ public class DayPlan
 {
     [JsonInclude]
     [JsonPropertyName("day")]
-    public DateTime Date { get; private set; }
+    public string Day { get; private set; } = string.Empty;
 
     [JsonInclude]
     [JsonPropertyName("tasks")]
     public List<TaskItem> Tasks { get; private set; } = new List<TaskItem>();
 
 
-    public DayPlan(DateTime date, List<TaskItem> tasks)
+    public DayPlan(string day, List<TaskItem> tasks)
     {
-        Date = date;
+        Day = day;
         Tasks = tasks;
     }
 
-    private DayPlan()
+    // Parameterloser Konstruktor muss public sein für JSON-Deserialisierung
+    public DayPlan()
     {
         Tasks = new List<TaskItem>();
     }

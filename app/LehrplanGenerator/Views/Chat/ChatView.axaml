@@ -42,8 +42,18 @@
             </ScrollViewer>
         </Border>
 
-        <DockPanel DockPanel.Dock="Bottom" Margin="0 12 0 0">
+        <StackPanel DockPanel.Dock="Bottom" Margin="0 12 0 0" Spacing="8">
+            
+            <!-- Lernplan erstellen Button -->
+            <Button Content="Lernplan erstellen"
+                    HorizontalAlignment="Center"
+                    Command="{Binding CreateStudyPlanCommand}"
+                    IsEnabled="{Binding !IsSending}"
+                    Background="#4CAF50"
+                    Foreground="White"
+                    Padding="16 8"/>
 
+            <!-- Eingabe-Bereich -->
             <Grid ColumnDefinitions="Auto,*,Auto">
 
                 <Button Grid.Column="0"
@@ -62,7 +72,7 @@
                         Command="{Binding SendCommand}" />
 
             </Grid>
-        </DockPanel>
+        </StackPanel>
 
     </DockPanel>
 

@@ -1,4 +1,3 @@
-
 using OpenAI.Chat;
 using System.Text.Json.Serialization;
 using OpenAI;
@@ -7,48 +6,9 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using OpenAI.Files;
-namespace LehrplanGenerator.Logic.Services
-{
-public class TaskItem
-{
-    [JsonInclude]
-    [JsonPropertyName("title")]
-    public string Title { get; private set; } = string.Empty;
+using LehrplanGenerator.Logic.Models;
 
-    [JsonInclude]
-    [JsonPropertyName("start_time")]
-    public string StartTime { get; private set; } = string.Empty;
-
-    [JsonInclude]
-    [JsonPropertyName("end_time")]
-    public string EndTime { get; private set; } = string.Empty;
-
-    [JsonInclude]
-    [JsonPropertyName("description")]
-    public string Description { get; private set; } = string.Empty;
-}
-
-public class DayPlan
-{
-    [JsonInclude]
-    [JsonPropertyName("day")]
-    public string Day { get; private set; } = string.Empty;
-
-    [JsonInclude]
-    [JsonPropertyName("tasks")]
-    public List<TaskItem> Tasks { get; private set; } = new List<TaskItem>();
-}
-
-public class StudyPlan
-{
-    [JsonInclude]
-    [JsonPropertyName("topic")]
-    public string Topic { get; private set; } = string.Empty;
-
-    [JsonInclude]
-    [JsonPropertyName("days")]
-    public List<DayPlan> Days { get; private set; } = new List<DayPlan>();
-}
+namespace LehrplanGenerator.Logic.AI;
 
 public class StudyPlanGeneratorService
 {
@@ -86,7 +46,7 @@ public class StudyPlanGeneratorService
 
         var systemMessage = new Message(Role.System,
             "day soll das Format dd.MM.yyyy haben und start_time und end_time das Format HH:mm. " +
-            $"Der erste Tag darf nicht vor dem heutigen Datum liegen: {heute}");
+            $"Der erste Tag darf nicht vor dem heutigen Datum liegen: {heute}, gib den Lernplan ausschließlich im JSON Format zurück. " );
 
         var messages = new List<Message> { systemMessage };
         messages.AddRange(_conversation);
@@ -103,7 +63,7 @@ try
                 Console.WriteLine("Fehler: Antwort konnte nicht in StudyPlan geparst werden.");
                 return null;
             }
-                // direkt in deiner UI verwenden
+
        
         return studyPlan;
     }    catch (Exception ex){
@@ -169,7 +129,5 @@ public async Task<string?> AskGptAsync(string userInput)
         Console.WriteLine($"API error: {ex.Message}");
         return null;
     }
-}
-
 }
 }

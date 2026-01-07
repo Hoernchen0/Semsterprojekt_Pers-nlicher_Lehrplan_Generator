@@ -5,6 +5,8 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using LehrplanGenerator.Logic.AI;
+using System;
 
 namespace LehrplanGenerator.ViewModels.Chat;
 
@@ -12,13 +14,11 @@ public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
-    private readonly StudyPlanGeneratorService _aiService;
 
     public ChatViewModel(INavigationService navigationService, AppState appState)
     {
         _navigationService = navigationService;
         _appState = appState;
-        _aiService = new StudyPlanGeneratorService();
         _messages = new ObservableCollection<ChatMessage>();
     }
 
@@ -52,7 +52,7 @@ public partial class ChatViewModel : ViewModelBase
         try
         {
             // API aufrufen
-            var response = await _aiService.AskGptAsync(userMessage);
+            var response = await _appState.AiService.AskGptAsync(userMessage);
 
             if (!string.IsNullOrEmpty(response))
             {
@@ -64,12 +64,65 @@ public partial class ChatViewModel : ViewModelBase
                 });
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
                 Text = $"Fehler bei der Kommunikation mit der KI: {ex.Message}"
+            });
+        }
+        finally
+        {
+            IsSending = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateStudyPlanAsync()
+    {
+        if (IsSending)
+            return;
+
+        IsSending = true;
+
+        Messages.Add(new ChatMessage
+        {
+            Sender = "System",
+            Text = "Erstelle Lernplan..."
+        });
+
+        try
+        {
+            // Erstelle Studienplan mit dem geteilten AI-Service
+            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
+
+            if (studyPlan != null)
+            {
+                // Speichere den Plan im AppState für die StudyPlanViewModel
+                _appState.CurrentStudyPlan = studyPlan;
+                
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = $"✓ Lernplan wurde erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
+                });
+            }
+            else
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = "Lernplan konnte nicht erstellt werden. Bitte geben Sie mehr Informationen im Chat an (Thema, Zeitraum, tägliche Lernzeit, etc.)"
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage
+            {
+                Sender = "System",
+                Text = $"Fehler beim Erstellen des Lernplans: {ex.Message}"
             });
         }
         finally
