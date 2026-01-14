@@ -23,7 +23,8 @@ public class StudyPlan
         Days = days;
     }
 
-    private StudyPlan()
+    // Parameterloser Konstruktor muss public sein für JSON-Deserialisierung
+    public StudyPlan()
     {
         Topic = string.Empty;
         Days = new List<DayPlan>();

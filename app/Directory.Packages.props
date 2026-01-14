@@ -28,6 +28,7 @@
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22" />
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22" />
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+        <PackageVersion Include="OpenAI-DotNet" Version="8.8.8" />
         <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
     </ItemGroup>
 </Project>

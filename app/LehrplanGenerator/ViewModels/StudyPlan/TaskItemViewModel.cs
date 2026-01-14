@@ -1,5 +1,6 @@
-namespace LehrplanGenerator.ViewModels.StudyPlan;
+using LehrplanGenerator.Logic.Models;
 
+namespace LehrplanGenerator.ViewModels.StudyPlan;
 public class TaskItemViewModel
 {
     public string Title { get; }

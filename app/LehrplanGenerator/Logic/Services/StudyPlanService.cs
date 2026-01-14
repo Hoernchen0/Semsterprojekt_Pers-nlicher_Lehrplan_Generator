@@ -16,7 +16,7 @@ public class StudyPlanService
 
     public StudyPlan GetStudyPlan()
     {
-        _studyPlan.Days.Sort((a, b) => a.Date.CompareTo(b.Date));
+        _studyPlan.Days.Sort((a, b) => a.Day.CompareTo(b.Day));
 
         foreach (var day in _studyPlan.Days)
         {
