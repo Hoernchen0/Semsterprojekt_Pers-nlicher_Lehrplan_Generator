@@ -7,27 +7,25 @@
              x:Class="LehrplanGenerator.Views.Main.MainView"
              x:DataType="vm:MainViewModel">
 
-    
-    <Grid>
-        <Grid.Background>
-            <SolidColorBrush Color="#0B1120"/>
-        </Grid.Background>
-    
+    <Grid Background="#0B1120">
+
+        <!-- Card -->
         <Border Width="420"
                 Padding="40"
+                CornerRadius="18"
                 Background="#FFFFFF"
-                CornerRadius="14"
+                BorderBrush="#E5E7EB"
+                BorderThickness="1"
+                Opacity="0.98"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                BoxShadow="0 20 60 0 #90000000">
+                VerticalAlignment="Center">
 
             <StackPanel Spacing="28">
 
-                
+                <!-- Header -->
                 <StackPanel Spacing="8">
-
                     <TextBlock Text="{Binding Greeting}"
-                               FontSize="30"
+                               FontSize="28"
                                FontWeight="SemiBold"
                                Foreground="#020617"
                                TextAlignment="Center"/>
@@ -36,32 +34,25 @@
                                FontSize="14"
                                Foreground="#64748B"
                                TextAlignment="Center"/>
-
                 </StackPanel>
 
-                
+                <!-- Divider -->
                 <Border Height="1"
-                        Background="#E5E7EB"
-                        Margin="0,8"/>
+                        Background="#E5E7EB"/>
 
-                
+                <!-- Actions -->
                 <StackPanel Spacing="14">
 
-                    
+                    <!-- Button bringt Hover/Pressed EFFEKTE AUTOMATISCH mit -->
                     <Button Content="Login"
-                            Height="46"
-                            FontSize="15"
-                            FontWeight="Medium"
+                            Height="44"
                             Background="#2563EB"
                             Foreground="White"
                             CornerRadius="10"
                             Command="{Binding LoginCommand}"/>
 
-                    
                     <Button Content="Registrieren"
-                            Height="46"
-                            FontSize="15"
-                            FontWeight="Medium"
+                            Height="44"
                             Background="#F1F5F9"
                             Foreground="#020617"
                             BorderBrush="#CBD5E1"
@@ -71,12 +62,11 @@
 
                 </StackPanel>
 
-                
+                <!-- Footer -->
                 <TextBlock Text="© 2026 • Lernplattform"
                            FontSize="11"
                            Foreground="#94A3B8"
-                           HorizontalAlignment="Center"
-                           Margin="0,10,0,0"/>
+                           HorizontalAlignment="Center"/>
 
             </StackPanel>
         </Border>
