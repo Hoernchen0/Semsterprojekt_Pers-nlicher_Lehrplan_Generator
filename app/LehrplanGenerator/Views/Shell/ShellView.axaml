@@ -5,72 +5,78 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Shell"
     x:DataType="vm:ShellViewModel">
 
-    <!-- Root Layout -->
+    <!-- LOKALE STYLES FÜR SIDEBAR -->
+    <UserControl.Styles>
+
+        <!-- Basis-Stil für Sidebar-Buttons -->
+        <Style Selector="Button.sidebar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#020617"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <!-- Hover-Effekt -->
+        <Style Selector="Button.sidebar:pointerover">
+            <Setter Property="Background" Value="#E0E7FF"/>
+        </Style>
+
+    </UserControl.Styles>
+
+    <!-- ROOT LAYOUT -->
     <Grid Background="#FFFFFF"
           ColumnDefinitions="240,*">
 
-        <!-- SIDEBAR (links) -->
-        <Border
-            Grid.Column="0"
-            Background="#F8FAFC"
-            BorderBrush="#E5E7EB"
-            BorderThickness="0,0,1,0"
-            Padding="20">
+        <!-- SIDEBAR LINKS -->
+        <Border Grid.Column="0"
+                Background="#F8FAFC"
+                BorderBrush="#E5E7EB"
+                BorderThickness="0,0,1,0"
+                Padding="20">
 
-            <StackPanel Spacing="20">
+            <StackPanel Spacing="24">
 
-                <!-- User -->
-                <TextBlock
-                    Text="{Binding CurrentUserName}"
-                    FontSize="16"
-                    FontWeight="SemiBold"
-                    Foreground="#020617" />
+                <!-- USER INFO -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{Binding CurrentUserName}"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#020617"/>
+                    <TextBlock Text="Lehrplan Generator"
+                               FontSize="12"
+                               Foreground="#64748B"/>
+                </StackPanel>
 
-                <!-- Navigation Buttons (UNVERÄNDERT, nur vertikal) -->
-                <StackPanel Spacing="10">
+                <!-- NAVIGATION -->
+                <StackPanel Spacing="6">
 
-                    <Button
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding ShowHomeCommand}"
-                        Content="Home"
-                        Foreground="#020617"
-                        HorizontalContentAlignment="Left" />
+                    <Button Classes="sidebar"
+                            Command="{Binding ShowHomeCommand}"
+                            Content="Home"/>
 
-                    <Button
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding ShowStudyPlanCommand}"
-                        Content="Kalender"
-                        Foreground="#020617"
-                        HorizontalContentAlignment="Left" />
+                    <Button Classes="sidebar"
+                            Command="{Binding ShowStudyPlanCommand}"
+                            Content="Kalender"/>
 
-                    <Button
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding ShowChatCommand}"
-                        Content="Chat"
-                        Foreground="#020617"
-                        HorizontalContentAlignment="Left" />
+                    <Button Classes="sidebar"
+                            Command="{Binding ShowChatCommand}"
+                            Content="Chat"/>
 
-                    <Button
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding ShowSettingsCommand}"
-                        Content="Einstellungen"
-                        Foreground="#020617"
-                        HorizontalContentAlignment="Left" />
+                    <Button Classes="sidebar"
+                            Command="{Binding ShowSettingsCommand}"
+                            Content="Einstellungen"/>
 
                 </StackPanel>
 
             </StackPanel>
         </Border>
 
-        <!-- CONTENT AREA (rechts) -->
-        <ContentControl
-            Grid.Column="1"
-            Background="#FFFFFF"
-            Content="{Binding CurrentContent}" />
+        <!-- CONTENT RECHTS -->
+        <ContentControl Grid.Column="1"
+                        Background="#FFFFFF"
+                        Content="{Binding CurrentContent}" />
 
     </Grid>
 </UserControl>
