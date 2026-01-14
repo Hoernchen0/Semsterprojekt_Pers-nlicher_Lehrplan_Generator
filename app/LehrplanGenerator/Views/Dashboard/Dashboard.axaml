@@ -7,139 +7,142 @@
              x:Class="LehrplanGenerator.Views.Dashboard.DashboardView"
              x:DataType="vm:DashboardViewModel">
 
-    <!-- Gesamthintergrund -->
-    <Grid Background="#020617"
-          Margin="32"
-          RowDefinitions="Auto,*">
+    <!-- ÄUSSERER CONTAINER MIT PADDING -->
+    <Border Background="#F8FAFC"
+            Padding="32">
 
-        <!-- Header -->
-        <StackPanel Spacing="6">
-            <TextBlock Text="Dashboard"
-                       FontSize="28"
-                       FontWeight="SemiBold"
-                       Foreground="#E5E7EB"/>
+        <Grid RowDefinitions="Auto,*">
 
-            <TextBlock Text="Willkommen zurück - dein Lernfortschritt im Überblick"
-                       FontSize="14"
-                       Foreground="#94A3B8"/>
-        </StackPanel>
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Dashboard"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="#020617"/>
 
-        <!-- Content -->
-        <Grid Grid.Row="1"
-              Margin="0,24,0,0"
-              ColumnDefinitions="2*,1*"
-              RowDefinitions="Auto,*"
-              ColumnSpacing="24"
-              RowSpacing="24">
+                <TextBlock Text="Willkommen zurück – dein Lernfortschritt im Überblick"
+                           FontSize="14"
+                           Foreground="#475569"/>
+            </StackPanel>
 
-            <!-- Lernfortschritt -->
-            <Border Background="#020617"
-                    BorderBrush="#1E293B"
-                    BorderThickness="1"
-                    CornerRadius="16"
-                    Padding="24">
+            <!-- Content -->
+            <Grid Grid.Row="1"
+                  Margin="0,24,0,0"
+                  ColumnDefinitions="2*,1*"
+                  RowDefinitions="Auto,*"
+                  ColumnSpacing="24"
+                  RowSpacing="24">
 
-                <StackPanel Spacing="14">
-                    <TextBlock Text="Lernfortschritt"
-                               FontSize="18"
-                               FontWeight="Medium"
-                               Foreground="#E5E7EB"/>
+                <!-- Lernfortschritt -->
+                <Border Background="#FFFFFF"
+                        BorderBrush="#E5E7EB"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="24">
 
-                    <ProgressBar Value="65"
-                                 Maximum="100"
-                                 Height="10"
-                                 Background="#1E293B"
-                                 Foreground="#3B82F6"/>
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="Lernfortschritt"
+                                   FontSize="18"
+                                   FontWeight="Medium"
+                                   Foreground="#020617"/>
 
-                    <TextBlock Text="65 % des aktuellen Lernplans abgeschlossen"
-                               FontSize="13"
-                               Foreground="#94A3B8"/>
-                </StackPanel>
-            </Border>
+                        <ProgressBar Value="65"
+                                     Maximum="100"
+                                     Height="10"
+                                     Background="#E5E7EB"
+                                     Foreground="#2563EB"/>
 
-            <!-- Nächste Session -->
-            <Border Grid.Column="1"
-                    Background="#020617"
-                    BorderBrush="#1E293B"
-                    BorderThickness="1"
-                    CornerRadius="16"
-                    Padding="24">
+                        <TextBlock Text="65 % des aktuellen Lernplans abgeschlossen"
+                                   FontSize="13"
+                                   Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
 
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Nächste Lerneinheit"
-                               FontSize="18"
-                               FontWeight="Medium"
-                               Foreground="#E5E7EB"/>
+                <!-- Nächste Lerneinheit -->
+                <Border Grid.Column="1"
+                        Background="#FFFFFF"
+                        BorderBrush="#E5E7EB"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="24">
 
-                    <TextBlock Text="Betriebssysteme - Threads und Synchronisation"
-                               FontSize="14"
-                               FontWeight="SemiBold"
-                               Foreground="#F8FAFC"/>
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Nächste Lerneinheit"
+                                   FontSize="18"
+                                   FontWeight="Medium"
+                                   Foreground="#020617"/>
 
-                    <TextBlock Text="Heute • 45 Minuten"
-                               FontSize="13"
-                               Foreground="#94A3B8"/>
+                        <TextBlock Text="Betriebssysteme – Threads und Synchronisation"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#020617"/>
 
-                    <Button Content="Weiterlernen"
-                            Height="40"
-                            Background="#2563EB"
-                            Foreground="White"
-                            CornerRadius="10"/>
-                </StackPanel>
-            </Border>
+                        <TextBlock Text="Heute • 45 Minuten"
+                                   FontSize="13"
+                                   Foreground="#64748B"/>
 
-            <!-- Lernpläne -->
-            <Border Grid.Row="1"
-                    Grid.ColumnSpan="2"
-                    Background="#020617"
-                    BorderBrush="#1E293B"
-                    BorderThickness="1"
-                    CornerRadius="16"
-                    Padding="24">
+                        <Button Content="Weiterlernen"
+                                Height="40"
+                                Background="#1D4ED8"
+                                Foreground="White"
+                                CornerRadius="10"
+                                HorizontalContentAlignment="Center"
+                                Theme="{x:Null}"/>
+                    </StackPanel>
+                </Border>
 
-                <StackPanel Spacing="16">
+                <!-- Aktive Lernpläne -->
+                <Border Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Background="#FFFFFF"
+                        BorderBrush="#E5E7EB"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="24">
 
-                    <TextBlock Text="Aktive Lernpläne"
-                               FontSize="18"
-                               FontWeight="Medium"
-                               Foreground="#E5E7EB"/>
+                    <StackPanel Spacing="16">
 
-                    <!-- Lernplan Item -->
-                    <Border Background="#020617"
-                            BorderBrush="#1E293B"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="16">
-                        <StackPanel Spacing="6">
-                            <TextBlock Text="Algorithmen und Datenstrukturen"
-                                       FontSize="15"
-                                       FontWeight="SemiBold"
-                                       Foreground="#F8FAFC"/>
-                            <TextBlock Text="Fortschritt: 40 %"
-                                       FontSize="13"
-                                       Foreground="#94A3B8"/>
-                        </StackPanel>
-                    </Border>
+                        <TextBlock Text="Aktive Lernpläne"
+                                   FontSize="18"
+                                   FontWeight="Medium"
+                                   Foreground="#020617"/>
 
-                    <Border Background="#020617"
-                            BorderBrush="#1E293B"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="16">
-                        <StackPanel Spacing="6">
-                            <TextBlock Text="Netzwerke und Protokolle"
-                                       FontSize="15"
-                                       FontWeight="SemiBold"
-                                       Foreground="#F8FAFC"/>
-                            <TextBlock Text="Fortschritt: 70 %"
-                                       FontSize="13"
-                                       Foreground="#94A3B8"/>
-                        </StackPanel>
-                    </Border>
+                        <Border Background="#F8FAFC"
+                                BorderBrush="#E5E7EB"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="16">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Algorithmen und Datenstrukturen"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="#020617"/>
+                                <TextBlock Text="Fortschritt: 40 %"
+                                           FontSize="13"
+                                           Foreground="#64748B"/>
+                            </StackPanel>
+                        </Border>
 
-                </StackPanel>
-            </Border>
+                        <Border Background="#F8FAFC"
+                                BorderBrush="#E5E7EB"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="16">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Netzwerke und Protokolle"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="#020617"/>
+                                <TextBlock Text="Fortschritt: 70 %"
+                                           FontSize="13"
+                                           Foreground="#64748B"/>
+                            </StackPanel>
+                        </Border>
 
+                    </StackPanel>
+                </Border>
+
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </UserControl>

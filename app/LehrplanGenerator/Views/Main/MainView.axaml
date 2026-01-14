@@ -7,68 +7,83 @@
              x:Class="LehrplanGenerator.Views.Main.MainView"
              x:DataType="vm:MainViewModel">
 
-    <Grid Background="#0B1120">
+    <Grid>
 
-        <!-- Card -->
-        <Border Width="420"
-                Padding="40"
-                CornerRadius="18"
-                Background="#FFFFFF"
-                BorderBrush="#E5E7EB"
-                BorderThickness="1"
-                Opacity="0.98"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+        <!-- Hintergrundbild -->
+        <Image Source="avares://LehrplanGenerator/Assets/Images/login_background.png"
+               Stretch="UniformToFill"/>
 
-            <StackPanel Spacing="28">
+        <!-- Dunkles Overlay für Kontrast -->
+        <Border Background="#7A000000"/>
 
-                <!-- Header -->
-                <StackPanel Spacing="8">
+        <!-- ZENTRIERTER CONTENT -->
+        <Grid HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+
+            <StackPanel Spacing="36"
+                        HorizontalAlignment="Center">
+
+                <!-- HEADER -->
+                <StackPanel Spacing="12"
+                            HorizontalAlignment="Center">
+
                     <TextBlock Text="{Binding Greeting}"
-                               FontSize="28"
+                               FontSize="36"
                                FontWeight="SemiBold"
-                               Foreground="#020617"
+                               Foreground="#F8FAFC"
                                TextAlignment="Center"/>
 
-                    <TextBlock Text="Strukturiert. Persönlich. Effizient lernen."
-                               FontSize="14"
-                               Foreground="#64748B"
-                               TextAlignment="Center"/>
+                    <TextBlock Text="Erstelle einen Account, um personalisierte Lerninhalte zu sehen"
+                               FontSize="15"
+                               Foreground="#CBD5E1"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Width="520"/>
                 </StackPanel>
 
-                <!-- Divider -->
-                <Border Height="1"
-                        Background="#E5E7EB"/>
+                <!-- ACTIONS -->
+                <StackPanel Spacing="18"
+                            HorizontalAlignment="Center">
 
-                <!-- Actions -->
-                <StackPanel Spacing="14">
-
-                    <!-- Button bringt Hover/Pressed EFFEKTE AUTOMATISCH mit -->
+                    <!-- LOGIN -->
                     <Button Content="Login"
-                            Height="44"
-                            Background="#2563EB"
+                            Width="320"
+                            Height="50"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            Background="#1D4ED8"
                             Foreground="White"
-                            CornerRadius="10"
+                            CornerRadius="14"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Theme="{x:Null}"
                             Command="{Binding LoginCommand}"/>
 
+                    <!-- REGISTRIEREN -->
                     <Button Content="Registrieren"
-                            Height="44"
-                            Background="#F1F5F9"
+                            Width="320"
+                            Height="50"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            Background="#E5E7EB"
                             Foreground="#020617"
                             BorderBrush="#CBD5E1"
                             BorderThickness="1"
-                            CornerRadius="10"
+                            CornerRadius="14"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Theme="{x:Null}"
                             Command="{Binding RegisterCommand}"/>
 
                 </StackPanel>
 
-                <!-- Footer -->
+                <!-- FOOTER -->
                 <TextBlock Text="© 2026 • Lernplattform"
                            FontSize="11"
-                           Foreground="#94A3B8"
+                           Foreground="#CBD5E1"
                            HorizontalAlignment="Center"/>
 
             </StackPanel>
-        </Border>
+        </Grid>
     </Grid>
 </UserControl>

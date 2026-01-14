@@ -33,5 +33,12 @@
     "LastName": "grgdrg",
     "Username": "herz5",
     "PasswordHash": "F9E18E5428FCD197C72869375154F7C830BE2729E163DEF13E0E3574BA6FD3D7"
+  },
+  {
+    "UserId": "d3b20538-fb9a-4a57-b69c-1e2f819abece",
+    "FirstName": "ewr",
+    "LastName": "erfer",
+    "Username": "Hallo123",
+    "PasswordHash": "F9E18E5428FCD197C72869375154F7C830BE2729E163DEF13E0E3574BA6FD3D7"
   }
 ]

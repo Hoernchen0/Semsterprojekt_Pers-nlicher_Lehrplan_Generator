@@ -5,54 +5,72 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Shell"
     x:DataType="vm:ShellViewModel">
 
-    <DockPanel>
-        <!--  Taskleiste (bleibt immer sichtbar)  -->
+    <!-- Root Layout -->
+    <Grid Background="#FFFFFF"
+          ColumnDefinitions="240,*">
+
+        <!-- SIDEBAR (links) -->
         <Border
-            Padding="15"
-            Background="#2c3e50"
-            BoxShadow="0 2 10 0 #40000000"
-            DockPanel.Dock="Top">
-            <StackPanel Orientation="Horizontal" Spacing="15">
+            Grid.Column="0"
+            Background="#F8FAFC"
+            BorderBrush="#E5E7EB"
+            BorderThickness="0,0,1,0"
+            Padding="20">
 
+            <StackPanel Spacing="20">
+
+                <!-- User -->
                 <TextBlock
-                    Margin="0,0,20,0"
-                    VerticalAlignment="Center"
+                    Text="{Binding CurrentUserName}"
                     FontSize="16"
-                    Foreground="White"
-                    Text="{Binding CurrentUserName}" />
+                    FontWeight="SemiBold"
+                    Foreground="#020617" />
 
-                <Button
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding ShowHomeCommand}"
-                    Content="Home"
-                    Foreground="White" />
-                <Button
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding ShowStudyPlanCommand}"
-                    Content="Kalender"
-                    Foreground="White" />
+                <!-- Navigation Buttons (UNVERÄNDERT, nur vertikal) -->
+                <StackPanel Spacing="10">
 
-                <Button
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding ShowChatCommand}"
-                    Content="Chat"
-                    Foreground="White" />
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ShowHomeCommand}"
+                        Content="Home"
+                        Foreground="#020617"
+                        HorizontalContentAlignment="Left" />
 
-                <Button
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding ShowSettingsCommand}"
-                    Content="Einstellungen"
-                    Foreground="White" />
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ShowStudyPlanCommand}"
+                        Content="Kalender"
+                        Foreground="#020617"
+                        HorizontalContentAlignment="Left" />
+
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ShowChatCommand}"
+                        Content="Chat"
+                        Foreground="#020617"
+                        HorizontalContentAlignment="Left" />
+
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ShowSettingsCommand}"
+                        Content="Einstellungen"
+                        Foreground="#020617"
+                        HorizontalContentAlignment="Left" />
+
+                </StackPanel>
 
             </StackPanel>
         </Border>
 
-        <!--  Content Area (ändert sich je nach Tab)  -->
-        <ContentControl Content="{Binding CurrentContent}" />
-    </DockPanel>
+        <!-- CONTENT AREA (rechts) -->
+        <ContentControl
+            Grid.Column="1"
+            Background="#FFFFFF"
+            Content="{Binding CurrentContent}" />
 
+    </Grid>
 </UserControl>
