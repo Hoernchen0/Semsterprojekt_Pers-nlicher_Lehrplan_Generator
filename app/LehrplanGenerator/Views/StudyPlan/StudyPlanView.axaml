@@ -25,9 +25,6 @@
                TextWrapping="Wrap" 
                HorizontalAlignment="Center"
                MaxWidth="400"/>
-    <Button Content="Erneut versuchen" 
-            Command="{Binding RefreshCommand}"
-            HorizontalAlignment="Center"/>
   </StackPanel>
 
   <!-- Content State -->
@@ -35,16 +32,11 @@
                 IsVisible="{Binding !IsLoading}">
     <StackPanel Margin="20" Spacing="10">
 
-      <!-- Header mit Refresh-Button -->
-      <Grid Margin="0,0,0,15">
-        <TextBlock Text="{Binding Topic}" 
-                   FontSize="24" 
-                   FontWeight="Bold" 
-                   HorizontalAlignment="Left"/>
-        <Button Content="🔄 Aktualisieren" 
-                Command="{Binding RefreshCommand}"
-                HorizontalAlignment="Right"/>
-      </Grid>
+      <!-- Header -->
+      <TextBlock Text="{Binding Topic}" 
+                 FontSize="24" 
+                 FontWeight="Bold" 
+                 Margin="0,0,0,15"/>
 
       <!-- Debug Info -->
       <TextBlock Text="{Binding Days.Count, StringFormat='Anzahl Tage: {0}'}" 

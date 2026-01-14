@@ -5,12 +5,11 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using LehrplanGenerator.Logic.AI;
 using System;
 using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
-
+using LehrplanGenerator.Models.Chat;
 namespace LehrplanGenerator.ViewModels.Chat;
 
 public partial class ChatViewModel : ViewModelBase
@@ -22,11 +21,9 @@ public partial class ChatViewModel : ViewModelBase
     {
         _navigationService = navigationService;
         _appState = appState;
-        _messages = new ObservableCollection<ChatMessage>();
     }
 
-    [ObservableProperty]
-    private ObservableCollection<ChatMessage> _messages;
+    public ObservableCollection<ChatMessage> Messages => _appState.ChatMessages;
 
     [ObservableProperty]
     private string _inputText = string.Empty;
@@ -181,12 +178,6 @@ public partial class ChatViewModel : ViewModelBase
             var selectedFile = files[0];
             var filePath = selectedFile.Path.LocalPath;
 
-            Messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Text = $"Lade PDF hoch: {selectedFile.Name}..."
-            });
-
             // PDF an AI-Service übergeben
             var success = await _appState.AiService.UploadPdfAsync(filePath);
 
@@ -222,10 +213,4 @@ public partial class ChatViewModel : ViewModelBase
     {
         _navigationService.NavigateTo<MainViewModel>();
     }
-}
-
-public class ChatMessage
-{
-    public string Sender { get; set; } = string.Empty;
-    public string Text { get; set; } = string.Empty;
 }

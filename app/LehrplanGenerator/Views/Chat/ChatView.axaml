@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:LehrplanGenerator.ViewModels.Chat"
+             xmlns:models="using:LehrplanGenerator.Models.Chat"
              x:Class="LehrplanGenerator.Views.Chat.ChatView"
              x:DataType="vm:ChatViewModel">
 
@@ -23,7 +24,7 @@
                 <ItemsControl ItemsSource="{Binding Messages}">
                     <ItemsControl.ItemTemplate>
 
-                        <DataTemplate x:DataType="vm:ChatMessage">
+                        <DataTemplate x:DataType="models:ChatMessage">
                             <StackPanel Margin="0 10">
 
                                 <TextBlock Text="{Binding Sender}"
@@ -64,7 +65,11 @@
                 <TextBox Grid.Column="1"
                          Text="{Binding InputText}"
                          Watermark="Nachricht…"
-                         Margin="8 0"/>
+                         Margin="8 0">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
 
                 <Button Grid.Column="2"
                         Content="Senden"
