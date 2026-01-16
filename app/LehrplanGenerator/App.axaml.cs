@@ -16,6 +16,7 @@ using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
 using LehrplanGenerator.ViewModels.Chat;
 using LehrplanGenerator.ViewModels.StudyPlan;
+using LehrplanGenerator.Logic;
 
 namespace LehrplanGenerator;
 
@@ -30,15 +31,23 @@ public partial class App : Application
         var services = new ServiceCollection();
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
+        
+        // Initialisiere die Datenbank (erstelle Tabellen, falls nicht vorhanden)
+        ServiceExtensions.InitializeDatabase(Services);
     }
 
     private void ConfigureServices(IServiceCollection services)
     {
+        // Registriere SQLite-basierte Datenbank Services (alle Nutzerdaten, Chats, Tabellen)
+        services.AddLehrplanServices();
+
         // Services
-        services.AddSingleton<UserCredentialStore>();
         services.AddSingleton<AppState>();
         services.AddSingleton<ViewLocator>();
         services.AddSingleton<INavigationService, NavigationService>();
+        
+        // UserCredentialStore wird jetzt über IUserRepository mit SQLite befüllt
+        services.AddSingleton<UserCredentialStore>();
 
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();

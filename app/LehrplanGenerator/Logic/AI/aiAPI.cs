@@ -19,12 +19,18 @@ public class StudyPlanGeneratorService
 
     public StudyPlanGeneratorService()
     {
-        var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT")
-                      ?? throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT is not set.");
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")
-                     ?? throw new InvalidOperationException("OPENAI_API_KEY is not set.");
-        var settings = new OpenAISettings(resourceName: endpoint, deploymentId: ModelName, apiVersion: "2025-03-01-preview");
-        _client = new OpenAIClient(apiKey,settings); 
+        var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+        
+        if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(apiKey))
+        {
+            _client = null;
+        }
+        else
+        {
+            var settings = new OpenAISettings(resourceName: endpoint, deploymentId: ModelName, apiVersion: "2025-03-01-preview");
+            _client = new OpenAIClient(apiKey, settings);
+        }
 
         _conversation = new List<Message>
         {
