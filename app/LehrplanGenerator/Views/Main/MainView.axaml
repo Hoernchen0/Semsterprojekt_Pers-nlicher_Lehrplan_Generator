@@ -8,15 +8,82 @@
              x:DataType="vm:MainViewModel">
 
     <Grid>
-        <StackPanel HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="20">
 
-            <TextBlock Text="{Binding Greeting}" FontSize="28"/>
+        <!-- Hintergrundbild -->
+        <Image Source="avares://LehrplanGenerator/Assets/Images/login_background.png"
+               Stretch="UniformToFill"/>
 
-            <Button Content="Login" Width="200" Command="{Binding LoginCommand}"/>
-            <Button Content="Registrieren" Width="200" Command="{Binding RegisterCommand}"/>
+        <!-- Dunkles Overlay für Kontrast -->
+        <Border Background="#7A000000"/>
 
-        </StackPanel>
+        <!-- ZENTRIERTER CONTENT -->
+        <Grid HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+
+            <StackPanel Spacing="36"
+                        HorizontalAlignment="Center">
+
+                <!-- HEADER -->
+                <StackPanel Spacing="12"
+                            HorizontalAlignment="Center">
+
+                    <TextBlock Text="{Binding Greeting}"
+                               FontSize="36"
+                               FontWeight="SemiBold"
+                               Foreground="#F8FAFC"
+                               TextAlignment="Center"/>
+
+                    <TextBlock Text="Erstelle einen Account, um personalisierte Lerninhalte zu sehen"
+                               FontSize="15"
+                               Foreground="#CBD5E1"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Width="520"/>
+                </StackPanel>
+
+                <!-- ACTIONS -->
+                <StackPanel Spacing="18"
+                            HorizontalAlignment="Center">
+
+                    <!-- LOGIN -->
+                    <Button Content="Login"
+                            Width="320"
+                            Height="50"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            Background="#1D4ED8"
+                            Foreground="White"
+                            CornerRadius="14"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Theme="{x:Null}"
+                            Command="{Binding LoginCommand}"/>
+
+                    <!-- REGISTRIEREN -->
+                    <Button Content="Registrieren"
+                            Width="320"
+                            Height="50"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            Background="#E5E7EB"
+                            Foreground="#020617"
+                            BorderBrush="#CBD5E1"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Theme="{x:Null}"
+                            Command="{Binding RegisterCommand}"/>
+
+                </StackPanel>
+
+                <!-- FOOTER -->
+                <TextBlock Text="© 2026 • Lernplattform"
+                           FontSize="11"
+                           Foreground="#CBD5E1"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

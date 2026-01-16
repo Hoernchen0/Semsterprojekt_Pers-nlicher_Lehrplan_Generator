@@ -2,25 +2,101 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
              x:Class="LehrplanGenerator.Views.Auth.RegisterView"
-             x:DataType="vm:RegisterViewModel">
+             x:DataType="vm:RegisterViewModel"
+             Background="#FFFFFF">
 
-     <StackPanel Margin="20" Spacing="12">
-        <TextBlock Text="Registrierung" FontSize="28" />
+    <!-- Root -->
+    <Grid HorizontalAlignment="Center"
+          VerticalAlignment="Center">
 
-        <TextBox Text="{Binding FirstName}" Watermark="Vorname" Width="250"/>
-        <TextBox Text="{Binding LastName}" Watermark="Nachname" Width="250"/>
-        <TextBox Text="{Binding Username}" Watermark="Username" Width="250"/>
-        <TextBox Text="{Binding Password}" Watermark="Passwort" PasswordChar="*" Width="250"/>
-        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" />
+        <!-- Content -->
+        <StackPanel Spacing="28"
+                    Width="360"
+                    HorizontalAlignment="Center">
 
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Account erstellen"
+                           FontSize="26"
+                           FontWeight="SemiBold"
+                           Foreground="#020617"
+                           TextAlignment="Center"/>
 
-        <Button Content="Registrieren"
-                Width="160"
-                Command="{Binding RegisterCommand}" />
+                <TextBlock Text="Erstelle deinen persönlichen Zugang"
+                           FontSize="14"
+                           Foreground="#64748B"
+                           TextAlignment="Center"/>
+            </StackPanel>
 
-        <Button Content="Zurück zum Menu"
-                Width="160"
-                Command="{Binding MenuCommand}" />
-    </StackPanel>
+            <!-- Form -->
+            <StackPanel Spacing="14">
 
+                <TextBox Text="{Binding FirstName}"
+                         Watermark="Vorname"
+                         Height="42"
+                         FontSize="14"/>
+
+                <TextBox Text="{Binding LastName}"
+                         Watermark="Nachname"
+                         Height="42"
+                         FontSize="14"/>
+
+                <TextBox Text="{Binding Username}"
+                         Watermark="Benutzername"
+                         Height="42"
+                         FontSize="14"/>
+
+                <TextBox Text="{Binding Password}"
+                         Watermark="Passwort"
+                         PasswordChar="*"
+                         Height="42"
+                         FontSize="14"/>
+
+            </StackPanel>
+
+            <!-- Error / Feedback -->
+            <TextBlock Text="{Binding ErrorMessage}"
+                       FontSize="13"
+                       Foreground="#DC2626"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"/>
+
+            <!-- ACTIONS – GLEICHES SYSTEM WIE LOGIN -->
+            <StackPanel Spacing="12"
+                        HorizontalAlignment="Center">
+
+                <!-- REGISTRIEREN -->
+                <Border Width="240"
+                        Height="44"
+                        Background="#E5E7EB"
+                        CornerRadius="12"
+                        Padding="1">
+
+                    <Button Content="Registrieren"
+                            Width="240"
+                            Height="44"
+                            Foreground="#020617"
+                            FontWeight="SemiBold"
+                            Command="{Binding RegisterCommand}"/>
+                </Border>
+
+                <!-- ZURÜCK -->
+                <Border Width="240"
+                        Height="44"
+                        Background="#E5E7EB"
+                        CornerRadius="12"
+                        Padding="1">
+
+                    <Button Content="Zurück zum Menü"
+                            Width="240"
+                            Height="44"
+                            Foreground="#020617"
+                            FontWeight="SemiBold"
+                            Command="{Binding MenuCommand}"/>
+                </Border>
+
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
 </UserControl>
