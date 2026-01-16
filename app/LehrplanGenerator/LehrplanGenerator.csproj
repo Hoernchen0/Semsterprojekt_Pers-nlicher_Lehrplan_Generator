@@ -23,6 +23,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="OpenAI-DotNet" />
+
+    <AvaloniaResource Include="Assets\**\*" />
     
     <!-- Database & EF Core -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
