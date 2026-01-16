@@ -1,4 +1,5 @@
-using System.Linq;
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Models;
@@ -15,40 +16,39 @@ public partial class LoginViewModel : ViewModelBase
     [ObservableProperty] private string password = string.Empty;
     [ObservableProperty] private string result = string.Empty;
 
-    private readonly UserCredentialStore _store;
+    private readonly AuthService _authService;
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
-    public LoginViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public LoginViewModel(AuthService authService, INavigationService navigationService, AppState appState)
     {
-        _store = store;
+        _authService = authService;
         _navigationService = navigationService;
         _appState = appState;
     }
 
     [RelayCommand]
-    private void Login()
+    private async Task Login()
     {
-        var cred = _store.GetByUsername(Username);
-
-        if (cred == null)
+        try
         {
-            Result = "Benutzername oder Passwort falsch";
-            return;
-        }
+            var user = await _authService.LoginAsync(Username, Password);
 
-        var hashed = PasswordHasher.Hash(Password);
-        if (hashed != cred.PasswordHash)
+            if (user == null)
+            {
+                Result = "Benutzername oder Passwort falsch";
+                return;
+            }
+
+            AppState.CurrentUser = user;
+            Result = "Login erfolgreich";
+
+            _navigationService.NavigateTo<ShellViewModel>();
+        }
+        catch (Exception ex)
         {
-            Result = "Benutzername oder Passwort falsch";
-            return;
+            Result = $"Login-Fehler: {ex.Message}";
         }
-
-        AppState.CurrentUser = new LehrplanGenerator.Logic.Models.User(cred.UserId, cred.FirstName, cred.LastName);
-
-        Result = "Login erfolgreich";
-
-        _navigationService.NavigateTo<ShellViewModel>();
     }
 
     [RelayCommand]

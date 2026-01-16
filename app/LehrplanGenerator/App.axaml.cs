@@ -28,50 +28,30 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-
-        var services = new ServiceCollection();
-        ConfigureServices(services);
-        Services = services.BuildServiceProvider();
-    }
-
-    private void ConfigureServices(IServiceCollection services)
-    {
-        // Services
-        services.AddSingleton<UserCredentialStore>();
-        services.AddSingleton<AppState>();
-        services.AddSingleton<ViewLocator>();
-        services.AddSingleton<INavigationService, NavigationService>();
-
-        // ViewModels
-        services.AddSingleton<MainWindowViewModel>();
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<RegisterViewModel>();
-        services.AddTransient<LoginViewModel>();
-        services.AddTransient<ShellViewModel>();
-        services.AddTransient<DashboardViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<ChatViewModel>();
-        services.AddTransient<StudyPlanViewModel>();
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
         DisableAvaloniaDataAnnotationValidation();
 
-        // Setup DI and reuse LernApp core services
+        // Setup DI with LernApp core services + LehrplanGenerator-specific services
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-        // determine DB path for host app (uses LocalApplicationData by default)
-        var dbPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "lernapp.db");
+        // Determine DB path
+        var dbPath = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+            "lernapp.db");
 
-        // register LernApp services (repositories, DbContext, domain services)
+        // Register LernApp services (DbContext, Repositories, Domain Services)
         services.AddApplicationServices(dbPath);
 
-        // Register LehrplanGenerator-specific services
-        services.AddSingleton<UserCredentialStore>();
+        // Register LehrplanGenerator-specific services and ViewModels
         services.AddSingleton<AppState>();
         services.AddSingleton<ViewLocator>();
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<AuthService>();  // Now uses IUserService instead of UserCredentialStore
+        
+        // ViewModels
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<RegisterViewModel>();

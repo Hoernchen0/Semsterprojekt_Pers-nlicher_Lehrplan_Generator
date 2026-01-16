@@ -1,43 +1,69 @@
 using System;
+using System.Threading.Tasks;
 using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.Logic.Models;
+using LernApp.Services;
 using UserAlias = LehrplanGenerator.Logic.Models.User;
 
 namespace LehrplanGenerator.Logic.Services;
 
 public class AuthService
 {
-    private readonly UserCredentialStore _store;
+    private readonly IUserService _userService;
 
     public UserAlias? CurrentUser { get; private set; }
 
-    //public AuthService()
-    public AuthService(UserCredentialStore store)
+    public AuthService(IUserService userService)
     {
-        _store = store;
+        _userService = userService;
     }
-    public bool Register(string firstName, string lastName, string username, string password)
+
+    public async Task<bool> RegisterAsync(string firstName, string lastName, string email, string password)
     {
-        if (_store.UsernameExists(username))
+        try
+        {
+            // Check if user already exists
+            var existingUser = await _userService.HoleBenutzerAsync(email);
+            if (existingUser != null)
+                return false;
+
+            // Register new user with LernApp service (uses SQLite)
+            var user = await _userService.RegisteriereBenutzerAsync(
+                name: $"{firstName} {lastName}",
+                email: email,
+                passwordHash: PasswordHasher.Hash(password)
+            );
+
+            CurrentUser = new UserAlias(Guid.NewGuid(), firstName, lastName);
+            return true;
+        }
+        catch
+        {
             return false;
-        var user = new UserCredential(
-            Guid.NewGuid(),
-            firstName,
-            lastName,
-            username,
-            PasswordHasher.Hash(password)
-        );
-
-        _store.Add(user);
-        CurrentUser = new UserAlias(user.UserId, user.FirstName, user.LastName);
-        return true;
+        }
     }
-    public UserCredential? Login(string username, string password)
-    {
-        var cred = _store.GetByUsername(username);
-        if (cred == null) return null;
 
-        var hashed = PasswordHasher.Hash(password);
-        return hashed == cred.PasswordHash ? cred : null;
+    public async Task<UserAlias?> LoginAsync(string email, string password)
+    {
+        try
+        {
+            // Authenticate using LernApp service (uses SQLite)
+            var user = await _userService.AuthentifiziereBenutzerAsync(email, PasswordHasher.Hash(password));
+            if (user == null)
+                return null;
+
+            // Parse name into firstName/lastName
+            var names = user.Name.Split(' ', 2);
+            var firstName = names[0];
+            var lastName = names.Length > 1 ? names[1] : "";
+
+            CurrentUser = new UserAlias(Guid.NewGuid(), firstName, lastName);
+            return CurrentUser;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
+

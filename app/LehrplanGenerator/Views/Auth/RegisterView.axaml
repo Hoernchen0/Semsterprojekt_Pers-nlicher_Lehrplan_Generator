@@ -9,7 +9,7 @@
 
         <TextBox Text="{Binding FirstName}" Watermark="Vorname" Width="250"/>
         <TextBox Text="{Binding LastName}" Watermark="Nachname" Width="250"/>
-        <TextBox Text="{Binding Username}" Watermark="Username" Width="250"/>
+        <TextBox Text="{Binding Email}" Watermark="E-Mail" Width="250"/>
         <TextBox Text="{Binding Password}" Watermark="Passwort" PasswordChar="*" Width="250"/>
         <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" />
 

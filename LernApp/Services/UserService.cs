@@ -8,6 +8,7 @@ public interface IUserService
     Task<User> RegisteriereBenutzerAsync(string name, string email, string passwordHash);
     Task<User?> AuthentifiziereBenutzerAsync(string email, string passwordHash);
     Task<User?> HoleBenutzerAsync(int userId);
+    Task<User?> HoleBenutzerAsync(string email); // Overload for email lookup
     Task<User> AktualisiereBenutzerAsync(User user);
     Task<bool> ExistiertEmailAsync(string email);
 }
@@ -74,6 +75,11 @@ public class UserService : IUserService
     public async Task<User?> HoleBenutzerAsync(int userId)
     {
         return await _userRepository.GetByIdAsync(userId);
+    }
+
+    public async Task<User?> HoleBenutzerAsync(string email)
+    {
+        return await _userRepository.GetByEmailAsync(email);
     }
 
     public async Task<User> AktualisiereBenutzerAsync(User user)

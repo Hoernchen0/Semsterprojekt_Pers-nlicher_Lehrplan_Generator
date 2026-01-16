@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Models;
@@ -14,43 +14,44 @@ public partial class RegisterViewModel : ViewModelBase
 {
     [ObservableProperty] private string firstName = string.Empty;
     [ObservableProperty] private string lastName = string.Empty;
-    [ObservableProperty] private string username = string.Empty;
+    [ObservableProperty] private string email = string.Empty;
     [ObservableProperty] private string password = string.Empty;
     [ObservableProperty] private string? errorMessage;
 
-    private readonly UserCredentialStore _store;
+    private readonly AuthService _authService;
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
-    public RegisterViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public RegisterViewModel(AuthService authService, INavigationService navigationService, AppState appState)
     {
-        _store = store;
+        _authService = authService;
         _navigationService = navigationService;
         _appState = appState;
     }
 
     [RelayCommand]
-    private void Register()
+    private async Task Register()
     {
         ErrorMessage = ValidateInput();
         if (ErrorMessage != null)
             return;
 
-        var userId = Guid.NewGuid();
+        try
+        {
+            var success = await _authService.RegisterAsync(FirstName, LastName, Email, Password);
+            if (!success)
+            {
+                ErrorMessage = "Benutzer mit dieser E-Mail existiert bereits";
+                return;
+            }
 
-        var user = new UserCredential(
-            userId,
-            FirstName,
-            LastName,
-            Username,
-            PasswordHasher.Hash(Password)
-        );
-
-        _store.Add(user);
-
-        AppState.CurrentUser = new LehrplanGenerator.Logic.Models.User(user.UserId, user.FirstName, user.LastName);
-
-        _navigationService.NavigateTo<ShellViewModel>();
+            AppState.CurrentUser = _authService.CurrentUser;
+            _navigationService.NavigateTo<ShellViewModel>();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Registrierungsfehler: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -67,18 +68,11 @@ public partial class RegisterViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(LastName) || LastName.Length < 2)
             return "Nachname muss mindestens 2 Zeichen lang sein.";
 
-        if (string.IsNullOrWhiteSpace(Username) || !Username.All(c => char.IsLetterOrDigit(c) || c == '_'))
-            return "Username darf nur Buchstaben, Zahlen und Unterstriche enthalten.";
+        if (string.IsNullOrWhiteSpace(Email) || !Email.Contains("@"))
+            return "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
 
-        if (_store.UsernameExists(Username))
-            return "Username ist bereits vergeben.";
-
-        if (string.IsNullOrWhiteSpace(Password) || Password.Length < 8
-            || !Password.Any(char.IsUpper)
-            || !Password.Any(char.IsLower)
-            || !Password.Any(char.IsDigit)
-            || !Password.Any(c => !char.IsLetterOrDigit(c)))
-            return "Passwort: mindestens 8 Zeichen, Groß-/Kleinbuchstabe, Zahl und Sonderzeichen.";
+        if (string.IsNullOrWhiteSpace(Password) || Password.Length < 6)
+            return "Passwort muss mindestens 6 Zeichen lang sein.";
 
         return null;
     }

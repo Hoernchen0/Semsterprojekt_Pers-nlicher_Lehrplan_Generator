@@ -13,7 +13,6 @@ namespace LehrplanGenerator.ViewModels.Shell;
 
 public partial class ShellViewModel : ViewModelBase
 {
-    private readonly UserCredentialStore _store;
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
@@ -26,9 +25,8 @@ public partial class ShellViewModel : ViewModelBase
     [ObservableProperty]
     private string selectedTab = "Home";
 
-    public ShellViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public ShellViewModel(INavigationService navigationService, AppState appState)
     {
-        _store = store;
         _navigationService = navigationService;
         _appState = appState;
 
