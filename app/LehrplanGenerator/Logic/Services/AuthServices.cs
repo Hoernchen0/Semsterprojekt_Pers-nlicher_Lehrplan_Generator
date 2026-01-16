@@ -25,20 +25,26 @@ public class AuthService
             // Check if user already exists
             var existingUser = await _userService.HoleBenutzerAsync(email);
             if (existingUser != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Registrierung: E-Mail {email} existiert bereits");
                 return false;
+            }
 
             // Register new user with LernApp service (uses SQLite)
+            var hashedPassword = PasswordHasher.Hash(password);
             var user = await _userService.RegisteriereBenutzerAsync(
                 name: $"{firstName} {lastName}",
                 email: email,
-                passwordHash: PasswordHasher.Hash(password)
+                passwordHash: hashedPassword
             );
 
             CurrentUser = new UserAlias(Guid.NewGuid(), firstName, lastName);
+            System.Diagnostics.Debug.WriteLine($"✅ Benutzer registriert: {email} (ID: {user.Id})");
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"❌ Registrierungsfehler: {ex.Message}\n{ex.StackTrace}");
             return false;
         }
     }
@@ -47,10 +53,22 @@ public class AuthService
     {
         try
         {
-            // Authenticate using LernApp service (uses SQLite)
-            var user = await _userService.AuthentifiziereBenutzerAsync(email, PasswordHasher.Hash(password));
-            if (user == null)
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Login: E-Mail oder Passwort leer");
                 return null;
+            }
+
+            // Authenticate using LernApp service (uses SQLite)
+            var hashedPassword = PasswordHasher.Hash(password);
+            System.Diagnostics.Debug.WriteLine($"🔐 Login-Versuch für: {email}");
+            
+            var user = await _userService.AuthentifiziereBenutzerAsync(email, hashedPassword);
+            if (user == null)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Login fehlgeschlagen: Benutzer oder Passwort falsch ({email})");
+                return null;
+            }
 
             // Parse name into firstName/lastName
             var names = user.Name.Split(' ', 2);
@@ -58,10 +76,12 @@ public class AuthService
             var lastName = names.Length > 1 ? names[1] : "";
 
             CurrentUser = new UserAlias(Guid.NewGuid(), firstName, lastName);
+            System.Diagnostics.Debug.WriteLine($"✅ Login erfolgreich: {email}");
             return CurrentUser;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"❌ Login-Fehler: {ex.Message}\n{ex.StackTrace}");
             return null;
         }
     }

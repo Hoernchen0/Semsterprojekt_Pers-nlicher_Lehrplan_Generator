@@ -7,7 +7,7 @@
     <StackPanel Margin="20" Spacing="12">
         <TextBlock Text="Login" FontSize="28"/>
 
-        <TextBox Text="{Binding Username}" Watermark="E-Mail" Width="250"/>
+        <TextBox Text="{Binding Email}" Watermark="E-Mail" Width="250"/>
         <TextBox Text="{Binding Password}" Watermark="Passwort" PasswordChar="*" Width="250"/>
 
         <Button Content="Login"

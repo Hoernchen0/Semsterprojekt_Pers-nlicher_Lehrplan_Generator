@@ -17,7 +17,7 @@ namespace LehrplanGenerator.ViewModels.Auth;
 
 public partial class LoginViewModel : ViewModelBase
 {
-    [ObservableProperty] private string username = string.Empty;
+    [ObservableProperty] private string email = string.Empty;
     [ObservableProperty] private string password = string.Empty;
     [ObservableProperty] private string result = string.Empty;
 
@@ -40,7 +40,8 @@ public partial class LoginViewModel : ViewModelBase
         try
         {
             Result = "Anmelden läuft...";
-            var user = await _authService.LoginAsync(Username, Password);
+            System.Diagnostics.Debug.WriteLine($"[LoginViewModel] Login-Button geklickt: Email={Email}");
+            var user = await _authService.LoginAsync(Email, Password);
 
             if (user == null)
             {

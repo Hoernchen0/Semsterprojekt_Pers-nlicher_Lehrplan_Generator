@@ -18,7 +18,7 @@
         
         <StackPanel Spacing="5">
             <TextBlock Text="E-Mail:" FontWeight="SemiBold"/>
-            <TextBox Text="{Binding Username}" Watermark="ihre@email.com" Height="40" Padding="10"/>
+            <TextBox Text="{Binding Email}" Watermark="ihre@email.com" Height="40" Padding="10"/>
         </StackPanel>
 
         <StackPanel Spacing="5">
