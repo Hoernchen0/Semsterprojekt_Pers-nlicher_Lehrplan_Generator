@@ -5,22 +5,46 @@
              x:DataType="vm:RegisterViewModel">
 
      <StackPanel Margin="20" Spacing="12">
-        <TextBlock Text="Registrierung" FontSize="28" />
+        <TextBlock Text="📚 LernApp - Registrierung" FontSize="24" FontWeight="Bold" Foreground="#1E88E5"/>
+        <Separator/>
 
-        <TextBox Text="{Binding FirstName}" Watermark="Vorname" Width="250"/>
-        <TextBox Text="{Binding LastName}" Watermark="Nachname" Width="250"/>
-        <TextBox Text="{Binding Email}" Watermark="E-Mail" Width="250"/>
-        <TextBox Text="{Binding Password}" Watermark="Passwort" PasswordChar="*" Width="250"/>
-        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" />
+        <StackPanel Spacing="5">
+            <TextBlock Text="Vorname:" FontWeight="SemiBold"/>
+            <TextBox Text="{Binding FirstName}" Watermark="Vorname" Height="40" Padding="10"/>
+        </StackPanel>
 
+        <StackPanel Spacing="5">
+            <TextBlock Text="Nachname:" FontWeight="SemiBold"/>
+            <TextBox Text="{Binding LastName}" Watermark="Nachname" Height="40" Padding="10"/>
+        </StackPanel>
+
+        <StackPanel Spacing="5">
+            <TextBlock Text="E-Mail:" FontWeight="SemiBold"/>
+            <TextBox Text="{Binding Email}" Watermark="ihre@email.com" Height="40" Padding="10"/>
+        </StackPanel>
+
+        <StackPanel Spacing="5">
+            <TextBlock Text="Passwort:" FontWeight="SemiBold"/>
+            <TextBox Text="{Binding Password}" PasswordChar="•" Watermark="Min. 6 Zeichen" Height="40" Padding="10"/>
+        </StackPanel>
+
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" IsVisible="{Binding ErrorMessage.Length}"/>
 
         <Button Content="Registrieren"
                 Width="160"
-                Command="{Binding RegisterCommand}" />
+                Height="40"
+                Command="{Binding RegisterCommand}"
+                Background="#1E88E5"
+                Foreground="White"
+                FontWeight="Bold" />
 
-        <Button Content="Zurück zum Menu"
-                Width="160"
-                Command="{Binding MenuCommand}" />
+        <Button Content="Zurück zur Anmeldung"
+                Width="200"
+                Height="35"
+                Command="{Binding MenuCommand}"
+                Background="Transparent"
+                Foreground="#1E88E5" />
     </StackPanel>
 
 </UserControl>
+

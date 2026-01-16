@@ -13,18 +13,25 @@ namespace LehrplanGenerator.Logic.AI;
 
 public class StudyPlanGeneratorService
 {
-    private readonly OpenAIClient _client;
+    private readonly OpenAIClient? _client;
     private readonly List<Message> _conversation;
     private const string ModelName = "gpt-5-chat";
 
     public StudyPlanGeneratorService()
     {
-        var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT")
-                      ?? throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT is not set.");
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")
-                     ?? throw new InvalidOperationException("OPENAI_API_KEY is not set.");
-        var settings = new OpenAISettings(resourceName: endpoint, deploymentId: ModelName, apiVersion: "2025-03-01-preview");
-        _client = new OpenAIClient(apiKey,settings); 
+        var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+        
+        // Nur initialisieren, wenn beide Umgebungsvariablen gesetzt sind
+        if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(apiKey))
+        {
+            var settings = new OpenAISettings(resourceName: endpoint, deploymentId: ModelName, apiVersion: "2025-03-01-preview");
+            _client = new OpenAIClient(apiKey, settings);
+        }
+        else
+        {
+            _client = null;
+        } 
 
         _conversation = new List<Message>
         {
@@ -42,6 +49,12 @@ public class StudyPlanGeneratorService
 
     public async Task<StudyPlan?> CreateStudyPlanAsync()
     {
+        if (_client == null)
+        {
+            Console.WriteLine("OpenAI Service nicht konfiguriert - AZURE_OPENAI_ENDPOINT oder OPENAI_API_KEY nicht gesetzt.");
+            return null;
+        }
+        
         var heute = DateTime.Now.ToString("dd.MM.yyyy");
 
         var systemMessage = new Message(Role.System,
@@ -140,6 +153,12 @@ try
     }
 public async Task<string?> AskGptAsync(string userInput)
 {
+    if (_client == null)
+    {
+        Console.WriteLine("OpenAI Service nicht konfiguriert - AZURE_OPENAI_ENDPOINT oder OPENAI_API_KEY nicht gesetzt.");
+        return null;
+    }
+    
     // Nachricht als User-Message hinzufügen
     _conversation.Add(new Message(Role.User, userInput));
 

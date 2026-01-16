@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Models;
@@ -7,6 +9,9 @@ using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.ViewModels.Shell;
+using LehrplanGenerator.ViewModels.Windows;
+using LehrplanGenerator.Views.Windows;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LehrplanGenerator.ViewModels.Auth;
 
@@ -21,12 +26,14 @@ public partial class RegisterViewModel : ViewModelBase
     private readonly AuthService _authService;
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
+    private readonly IServiceProvider _serviceProvider;
 
-    public RegisterViewModel(AuthService authService, INavigationService navigationService, AppState appState)
+    public RegisterViewModel(AuthService authService, INavigationService navigationService, AppState appState, IServiceProvider serviceProvider)
     {
         _authService = authService;
         _navigationService = navigationService;
         _appState = appState;
+        _serviceProvider = serviceProvider;
     }
 
     [RelayCommand]
@@ -38,6 +45,7 @@ public partial class RegisterViewModel : ViewModelBase
 
         try
         {
+            ErrorMessage = "Registrierung läuft...";
             var success = await _authService.RegisterAsync(FirstName, LastName, Email, Password);
             if (!success)
             {
@@ -46,18 +54,30 @@ public partial class RegisterViewModel : ViewModelBase
             }
 
             AppState.CurrentUser = _authService.CurrentUser;
-            _navigationService.NavigateTo<ShellViewModel>();
+            ErrorMessage = null;
+            
+            // Nach erfolgreichem Registrieren: Wechsel vom Registrierungsfenster zum MainWindow
+            await Task.Delay(500);
+            SwitchToMainWindow();
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Registrierungsfehler: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"RegisterViewModel.Register() Exception: {ex}");
         }
     }
 
     [RelayCommand]
     private void Menu()
     {
-        _navigationService.NavigateTo<LehrplanGenerator.ViewModels.Main.MainViewModel>();
+        // Zurück zur Login-Seite
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow = new Views.Windows.LoginWindow
+            {
+                DataContext = _serviceProvider.GetRequiredService<LoginViewModel>()
+            };
+        }
     }
 
     private string? ValidateInput()
@@ -75,5 +95,26 @@ public partial class RegisterViewModel : ViewModelBase
             return "Passwort muss mindestens 6 Zeichen lang sein.";
 
         return null;
+    }
+
+    private void SwitchToMainWindow()
+    {
+        try
+        {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var mainWindowVM = _serviceProvider.GetRequiredService<MainWindowViewModel>();
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = mainWindowVM
+                };
+                desktop.MainWindow.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Fehler beim Laden der Hauptanwendung: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"SwitchToMainWindow Exception: {ex}");
+        }
     }
 }
