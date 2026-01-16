@@ -31,6 +31,9 @@ public partial class ChatViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isSending = false;
 
+    [ObservableProperty]
+    private bool _canCreateStudyPlan = false;
+
     [RelayCommand]
     private async Task SendAsync()
     {
@@ -48,6 +51,7 @@ public partial class ChatViewModel : ViewModelBase
             Text = userMessage
         });
 
+        CanCreateStudyPlan = true;
         IsSending = true;
 
         try
@@ -102,7 +106,7 @@ public partial class ChatViewModel : ViewModelBase
             {
                 // Speichere den Plan im AppState für die StudyPlanViewModel
                 _appState.CurrentStudyPlan = studyPlan;
-                
+
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
@@ -213,4 +217,7 @@ public partial class ChatViewModel : ViewModelBase
     {
         _navigationService.NavigateTo<MainViewModel>();
     }
+
+    partial void OnInputTextChanged(string value) { OnPropertyChanged(nameof(HasInput)); }
+    public bool HasInput => !string.IsNullOrWhiteSpace(InputText);
 }
