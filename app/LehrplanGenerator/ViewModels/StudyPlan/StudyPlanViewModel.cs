@@ -37,8 +37,27 @@ public partial class StudyPlanViewModel : ViewModelBase
         _appState = appState;
         _service = new StudyPlanService(new Logic.Models.StudyPlan(string.Empty, new()));
         
-        // Lade Studienplan asynchron
-        _ = LoadStudyPlanAsync();
+        // Lade Daten direkt aus AppState
+        LoadFromAppState();
+    }
+
+    private void LoadFromAppState()
+    {
+        var studyPlan = _appState.CurrentStudyPlan;
+
+        if (studyPlan != null)
+        {
+            Topic = studyPlan.Topic;
+            Days = new ObservableCollection<DayPlanViewModel>(
+               studyPlan.Days.Select(d => new DayPlanViewModel(d))
+            );
+            IsLoading = false;
+        }
+        else
+        {
+            ErrorMessage = "Kein Lernplan vorhanden. Bitte erstellen Sie zuerst einen Plan über den Chat.";
+            IsLoading = false;
+        }
     }
 
     private async Task LoadStudyPlanAsync()
@@ -50,16 +69,6 @@ public partial class StudyPlanViewModel : ViewModelBase
 
             // Prüfe, ob bereits ein Plan im AppState existiert
             var studyPlan = _appState.CurrentStudyPlan;
-
-            // Falls nicht, erstelle einen neuen
-            if (studyPlan == null)
-            {
-                studyPlan = await _appState.AiService.CreateStudyPlanAsync();
-                if (studyPlan != null)
-                {
-                    _appState.CurrentStudyPlan = studyPlan;
-                }
-            }
 
             if (studyPlan != null)
             {
@@ -73,7 +82,7 @@ public partial class StudyPlanViewModel : ViewModelBase
             }
             else
             {
-                ErrorMessage = "Fehler beim Erstellen des Studienplans. Bitte versuchen Sie es erneut.";
+                ErrorMessage = "Kein Lernplan vorhanden. Bitte erstellen Sie zuerst einen Plan über den Chat.";
             }
         }
         catch (Exception ex)
@@ -86,13 +95,6 @@ public partial class StudyPlanViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        // Erzwinge Neuerstellung des Plans
-        _appState.CurrentStudyPlan = null;
-        await LoadStudyPlanAsync();
-    }
 
     [RelayCommand]
     private void GoBack()

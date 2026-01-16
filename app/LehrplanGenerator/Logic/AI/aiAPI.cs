@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using OpenAI.Files;
 using LehrplanGenerator.Logic.Models;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
 
 namespace LehrplanGenerator.Logic.AI;
 
@@ -30,8 +31,7 @@ public class StudyPlanGeneratorService
             new Message(Role.System, "Hilf dem Nutzer einen Lernplan zu erstellen und"
                                                    + "seine Fragen zu Themen zu beantworten."
                                  + "Du darfst nicht einfach im Chat den Lernplan ausgeben..."
-                               +   "Du kannst den Nutzer auch fragen ob du im selbst von dir erstellte Praxisübungen"
-                                +  "erstellen sollst. Du kannst ihn auch fragen welche Themen er besonders "
+                                +"Du kannst ihn auch fragen welche Themen er besonders "
                                 +  "intensiv wiederholen will, das ist sehr wichtig für die richtige Zeitaufteilung"
                                 +  "im Lernplan. Für die Erstellung ist auch wichtig zu fragen zu welchen Zeiten"
                                 +  "der Nutzer lernen möchte. Plane die Themen über die Zeit so, "
@@ -84,25 +84,58 @@ try
         {
             string fileName = Path.GetFileName(pdfPath);
 
-            // Lade die Datei über die Files API hoch
-            var uploadedFile = await _client.FilesEndpoint.UploadFileAsync(pdfPath, FilePurpose.Assistants);
+            // Extrahiere den Text aus der PDF
+            string extractedText = ExtractTextFromPdf(pdfPath);
 
-            // Füge eine Nachricht mit Dateireferenz hinzu
+            if (string.IsNullOrWhiteSpace(extractedText))
+            {
+                Console.WriteLine("Fehler: Kein Text aus der PDF extrahiert.");
+                return false;
+            }
+
+            // Füge den extrahierten Text als Nachricht zur Konversation hinzu
             _conversation.Add(new Message(Role.User, 
-                $"Ich habe die PDF-Datei '{fileName}' hochgeladen (File ID: {uploadedFile.Id}). " +
-                "Bitte nutze diese als Grundlage für Zusammenfassungen und den Lernplan."));
+                $"Ich habe die PDF-Datei '{fileName}' hochgeladen. Hier ist der Inhalt:\n\n{extractedText}\n\n" +
+                "Bitte nutze diesen Inhalt als Grundlage für Zusammenfassungen und den Lernplan."));
             
             _conversation.Add(new Message(Role.System, 
-                "Nutze die hochgeladene PDF als Grundlage für Zusammenfassungen und den Lernplan."
+                "Nutze den bereitgestellten PDF-Inhalt als Grundlage für Zusammenfassungen und den Lernplan."
             ));
 
-            Console.WriteLine($"PDF erfolgreich hochgeladen: {uploadedFile.Id}");
+            Console.WriteLine($"PDF-Text erfolgreich extrahiert und zur Konversation hinzugefügt.");
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fehler beim Hochladen der PDF: {ex.Message}");
+            Console.WriteLine($"Fehler beim Verarbeiten der PDF: {ex.Message}");
             return false;
+        }
+    }
+
+    private string ExtractTextFromPdf(string pdfPath)
+    {
+        try
+        {
+            using (var pdfReader = new PdfReader(pdfPath))
+            using (var pdfDocument = new PdfDocument(pdfReader))
+            {
+                var textBuilder = new System.Text.StringBuilder();
+                
+                for (int i = 1; i <= pdfDocument.GetNumberOfPages(); i++)
+                {
+                    var page = pdfDocument.GetPage(i);
+                    string pageText = PdfTextExtractor.GetTextFromPage(page);
+                    textBuilder.AppendLine(pageText);
+                    textBuilder.AppendLine(); // Leerzeile zwischen Seiten
+                }
+                
+                return textBuilder.ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Extrahieren des PDF-Textes: {ex.Message}");
+            throw;
         }
     }
 public async Task<string?> AskGptAsync(string userInput)

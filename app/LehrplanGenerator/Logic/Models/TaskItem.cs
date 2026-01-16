@@ -21,6 +21,8 @@ public class TaskItem
     [JsonPropertyName("description")]
     public string Description { get; private set; } = string.Empty;
 
+    public bool IsDone { get; set; }
+
 
     public TaskItem(string title, string start, string end, string description)
     {

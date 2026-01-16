@@ -5,9 +5,11 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using LehrplanGenerator.Logic.AI;
 using System;
-
+using Avalonia.Platform.Storage;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia;
+using LehrplanGenerator.Models.Chat;
 namespace LehrplanGenerator.ViewModels.Chat;
 
 public partial class ChatViewModel : ViewModelBase
@@ -19,17 +21,18 @@ public partial class ChatViewModel : ViewModelBase
     {
         _navigationService = navigationService;
         _appState = appState;
-        _messages = new ObservableCollection<ChatMessage>();
     }
 
-    [ObservableProperty]
-    private ObservableCollection<ChatMessage> _messages;
+    public ObservableCollection<ChatMessage> Messages => _appState.ChatMessages;
 
     [ObservableProperty]
     private string _inputText = string.Empty;
 
     [ObservableProperty]
     private bool _isSending = false;
+
+    [ObservableProperty]
+    private bool _canCreateStudyPlan = false;
 
     [RelayCommand]
     private async Task SendAsync()
@@ -39,6 +42,7 @@ public partial class ChatViewModel : ViewModelBase
 
         var userMessage = InputText;
         InputText = string.Empty;
+        userMessage = userMessage.Trim();
 
         // User-Nachricht hinzufügen
         Messages.Add(new ChatMessage
@@ -47,6 +51,7 @@ public partial class ChatViewModel : ViewModelBase
             Text = userMessage
         });
 
+        CanCreateStudyPlan = true;
         IsSending = true;
 
         try
@@ -101,7 +106,7 @@ public partial class ChatViewModel : ViewModelBase
             {
                 // Speichere den Plan im AppState für die StudyPlanViewModel
                 _appState.CurrentStudyPlan = studyPlan;
-                
+
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
@@ -132,9 +137,79 @@ public partial class ChatViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Upload()
+    private async Task UploadAsync()
     {
-        //TODO
+        try
+        {
+            // StorageProvider vom Hauptfenster holen
+            var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            var mainWindow = lifetime?.MainWindow;
+            
+            if (mainWindow == null)
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = "Fehler: Hauptfenster nicht verfügbar."
+                });
+                return;
+            }
+
+            // File-Picker konfigurieren
+            var options = new FilePickerOpenOptions
+            {
+                Title = "PDF-Datei auswählen",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("PDF-Dateien")
+                    {
+                        Patterns = new[] { "*.pdf" },
+                        MimeTypes = new[] { "application/pdf" }
+                    }
+                }
+            };
+
+            // Datei-Dialog öffnen
+            var files = await mainWindow.StorageProvider.OpenFilePickerAsync(options);
+            
+            if (files.Count == 0)
+            {
+                // Benutzer hat abgebrochen
+                return;
+            }
+
+            var selectedFile = files[0];
+            var filePath = selectedFile.Path.LocalPath;
+
+            // PDF an AI-Service übergeben
+            var success = await _appState.AiService.UploadPdfAsync(filePath);
+
+            if (success)
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!"
+                });
+            }
+            else
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'."
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage
+            {
+                Sender = "System",
+                Text = $"Fehler beim Hochladen: {ex.Message}"
+            });
+        }
     }
 
     [RelayCommand]
@@ -142,10 +217,7 @@ public partial class ChatViewModel : ViewModelBase
     {
         _navigationService.NavigateTo<MainViewModel>();
     }
-}
 
-public class ChatMessage
-{
-    public string Sender { get; set; } = string.Empty;
-    public string Text { get; set; } = string.Empty;
+    partial void OnInputTextChanged(string value) { OnPropertyChanged(nameof(HasInput)); }
+    public bool HasInput => !string.IsNullOrWhiteSpace(InputText);
 }
