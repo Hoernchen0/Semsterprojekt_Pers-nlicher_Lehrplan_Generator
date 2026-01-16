@@ -1,0 +1,17 @@
+/workspace/LernApp/bin/Debug/net10.0/LernApp.deps.json
+/workspace/LernApp/bin/Debug/net10.0/LernApp.runtimeconfig.json
+/workspace/LernApp/bin/Debug/net10.0/LernApp.dll
+/workspace/LernApp/bin/Debug/net10.0/LernApp.pdb
+/workspace/LernApp/obj/Debug/net10.0/LernApp.csproj.AssemblyReference.cache
+/workspace/LernApp/obj/Debug/net10.0/Avalonia/Resources.Inputs.cache
+/workspace/LernApp/obj/Debug/net10.0/Avalonia/resources
+/workspace/LernApp/obj/Debug/net10.0/LernApp.GeneratedMSBuildEditorConfig.editorconfig
+/workspace/LernApp/obj/Debug/net10.0/LernApp.AssemblyInfoInputs.cache
+/workspace/LernApp/obj/Debug/net10.0/LernApp.AssemblyInfo.cs
+/workspace/LernApp/obj/Debug/net10.0/LernApp.csproj.CoreCompileInputs.cache
+/workspace/LernApp/obj/Debug/net10.0/LernApp.sourcelink.json
+/workspace/LernApp/obj/Debug/net10.0/LernApp.dll
+/workspace/LernApp/obj/Debug/net10.0/refint/LernApp.dll
+/workspace/LernApp/obj/Debug/net10.0/LernApp.pdb
+/workspace/LernApp/obj/Debug/net10.0/LernApp.genruntimeconfig.cache
+/workspace/LernApp/obj/Debug/net10.0/ref/LernApp.dll

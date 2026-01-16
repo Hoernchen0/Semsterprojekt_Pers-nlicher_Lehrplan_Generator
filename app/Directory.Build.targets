@@ -1,0 +1,9 @@
+<Project>
+  <!-- Remove SDK generated assembly attributes that conflict with our AssemblyInfo -->
+  <Target Name="RemoveSdkAssemblyAttributes" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <!-- Remove the SDK-generated AssemblyAttributes file  -->
+      <Compile Remove="@(Compile)" Condition="'%(Filename)' == '.NETCoreApp,Version=v10.0.AssemblyAttributes' or '%(Filename)' == '.NETCoreApp,Version=v8.0.AssemblyAttributes'" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   
   
@@ -22,8 +23,9 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="OpenAI-DotNet" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lerhrplanfoundation\LernApp\LernApp.csproj" />
+    <ProjectReference Include="..\..\LernApp\LernApp.csproj" />
   </ItemGroup>
 </Project>

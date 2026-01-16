@@ -23,5 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LehrplanGenerator\LehrplanGenerator.csproj" />
+    <ProjectReference Include="..\..\LernApp\LernApp.csproj" />
   </ItemGroup>
 </Project>

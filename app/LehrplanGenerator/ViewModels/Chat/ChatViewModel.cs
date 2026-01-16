@@ -43,8 +43,7 @@ public partial class ChatViewModel : ViewModelBase
         // User-Nachricht hinzufügen
         Messages.Add(new ChatMessage
         {
-            Sender = _appState.CurrentUserDisplayName ?? "Benutzer",
-//                      Sender = AppState.CurrentUserDisplayName ?? "Benutzer", //alter code
+            Sender = AppState.CurrentUserDisplayName ?? "Benutzer",
             Text = userMessage
         });
 

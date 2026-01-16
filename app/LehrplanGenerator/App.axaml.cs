@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using LernApp.Infrastructure;
 using LernApp.Services;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.ViewModels.Windows;
 using LehrplanGenerator.ViewModels.Main;
@@ -58,8 +58,6 @@ public partial class App : Application
     {
         DisableAvaloniaDataAnnotationValidation();
 
-        DisableAvaloniaDataAnnotationValidation();
-
         // Setup DI and reuse LernApp core services
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
@@ -67,21 +65,27 @@ public partial class App : Application
         var dbPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "lernapp.db");
 
         // register LernApp services (repositories, DbContext, domain services)
-        LernApp.Services.ServiceCollectionExtensions.AddLernAppServices(services, dbPath);
+        services.AddApplicationServices(dbPath);
 
-        // Register ViewModels from this app so they can get services via constructor
+        // Register LehrplanGenerator-specific services
+        services.AddSingleton<UserCredentialStore>();
+        services.AddSingleton<AppState>();
+        services.AddSingleton<ViewLocator>();
+        services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<MainViewModel>();
+        services.AddTransient<RegisterViewModel>();
+        services.AddTransient<LoginViewModel>();
+        services.AddTransient<ShellViewModel>();
+        services.AddTransient<DashboardViewModel>();
+        services.AddTransient<SettingsViewModel>();
+        services.AddTransient<ChatViewModel>();
+        services.AddTransient<StudyPlanViewModel>();
 
-        var provider = services.BuildServiceProvider();
+        Services = services.BuildServiceProvider();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Use the Windows.MainWindow implementation for navigation compatibility
-            //desktop.MainWindow = new LehrplanGenerator.Views.Windows.MainWindow()
-            //{
-            //    DataContext = provider.GetRequiredService<MainViewModel>()
-                //TODO: switch to MainWindowViewModel?
-                
             desktop.MainWindow = new MainWindow
             {
                 DataContext = Services.GetRequiredService<MainWindowViewModel>()
@@ -89,10 +93,6 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            //singleViewPlatform.MainView = new LehrplanGenerator.Views.Main.MainView
-            //{
-            //    DataContext = provider.GetRequiredService<MainViewModel>()
-            //TODO: switch to MainWindowViewModel?
             singleViewPlatform.MainView = new Views.Main.MainView
             {
                 DataContext = Services.GetRequiredService<MainWindowViewModel>()

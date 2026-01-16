@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Disable automatic assembly info generation to avoid duplicates with Avalonia -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Suppress duplicate TargetFrameworkAttribute warnings -->
+    <NoWarn>$(NoWarn);CS0579</NoWarn>
+  </PropertyGroup>
+</Project>
