@@ -109,7 +109,8 @@
                 <Button Grid.Column="0"
                         Content="Upload"
                         Background="#fbfbff"
-                        Foreground="Black"/>
+                        Foreground="Black"
+                        Command="{Binding UploadCommand}"/>
                 <TextBox Grid.Column="1"
                     Text="{Binding InputText}"
                     Background="#fbfbff"
