@@ -12,6 +12,8 @@ public class LehrplanDbContext : DbContext
     public DbSet<UserCredentialEntity> Users { get; set; } = null!;
     public DbSet<ChatSessionEntity> ChatSessions { get; set; } = null!;
     public DbSet<ChatMessageEntity> ChatMessages { get; set; } = null!;
+    public DbSet<DayPlanEntity> DayPlans { get; set; } = null!;
+    public DbSet<TaskItemEntity> TaskItems { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -77,5 +79,37 @@ public class LehrplanDbContext : DbContext
 
         modelBuilder.Entity<ChatSessionEntity>()
             .HasIndex(s => new { s.UserId, s.CreatedAt });
+
+        // ===== KALENDER / DAYPLAN KONFIGURATION =====
+
+        // DayPlan Entity - PRIMARY KEY
+        modelBuilder.Entity<DayPlanEntity>()
+            .HasKey(d => d.DayPlanId);
+
+        // TaskItem Entity - PRIMARY KEY
+        modelBuilder.Entity<TaskItemEntity>()
+            .HasKey(t => t.TaskId);
+
+        // User -> DayPlans: One-to-Many
+        modelBuilder.Entity<UserCredentialEntity>()
+            .HasMany<DayPlanEntity>()
+            .WithOne(d => d.User)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // DayPlan -> TaskItems: One-to-Many
+        modelBuilder.Entity<DayPlanEntity>()
+            .HasMany(d => d.Tasks)
+            .WithOne(t => t.DayPlan)
+            .HasForeignKey(t => t.DayPlanId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // TaskItem Indizes für Performance
+        modelBuilder.Entity<TaskItemEntity>()
+            .HasIndex(t => new { t.DayPlanId, t.CreatedAt });
+
+        modelBuilder.Entity<DayPlanEntity>()
+            .HasIndex(d => new { d.UserId, d.Day })
+            .IsUnique(); // Ein Tag pro Nutzer
     }
 }

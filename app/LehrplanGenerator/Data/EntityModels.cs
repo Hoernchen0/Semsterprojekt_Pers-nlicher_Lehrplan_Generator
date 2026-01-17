@@ -78,3 +78,59 @@ public class ChatMessageEntity
         return new ChatMessage { Sender = Sender, Text = Text };
     }
 }
+
+// Day Plan Entity (Kalender-Eintrag mit Tasks)
+public class DayPlanEntity
+{
+    public Guid DayPlanId { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public string Day { get; set; } = string.Empty; // z.B. "Montag", "2026-01-17"
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation Properties
+    public UserCredentialEntity? User { get; set; }
+    public ICollection<TaskItemEntity> Tasks { get; set; } = new List<TaskItemEntity>();
+}
+
+// Task Item Entity (einzelne Aufgabe im Kalender)
+public class TaskItemEntity
+{
+    public Guid TaskId { get; set; } = Guid.NewGuid();
+    public Guid DayPlanId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string StartTime { get; set; } = string.Empty;
+    public string EndTime { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public bool IsDone { get; set; } = false; // Checkbox-Status
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation Properties
+    public DayPlanEntity? DayPlan { get; set; }
+
+    // Konvertierung zu Model
+    public TaskItem ToTaskItem()
+    {
+        return new TaskItem(Title, StartTime, EndTime, Description)
+        {
+            IsDone = this.IsDone
+        };
+    }
+
+    // Erstellung aus Model
+    public static TaskItemEntity FromTaskItem(TaskItem item, Guid dayPlanId)
+    {
+        return new TaskItemEntity
+        {
+            DayPlanId = dayPlanId,
+            Title = item.Title,
+            StartTime = item.StartTime,
+            EndTime = item.EndTime,
+            Description = item.Description,
+            IsDone = item.IsDone,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+    }
+}

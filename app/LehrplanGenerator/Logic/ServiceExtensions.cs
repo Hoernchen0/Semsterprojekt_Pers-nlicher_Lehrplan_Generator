@@ -41,10 +41,12 @@ public static class ServiceExtensions
         // Repositories registrieren
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
+        services.AddScoped<ICalendarRepository, CalendarRepository>();
 
         // Services registrieren
         services.AddScoped<AuthServiceDb>();
         services.AddScoped<ChatServiceDb>();
+        services.AddScoped<PersistenceService>();
 
         return services;
     }

@@ -146,6 +146,12 @@ try
     }
 public async Task<string?> AskGptAsync(string userInput)
 {
+    // Wenn keine KI konfiguriert ist, gib eine Fehler zurück
+    if (_client == null)
+    {
+        return "Fehler: Azure OpenAI ist nicht konfiguriert. Bitte stelle sicher, dass AZURE_OPENAI_ENDPOINT und OPENAI_API_KEY gesetzt sind.";
+    }
+
     // Nachricht als User-Message hinzufügen
     _conversation.Add(new Message(Role.User, userInput));
 

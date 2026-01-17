@@ -16,11 +16,13 @@ public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
+    private readonly PersistenceService _persistenceService;
 
-    public ChatViewModel(INavigationService navigationService, AppState appState)
+    public ChatViewModel(INavigationService navigationService, AppState appState, PersistenceService persistenceService)
     {
         _navigationService = navigationService;
         _appState = appState;
+        _persistenceService = persistenceService;
     }
 
     public ObservableCollection<ChatMessage> Messages => _appState.ChatMessages;
@@ -44,12 +46,37 @@ public partial class ChatViewModel : ViewModelBase
         InputText = string.Empty;
         userMessage = userMessage.Trim();
 
+        // Erstelle eine neue Chat-Session falls nicht vorhanden
+        if (!_appState.CurrentChatSessionId.HasValue)
+        {
+            _appState.CurrentChatSessionId = Guid.NewGuid();
+        }
+
         // User-Nachricht hinzufügen
-        Messages.Add(new ChatMessage
+        var displayMessage = new ChatMessage
         {
             Sender = _appState.CurrentUserDisplayName ?? "Benutzer",
             Text = userMessage
-        });
+        };
+        Messages.Add(displayMessage);
+
+        // Speichere User-Message in der Datenbank
+        if (_appState.CurrentUserId.HasValue)
+        {
+            try
+            {
+                await _persistenceService.SaveChatMessageAsync(
+                    _appState.CurrentUserId.Value,
+                    _appState.CurrentChatSessionId.Value,
+                    displayMessage.Sender,
+                    userMessage
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler beim Speichern der User-Nachricht: {ex.Message}");
+            }
+        }
 
         CanCreateStudyPlan = true;
         IsSending = true;
@@ -62,11 +89,30 @@ public partial class ChatViewModel : ViewModelBase
             if (!string.IsNullOrEmpty(response))
             {
                 // Assistant-Antwort hinzufügen
-                Messages.Add(new ChatMessage
+                var aiMessage = new ChatMessage
                 {
                     Sender = "KI-Assistent",
                     Text = response
-                });
+                };
+                Messages.Add(aiMessage);
+
+                // Speichere KI-Antwort in der Datenbank
+                if (_appState.CurrentUserId.HasValue)
+                {
+                    try
+                    {
+                        await _persistenceService.SaveChatMessageAsync(
+                            _appState.CurrentUserId.Value,
+                            _appState.CurrentChatSessionId.Value,
+                            "KI-Assistent",
+                            response
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fehler beim Speichern der KI-Antwort: {ex.Message}");
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -107,10 +153,30 @@ public partial class ChatViewModel : ViewModelBase
                 // Speichere den Plan im AppState für die StudyPlanViewModel
                 _appState.CurrentStudyPlan = studyPlan;
 
+                // Speichere jeden Tag des Lernplans in der Datenbank
+                if (_appState.CurrentUserId.HasValue)
+                {
+                    try
+                    {
+                        foreach (var dayPlan in studyPlan.Days)
+                        {
+                            await _persistenceService.SaveCalendarAsync(
+                                _appState.CurrentUserId.Value,
+                                dayPlan.Day,
+                                dayPlan
+                            );
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fehler beim Speichern des Kalenders: {ex.Message}");
+                    }
+                }
+
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
-                    Text = $"✓ Lernplan wurde erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
+                    Text = $"✓ Lernplan wurde erfolgreich erstellt und gespeichert!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
                 });
             }
             else

@@ -16,6 +16,9 @@ public partial class AppState : ObservableObject
     private string? _currentUserDisplayName;
 
     [ObservableProperty]
+    private Guid? _currentChatSessionId; // Aktuelle Chat-Session für Datenbank-Persistierung
+
+    [ObservableProperty]
     private StudyPlan? _currentStudyPlan;
 
     // Chat-Nachrichten bleiben während der Session erhalten
