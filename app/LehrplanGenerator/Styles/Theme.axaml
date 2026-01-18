@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Farbpaletten  -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://LehrplanGenerator/Styles/Colors.Dark.axaml" />
+        <ResourceInclude Source="avares://LehrplanGenerator/Styles/Colors.Light.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--  ===============================  -->
+    <!--  FLUENT ACCENT OVERRIDES  -->
+    <!--  ===============================  -->
+
+    <!--  Accent Brush  -->
+    <SolidColorBrush x:Key="SystemAccentBrush" Color="{DynamicResource AccentPrimary}" />
+
+    <!--  Fokus-Rahmen (DAS war lila)  -->
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{DynamicResource AccentPrimary}" />
+
+    <!--  Hover  -->
+    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource TextMuted}" />
+
+    <!--  Fokus-Glow AUS  -->
+    <SolidColorBrush x:Key="FocusAdornerBrush" Color="Transparent" />
+
+</ResourceDictionary>

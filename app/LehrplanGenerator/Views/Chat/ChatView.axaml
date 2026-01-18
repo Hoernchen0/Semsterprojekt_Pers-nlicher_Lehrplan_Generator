@@ -1,136 +1,146 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Chat"
-             xmlns:models="using:LehrplanGenerator.Models.Chat"
-             x:Class="LehrplanGenerator.Views.Chat.ChatView"
-             x:DataType="vm:ChatViewModel">
+<UserControl
+    x:Class="LehrplanGenerator.Views.Chat.ChatView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:LehrplanGenerator.Models.Chat"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Chat"
+    x:DataType="vm:ChatViewModel">
 
-  
+
     <UserControl.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="FontFamily" Value="SF Pro Display"/>
+            <Setter Property="FontFamily" Value="SF Pro Display" />
         </Style>
 
         <Style Selector="Button">
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Padding" Value="14 8"/>
-            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="14 8" />
+            <Setter Property="FontWeight" Value="Medium" />
         </Style>
 
-        
+
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,*,Auto, Auto"
-          Background="#FFFFFF"
-         >
+    <Grid Background="#FFFFFF" RowDefinitions="Auto,*,Auto,Auto">
 
-        <TextBlock Grid.Row="0"
-                   Text="Chat"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Foreground="Black"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Margin="8 0 0 0"/>
+        <TextBlock
+            Grid.Row="0"
+            Margin="0,16,0,16"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="28"
+            FontWeight="Bold"
+            Foreground="Black"
+            Text="Chat" />
 
-        <Border Grid.Row="1"
-                Background="#F9F9FB"
-                CornerRadius="20"
-                Padding="16">
+        <Border
+            Grid.Row="1"
+            Padding="16,0"
+            Background="#F9F9FB">
 
             <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                <ItemsControl ItemsSource="{Binding Messages}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:ChatMessage">
+                <StackPanel Margin="0,16" Spacing="8">
+                    <ItemsControl ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:ChatMessage">
+                                <StackPanel Margin="0,0,0,8">
+                                    <!--  Nutzer-Nachricht: rechts, blau  -->
+                                    <!--  Assistent-Nachricht: links, grau  -->
 
-                            <Border Background="#E5E5EA"
-                                    CornerRadius="16"
-                                    Padding="12"
-                                    Margin="0 0 0 12"
-                                    MaxWidth="520">
+                                    <Border
+                                        MaxWidth="520"
+                                        Padding="12"
+                                        HorizontalAlignment="{Binding Sender, Converter={StaticResource SenderToAlignmentConverter}}"
+                                        Background="{Binding Sender, Converter={StaticResource SenderToColorConverter}}"
+                                        CornerRadius="16">
 
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="{Binding Sender}"
-                                               FontSize="12"
-                                               Foreground="#6E6E73"
-                                               FontWeight="SemiBold"/>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock
+                                                FontSize="12"
+                                                FontWeight="SemiBold"
+                                                Foreground="#6E6E73"
+                                                Text="{Binding Sender}" />
 
-                                    <TextBlock Text="{Binding Text}"
-                                               TextWrapping="Wrap"
-                                               FontSize="14"
-                                               Foreground="#1C1C1E"/>
+                                            <TextBlock
+                                                FontSize="14"
+                                                Foreground="#1C1C1E"
+                                                Text="{Binding Text}"
+                                                TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                    </Border>
                                 </StackPanel>
 
-                            </Border>
-
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
 
             </ScrollViewer>
         </Border>
 
-    
 
-        <Border Grid.Row="2"
-                Margin="0 0 0 0"
-                Background="#0d0d0e"
-                CornerRadius="20 20 0 0"
-                Padding="5 5"
-                Width="175"
-                IsVisible="{Binding CanCreateStudyPlan}"
-                >
-                
-                <Button Grid.Row="2"
-                Content="Lernplan erstellen"
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,8,0,0"
+            IsVisible="{Binding CanCreateStudyPlan}"
+            Orientation="Vertical">
+
+            <Button
+                Padding="20,8"
                 HorizontalAlignment="Center"
-                HorizontalContentAlignment ="Center"
-                VerticalContentAlignment ="Center"
                 Background="#fbfbff"
-                Foreground="Black"
-                BorderBrush="#0d0d0e"
-                BorderThickness="6"
-                CornerRadius="20"
                 Command="{Binding CreateStudyPlanCommand}"
-                IsEnabled="{Binding !IsSending}"/>
-        </Border>
+                Content="Lernplan erstellen"
+                CornerRadius="20"
+                Foreground="Black"
+                IsEnabled="{Binding !IsSending}" />
+        </StackPanel>
 
+        <Border
+            Grid.Row="3"
+            Margin="8,0,8,8"
+            Padding="12"
+            Background="#0d0d0e"
+            CornerRadius="25">
 
-        <Border Grid.Row="3"
-                Margin="8 0 8 8"
-                Background="#0d0d0e"
-                CornerRadius="25"
-                Padding="12">
+            <Grid VerticalAlignment="Center" ColumnDefinitions="Auto,*,Auto">
 
-            <Grid ColumnDefinitions="Auto,*,Auto"
-                  VerticalAlignment="Center">
-
-                <Button Grid.Column="0"
-                        Content="Upload"
-                        Background="#fbfbff"
-                        Foreground="Black"/>
-                <TextBox Grid.Column="1"
-                    Text="{Binding InputText}"
+                <Button
+                    Grid.Column="0"
                     Background="#fbfbff"
-                    Foreground="White"
-                    Watermark="Gebe den Zeitraum, deine Lernzeit pro Tag und die Themen an…"
-                    Margin="8 0">
+                    Content="Upload"
+                    Foreground="Black" />
+                <TextBox
+                    Grid.Column="1"
+                    Margin="8,0"
+                    Background="#fbfbff"
+                    CaretBrush="Black"
+                    Foreground="Black"
+                    Text="{Binding InputText}"
+                    Watermark="Gebe den Zeitraum, deine Lernzeit pro Tag und die Themen an…">
 
                     <TextBox.Styles>
-                       <Style Selector="TextBox"> <Setter Property="FocusAdorner"> <FocusAdornerTemplate> <!-- leer --> </FocusAdornerTemplate> </Setter> <Setter Property="BorderThickness" Value="0"/> </Style>
+                        <Style Selector="TextBox">
+                            <Setter Property="FocusAdorner">
+                                <FocusAdornerTemplate />
+                            </Setter>
+                            <Setter Property="BorderThickness" Value="0" />
+                        </Style>
                         <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Foreground" Value="#999999" />
                         </Style>
                     </TextBox.Styles>
 
                 </TextBox>
 
-                <Button Grid.Column="2"
-                        Content="Senden"
-                        Background="#fbfbff"
-                        Foreground="Black"
-                        Command="{Binding SendCommand}"/>
+                <Button
+                    Grid.Column="2"
+                    Background="#fbfbff"
+                    Command="{Binding SendCommand}"
+                    Content="Senden"
+                    Foreground="Black" />
             </Grid>
         </Border>
 

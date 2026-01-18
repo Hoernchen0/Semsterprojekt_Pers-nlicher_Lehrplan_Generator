@@ -1,0 +1,135 @@
+<UserControl
+    x:Class="LehrplanGenerator.Views.Guide.GuideView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Guide"
+    x:DataType="vm:GuideViewModel">
+
+    <Grid ColumnDefinitions="320,*">
+
+        <!--  BACKGROUND  -->
+        <Image
+            Grid.ColumnSpan="2"
+            Source="avares://LehrplanGenerator/Assets/Images/test3.jpg"
+            Stretch="UniformToFill" />
+
+        <Border Grid.ColumnSpan="2" Background="#66000000" />
+
+        <!--  LEFT PANEL  -->
+        <Border
+            Grid.Column="0"
+            Padding="32"
+            Background="{DynamicResource AccentPrimary}">
+
+            <StackPanel VerticalAlignment="Center" Spacing="24">
+
+                <Border
+                    Width="80"
+                    Height="80"
+                    Background="#FFFFFF33"
+                    CornerRadius="40" />
+
+                <TextBlock
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Lass uns starten" />
+
+                <TextBlock
+                    FontSize="13"
+                    Foreground="#FFFFFFCC"
+                    Text="Wir richten dein Profil Schritt für Schritt ein."
+                    TextWrapping="Wrap" />
+
+                <TextBlock
+                    FontSize="12"
+                    Foreground="#FFFFFFAA"
+                    Text="{Binding CurrentStep, StringFormat=Schritt {0} von 3}" />
+
+            </StackPanel>
+        </Border>
+
+        <!--  RIGHT CONTENT  -->
+        <Grid Grid.Column="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                    <Border
+                        Width="720"
+                        Margin="-320,0,0,0"
+                        Padding="40"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="20">
+
+                        <StackPanel Spacing="22">
+
+                            <TextBlock
+                                FontSize="24"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Studium"
+                                TextAlignment="Center" />
+
+                            <StackPanel Spacing="14">
+
+                                <!--  STUDY PROGRAM  -->
+                                <StackPanel Spacing="6">
+                                    <TextBlock Foreground="{DynamicResource TextPrimary}" Text="Studiengang *" />
+
+                                    <ComboBox
+                                        ItemsSource="{Binding StudyPrograms}"
+                                        PlaceholderText="Bitte auswählen"
+                                        SelectedItem="{Binding SelectedStudyProgram}" />
+                                </StackPanel>
+
+                                <!--  SEMESTER  -->
+                                <StackPanel Spacing="6">
+                                    <TextBlock Foreground="{DynamicResource TextPrimary}" Text="Aktuelles Semester *" />
+
+                                    <ComboBox
+                                        ItemsSource="{Binding Semesters}"
+                                        PlaceholderText="Bitte auswählen"
+                                        SelectedItem="{Binding SelectedSemester}" />
+                                </StackPanel>
+
+                                <!--  OPTIONAL PDF  -->
+                                <StackPanel Spacing="6">
+                                    <TextBlock Foreground="{DynamicResource TextPrimary}" Text="Stundenplan (optional)" />
+
+                                    <Button Classes="secondary" Content="PDF auswählen" />
+                                </StackPanel>
+
+                            </StackPanel>
+
+                            <!--  ERROR  -->
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="#DC2626"
+                                Text="{Binding ErrorMessage}"
+                                TextWrapping="Wrap" />
+
+                            <!--  ACTIONS  -->
+                            <StackPanel
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal"
+                                Spacing="12">
+
+                                <Button
+                                    Classes="secondary"
+                                    Command="{Binding SkipCommand}"
+                                    Content="Später" />
+
+                                <Button
+                                    Classes="primary"
+                                    Command="{Binding NextCommand}"
+                                    Content="Weiter" />
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

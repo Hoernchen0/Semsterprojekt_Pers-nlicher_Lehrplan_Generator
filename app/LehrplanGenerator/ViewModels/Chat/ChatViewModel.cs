@@ -10,17 +10,23 @@ using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
 using LehrplanGenerator.Models.Chat;
+
 namespace LehrplanGenerator.ViewModels.Chat;
 
 public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
+    private readonly LearningProgressService _learningProgressService;
 
-    public ChatViewModel(INavigationService navigationService, AppState appState)
+    public ChatViewModel(
+        INavigationService navigationService,
+        AppState appState,
+        LearningProgressService learningProgressService)
     {
         _navigationService = navigationService;
         _appState = appState;
+        _learningProgressService = learningProgressService;
     }
 
     public ObservableCollection<ChatMessage> Messages => _appState.ChatMessages;
@@ -29,10 +35,10 @@ public partial class ChatViewModel : ViewModelBase
     private string _inputText = string.Empty;
 
     [ObservableProperty]
-    private bool _isSending = false;
+    private bool _isSending;
 
     [ObservableProperty]
-    private bool _canCreateStudyPlan = false;
+    private bool _canCreateStudyPlan;
 
     [RelayCommand]
     private async Task SendAsync()
@@ -40,11 +46,9 @@ public partial class ChatViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(InputText) || IsSending)
             return;
 
-        var userMessage = InputText;
+        var userMessage = InputText.Trim();
         InputText = string.Empty;
-        userMessage = userMessage.Trim();
 
-        // User-Nachricht hinzufügen
         Messages.Add(new ChatMessage
         {
             Sender = _appState.CurrentUserDisplayName ?? "Benutzer",
@@ -56,12 +60,10 @@ public partial class ChatViewModel : ViewModelBase
 
         try
         {
-            // API aufrufen
             var response = await _appState.AiService.AskGptAsync(userMessage);
 
             if (!string.IsNullOrEmpty(response))
             {
-                // Assistant-Antwort hinzufügen
                 Messages.Add(new ChatMessage
                 {
                     Sender = "KI-Assistent",
@@ -99,35 +101,36 @@ public partial class ChatViewModel : ViewModelBase
 
         try
         {
-            // Erstelle Studienplan mit dem geteilten AI-Service
             var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
 
-            if (studyPlan != null)
+            if (studyPlan == null)
             {
-                // Speichere den Plan im AppState für die StudyPlanViewModel
-                _appState.CurrentStudyPlan = studyPlan;
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = "Lernplan konnte nicht erstellt werden."
+                });
+                return;
+            }
 
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    Text = $"✓ Lernplan wurde erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
-                });
-            }
-            else
+            // ✅ KORREKT: nur 2 Parameter
+            await _learningProgressService.SaveStudyPlanAsync(
+                _appState.CurrentUserId!.Value,
+                studyPlan
+            );
+
+            Messages.Add(new ChatMessage
             {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    Text = "Lernplan konnte nicht erstellt werden. Bitte geben Sie mehr Informationen im Chat an (Thema, Zeitraum, tägliche Lernzeit, etc.)"
-                });
-            }
+                Sender = "System",
+                Text = $"✓ Lernplan gespeichert\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
+            });
         }
         catch (Exception ex)
         {
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                Text = $"Fehler beim Erstellen des Lernplans: {ex.Message}"
+                Text = $"Fehler beim Erstellen oder Speichern des Lernplans: {ex.Message}"
             });
         }
         finally
@@ -141,21 +144,12 @@ public partial class ChatViewModel : ViewModelBase
     {
         try
         {
-            // StorageProvider vom Hauptfenster holen
-            var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             var mainWindow = lifetime?.MainWindow;
-            
-            if (mainWindow == null)
-            {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    Text = "Fehler: Hauptfenster nicht verfügbar."
-                });
-                return;
-            }
 
-            // File-Picker konfigurieren
+            if (mainWindow == null)
+                return;
+
             var options = new FilePickerOpenOptions
             {
                 Title = "PDF-Datei auswählen",
@@ -170,44 +164,27 @@ public partial class ChatViewModel : ViewModelBase
                 }
             };
 
-            // Datei-Dialog öffnen
             var files = await mainWindow.StorageProvider.OpenFilePickerAsync(options);
-            
             if (files.Count == 0)
-            {
-                // Benutzer hat abgebrochen
                 return;
-            }
 
-            var selectedFile = files[0];
-            var filePath = selectedFile.Path.LocalPath;
+            var file = files[0];
+            var success = await _appState.AiService.UploadPdfAsync(file.Path.LocalPath);
 
-            // PDF an AI-Service übergeben
-            var success = await _appState.AiService.UploadPdfAsync(filePath);
-
-            if (success)
+            Messages.Add(new ChatMessage
             {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    Text = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!"
-                });
-            }
-            else
-            {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    Text = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'."
-                });
-            }
+                Sender = "System",
+                Text = success
+                    ? $"✓ PDF '{file.Name}' verarbeitet"
+                    : $"❌ Fehler beim Verarbeiten von '{file.Name}'"
+            });
         }
         catch (Exception ex)
         {
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                Text = $"Fehler beim Hochladen: {ex.Message}"
+                Text = $"Upload-Fehler: {ex.Message}"
             });
         }
     }
@@ -218,6 +195,8 @@ public partial class ChatViewModel : ViewModelBase
         _navigationService.NavigateTo<MainViewModel>();
     }
 
-    partial void OnInputTextChanged(string value) { OnPropertyChanged(nameof(HasInput)); }
+    partial void OnInputTextChanged(string value)
+        => OnPropertyChanged(nameof(HasInput));
+
     public bool HasInput => !string.IsNullOrWhiteSpace(InputText);
 }

@@ -1,0 +1,9 @@
+<UserControl
+    x:Class="LehrplanGenerator.Views.Windows.MainHostView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Windows"
+    x:DataType="vm:MainWindowViewModel">
+
+    <ContentControl Content="{Binding CurrentViewModel}" />
+</UserControl>

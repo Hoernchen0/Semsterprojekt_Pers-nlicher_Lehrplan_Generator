@@ -8,6 +8,9 @@ namespace LehrplanGenerator.Logic.Services;
 public interface INavigationService
 {
     void NavigateTo<TViewModel>() where TViewModel : ViewModelBase;
+    void NavigateTo<TViewModel>(Action<TViewModel> init)
+        where TViewModel : ViewModelBase;
+
     void SetMainViewModel(MainWindowViewModel mainViewModel);
 }
 
@@ -32,6 +35,17 @@ public class NavigationService : INavigationService
             throw new InvalidOperationException("MainViewModel not set. Call SetMainViewModel first.");
 
         var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
+        _mainViewModel.CurrentViewModel = viewModel;
+    }
+
+    public void NavigateTo<TViewModel>(Action<TViewModel> init)
+        where TViewModel : ViewModelBase
+    {
+        if (_mainViewModel == null)
+            throw new InvalidOperationException("MainViewModel not set. Call SetMainViewModel first.");
+
+        var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
+        init(viewModel);
 
         _mainViewModel.CurrentViewModel = viewModel;
     }

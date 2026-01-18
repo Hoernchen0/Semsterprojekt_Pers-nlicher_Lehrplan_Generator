@@ -2,11 +2,11 @@ using Avalonia.Controls;
 
 namespace LehrplanGenerator.Views.Dashboard;
 
-public partial class DashboardView : UserControl
+public partial class StudySessionView : UserControl
 {
     private const double DesktopBreakpoint = 720;
 
-    public DashboardView()
+    public StudySessionView()
     {
         InitializeComponent();
 

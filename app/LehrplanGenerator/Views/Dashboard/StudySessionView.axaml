@@ -1,0 +1,132 @@
+<UserControl
+    x:Class="LehrplanGenerator.Views.Dashboard.StudySessionView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
+    x:DataType="vm:StudySessionViewModel">
+
+    <Grid>
+
+        <!--  ================= DESKTOP =================  -->
+        <Border
+            x:Name="DesktopLayout"
+            Padding="40"
+            Background="#0f172a">
+
+            <Grid>
+                <StackPanel
+                    Width="420"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="28">
+
+                    <TextBlock
+                        FontSize="26"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{Binding Title}"
+                        TextAlignment="Center" />
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="64"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        Text="{Binding RemainingTimeText}" />
+
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="14">
+
+                        <Button
+                            Width="120"
+                            Height="44"
+                            Background="#334155"
+                            Command="{Binding PauseCommand}"
+                            Content="Pause"
+                            CornerRadius="10"
+                            Foreground="White"
+                            IsVisible="{Binding IsRunning}" />
+
+                        <Button
+                            Width="120"
+                            Height="44"
+                            Background="#2563EB"
+                            Command="{Binding StartCommand}"
+                            Content="Weiter"
+                            CornerRadius="10"
+                            Foreground="White"
+                            IsVisible="{Binding IsPaused}" />
+
+                        <Button
+                            Width="120"
+                            Height="44"
+                            Background="#16A34A"
+                            Command="{Binding FinishCommand}"
+                            Content="Fertig"
+                            CornerRadius="10"
+                            Foreground="White" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  ================= MOBILE =================  -->
+        <Border
+            x:Name="MobileLayout"
+            Padding="20"
+            Background="#0f172a">
+
+            <StackPanel
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Spacing="20">
+
+                <TextBlock
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="{Binding Title}"
+                    TextAlignment="Center" />
+
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="48"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    Text="{Binding RemainingTimeText}" />
+
+                <StackPanel Spacing="12">
+
+                    <Button
+                        Height="44"
+                        Background="#334155"
+                        Command="{Binding PauseCommand}"
+                        Content="Pause"
+                        CornerRadius="10"
+                        Foreground="White"
+                        IsVisible="{Binding IsRunning}" />
+
+                    <Button
+                        Height="44"
+                        Background="#2563EB"
+                        Command="{Binding StartCommand}"
+                        Content="Weiter"
+                        CornerRadius="10"
+                        Foreground="White"
+                        IsVisible="{Binding IsPaused}" />
+
+                    <Button
+                        Height="44"
+                        Background="#16A34A"
+                        Command="{Binding FinishCommand}"
+                        Content="Fertig"
+                        CornerRadius="10"
+                        Foreground="White" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

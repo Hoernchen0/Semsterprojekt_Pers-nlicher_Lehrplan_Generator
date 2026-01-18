@@ -1,104 +1,99 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using LehrplanGenerator.Logic.Models;
-using LehrplanGenerator.Logic.Services;
-using System.Collections.ObjectModel;
-using LehrplanGenerator.Views.Windows;
-using System.Linq;
-using LehrplanGenerator.Logic.State;
 using CommunityToolkit.Mvvm.Input;
-using LehrplanGenerator.ViewModels.Main;
-using LehrplanGenerator.Logic.AI;
+using LehrplanGenerator.Logic.Services;
+using LehrplanGenerator.Logic.State;
+using LehrplanGenerator.Logic.Models;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LehrplanGenerator.ViewModels.StudyPlan;
 
 public partial class StudyPlanViewModel : ViewModelBase
 {
-    private readonly StudyPlanService _service;
-    private readonly INavigationService _navigationService;
     private readonly AppState _appState;
+    private readonly LearningProgressService _learningProgressService;
 
     [ObservableProperty]
-    private string _topic = string.Empty;
+    private ObservableCollection<StudyPlanEntity> studyPlans = new();
 
     [ObservableProperty]
-    private ObservableCollection<DayPlanViewModel> _days = new();
+    private StudyPlanEntity? selectedStudyPlan;
 
     [ObservableProperty]
-    private bool _isLoading = true;
+    private ObservableCollection<DayPlanViewModel> days = new();
 
     [ObservableProperty]
-    private string? _errorMessage;
+    private DayPlanViewModel? selectedDay;
 
-    public StudyPlanViewModel(INavigationService navigationService, AppState appState)
+    [ObservableProperty]
+    private bool isLoading;
+
+    [ObservableProperty]
+    private string? errorMessage;
+
+    public StudyPlanViewModel(
+        AppState appState,
+        LearningProgressService learningProgressService)
     {
-        _navigationService = navigationService;
         _appState = appState;
-        _service = new StudyPlanService(new Logic.Models.StudyPlan(string.Empty, new()));
-        
-        // Lade Daten direkt aus AppState
-        LoadFromAppState();
+        _learningProgressService = learningProgressService;
+        _ = LoadPlansAsync();
     }
 
-    private void LoadFromAppState()
+    private async Task LoadPlansAsync()
     {
-        var studyPlan = _appState.CurrentStudyPlan;
+        IsLoading = true;
+        ErrorMessage = null;
 
-        if (studyPlan != null)
-        {
-            Topic = studyPlan.Topic;
-            Days = new ObservableCollection<DayPlanViewModel>(
-               studyPlan.Days.Select(d => new DayPlanViewModel(d))
-            );
-            IsLoading = false;
-        }
-        else
-        {
-            ErrorMessage = "Kein Lernplan vorhanden. Bitte erstellen Sie zuerst einen Plan über den Chat.";
-            IsLoading = false;
-        }
+        if (_appState.CurrentUserId == null)
+            return;
+
+        StudyPlans.Clear();
+
+        var plans = await _learningProgressService
+            .LoadStudyPlansAsync(_appState.CurrentUserId.Value);
+
+        foreach (var p in plans)
+            StudyPlans.Add(p);
+
+        SelectedStudyPlan =
+            plans.FirstOrDefault(p => p.Id == _appState.CurrentStudyPlanId)
+            ?? plans.FirstOrDefault();
+
+        IsLoading = false;
     }
 
-    private async Task LoadStudyPlanAsync()
+    partial void OnSelectedStudyPlanChanged(StudyPlanEntity? value)
     {
-        try
-        {
-            IsLoading = true;
-            ErrorMessage = null;
+        if (value == null)
+            return;
 
-            // Prüfe, ob bereits ein Plan im AppState existiert
-            var studyPlan = _appState.CurrentStudyPlan;
-
-            if (studyPlan != null)
-            {
-                // Verarbeite und sortiere den Plan
-                
-
-                Topic = studyPlan.Topic;
-                Days = new ObservableCollection<DayPlanViewModel>(
-                   studyPlan.Days.Select(d => new DayPlanViewModel(d))
-                );
-            }
-            else
-            {
-                ErrorMessage = "Kein Lernplan vorhanden. Bitte erstellen Sie zuerst einen Plan über den Chat.";
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Fehler: {ex.Message}";
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        _appState.CurrentStudyPlanId = value.Id;
+        _ = LoadPlanAsync(value.Id);
     }
 
+    private async Task LoadPlanAsync(Guid planId)
+    {
+        Days.Clear();
+
+        var result = await _learningProgressService.LoadStudyPlanAsync(planId);
+
+        foreach (var day in result.GroupedDays)
+        {
+            Days.Add(new DayPlanViewModel(
+                day.Key,
+                day.Value.Select(lp => new TaskItemViewModel(lp))
+            ));
+        }
+
+        SelectedDay = Days.FirstOrDefault();
+    }
 
     [RelayCommand]
-    private void GoBack()
+    private void SelectDay(DayPlanViewModel day)
     {
-        _navigationService.NavigateTo<MainViewModel>();
+        SelectedDay = day;
     }
 }

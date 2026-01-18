@@ -1,148 +1,204 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
-             mc:Ignorable="d"
-             x:Class="LehrplanGenerator.Views.Dashboard.DashboardView"
-             x:DataType="vm:DashboardViewModel">
+<UserControl
+    x:Class="LehrplanGenerator.Views.Dashboard.DashboardView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
+    x:DataType="vm:DashboardViewModel">
 
-    <!-- ÄUSSERER CONTAINER MIT PADDING -->
-    <Border Background="#F8FAFC"
-            Padding="32">
+    <Grid>
 
-        <Grid RowDefinitions="Auto,*">
+        <!--  ================= DESKTOP =================  -->
+        <Border
+            x:Name="DesktopLayout"
+            Padding="32"
+            Background="#F8FAFC">
 
-            <!-- Header -->
-            <StackPanel Spacing="6">
-                <TextBlock Text="Dashboard"
-                           FontSize="28"
-                           FontWeight="SemiBold"
-                           Foreground="#020617"/>
+            <Grid RowDefinitions="Auto,*">
 
-                <TextBlock Text="Willkommen zurück – dein Lernfortschritt im Überblick"
-                           FontSize="14"
-                           Foreground="#475569"/>
-            </StackPanel>
+                <!--  Header  -->
+                <StackPanel Spacing="6">
+                    <TextBlock
+                        FontSize="28"
+                        FontWeight="SemiBold"
+                        Foreground="#020617"
+                        Text="Dashboard" />
 
-            <!-- Content -->
-            <Grid Grid.Row="1"
-                  Margin="0,24,0,0"
-                  ColumnDefinitions="2*,1*"
-                  RowDefinitions="Auto,*"
-                  ColumnSpacing="24"
-                  RowSpacing="24">
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="#475569"
+                        Text="{Binding WelcomeMessage}" />
+                </StackPanel>
 
-                <!-- Lernfortschritt -->
-                <Border Background="#FFFFFF"
+                <!--  Content  -->
+                <Grid
+                    Grid.Row="1"
+                    Margin="0,24,0,0"
+                    ColumnDefinitions="2*,1*"
+                    ColumnSpacing="24"
+                    RowDefinitions="Auto,*"
+                    RowSpacing="24">
+
+                    <!--  Lernfortschritt  -->
+                    <Border
+                        Padding="24"
+                        Background="White"
                         BorderBrush="#E5E7EB"
                         BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24">
+                        CornerRadius="16">
 
-                    <StackPanel Spacing="14">
-                        <TextBlock Text="Lernfortschritt"
-                                   FontSize="18"
-                                   FontWeight="Medium"
-                                   Foreground="#020617"/>
+                        <StackPanel Spacing="14">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="Medium"
+                                Foreground="#020617"
+                                Text="Lernfortschritt" />
 
-                        <ProgressBar Value="65"
-                                     Maximum="100"
-                                     Height="10"
-                                     Background="#E5E7EB"
-                                     Foreground="#2563EB"/>
+                            <ProgressBar
+                                Height="10"
+                                Maximum="100"
+                                Value="{Binding ProgressPercent}" />
 
-                        <TextBlock Text="65 % des aktuellen Lernplans abgeschlossen"
-                                   FontSize="13"
-                                   Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="#64748B"
+                                Text="{Binding ProgressPercent, StringFormat='{}{0} % des aktuellen Lernplans abgeschlossen'}" />
+                        </StackPanel>
+                    </Border>
 
-                <!-- Nächste Lerneinheit -->
-                <Border Grid.Column="1"
-                        Background="#FFFFFF"
+                    <!--  Nächste Einheit  -->
+                    <Border
+                        Grid.Column="1"
+                        Padding="24"
+                        Background="White"
                         BorderBrush="#E5E7EB"
                         BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24">
+                        CornerRadius="16">
 
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="Nächste Lerneinheit"
-                                   FontSize="18"
-                                   FontWeight="Medium"
-                                   Foreground="#020617"/>
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="Medium"
+                                Foreground="#020617"
+                                Text="Nächste Lerneinheit" />
 
-                        <TextBlock Text="Betriebssysteme – Threads und Synchronisation"
-                                   FontSize="14"
-                                   FontWeight="SemiBold"
-                                   Foreground="#020617"/>
+                            <TextBlock
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Foreground="#020617"
+                                Text="{Binding NextUnitTitle}" />
 
-                        <TextBlock Text="Heute • 45 Minuten"
-                                   FontSize="13"
-                                   Foreground="#64748B"/>
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="#64748B"
+                                Text="{Binding NextUnitTime}" />
 
-                        <Button Content="Weiterlernen"
+                            <Button
                                 Height="40"
-                                Background="#1D4ED8"
-                                Foreground="White"
+                                Background="#2563EB"
+                                Command="{Binding ContinueLearningCommand}"
+                                Content="Weiterlernen"
                                 CornerRadius="10"
-                                HorizontalContentAlignment="Center"
-                                Theme="{x:Null}"/>
-                    </StackPanel>
-                </Border>
+                                Foreground="White"
+                                IsEnabled="{Binding SelectedStudyPlan}" />
+                        </StackPanel>
+                    </Border>
 
-                <!-- Aktive Lernpläne -->
-                <Border Grid.Row="1"
+                    <!--  Aktive Lernpläne  -->
+                    <Border
+                        Grid.Row="1"
                         Grid.ColumnSpan="2"
-                        Background="#FFFFFF"
+                        Padding="24"
+                        Background="White"
                         BorderBrush="#E5E7EB"
                         BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24">
+                        CornerRadius="16">
 
-                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="16">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="Medium"
+                                Foreground="#020617"
+                                Text="Aktive Lernpläne" />
 
-                        <TextBlock Text="Aktive Lernpläne"
-                                   FontSize="18"
-                                   FontWeight="Medium"
-                                   Foreground="#020617"/>
+                            <ListBox
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ItemsSource="{Binding ActiveStudyPlans}"
+                                SelectedItem="{Binding SelectedStudyPlan}">
 
-                        <Border Background="#F8FAFC"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="16">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Algorithmen und Datenstrukturen"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"
-                                           Foreground="#020617"/>
-                                <TextBlock Text="Fortschritt: 40 %"
-                                           FontSize="13"
-                                           Foreground="#64748B"/>
-                            </StackPanel>
-                        </Border>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border
+                                            Margin="0,0,0,8"
+                                            Padding="16"
+                                            Background="#F8FAFC"
+                                            CornerRadius="12">
 
-                        <Border Background="#F8FAFC"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="16">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Netzwerke und Protokolle"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"
-                                           Foreground="#020617"/>
-                                <TextBlock Text="Fortschritt: 70 %"
-                                           FontSize="13"
-                                           Foreground="#64748B"/>
-                            </StackPanel>
-                        </Border>
+                                            <StackPanel>
+                                                <TextBlock
+                                                    FontWeight="SemiBold"
+                                                    Foreground="#020617"
+                                                    Text="{Binding Title}" />
 
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    Foreground="#64748B"
+                                                    Text="Klicken, um diesen Lernplan fortzusetzen" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!--  ================= MOBILE =================  -->
+        <ScrollViewer
+            x:Name="MobileLayout"
+            Padding="16"
+            Background="#F8FAFC">
+
+            <StackPanel Spacing="16">
+
+                <TextBlock
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="#020617"
+                    Text="Dashboard" />
+
+                <TextBlock
+                    FontSize="13"
+                    Foreground="#475569"
+                    Text="{Binding WelcomeMessage}" />
+
+                <Border
+                    Padding="16"
+                    Background="White"
+                    CornerRadius="14">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Foreground="#020617"
+                            Text="Lernfortschritt" />
+
+                        <ProgressBar
+                            Height="8"
+                            Maximum="100"
+                            Value="{Binding ProgressPercent}" />
+
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="#64748B"
+                            Text="{Binding ProgressPercent, StringFormat='{}{0} % abgeschlossen'}" />
                     </StackPanel>
                 </Border>
 
-            </Grid>
-        </Grid>
-    </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
 </UserControl>

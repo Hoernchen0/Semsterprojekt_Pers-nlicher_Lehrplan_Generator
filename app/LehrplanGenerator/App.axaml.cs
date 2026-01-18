@@ -10,13 +10,14 @@ using LehrplanGenerator.ViewModels.Windows;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.ViewModels.Auth;
 using LehrplanGenerator.Views.Windows;
-using LehrplanGenerator.ViewModels.Shell;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
 using LehrplanGenerator.ViewModels.Chat;
 using LehrplanGenerator.ViewModels.StudyPlan;
 using LehrplanGenerator.Logic;
+using LehrplanGenerator.ViewModels.Guide;
+using LehrplanGenerator.ViewModels.Shell;
 
 namespace LehrplanGenerator;
 
@@ -31,31 +32,31 @@ public partial class App : Application
         var services = new ServiceCollection();
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
-        
-        // Initialisiere die Datenbank (erstelle Tabellen, falls nicht vorhanden)
+
         ServiceExtensions.InitializeDatabase(Services);
     }
 
     private void ConfigureServices(IServiceCollection services)
     {
-        // Registriere SQLite-basierte Datenbank Services (alle Nutzerdaten, Chats, Tabellen)
         services.AddLehrplanServices();
 
-        // Services
+        // Core
         services.AddSingleton<AppState>();
         services.AddSingleton<ViewLocator>();
         services.AddSingleton<INavigationService, NavigationService>();
-        
-        // UserCredentialStore wird jetzt über IUserRepository mit SQLite befüllt
         services.AddSingleton<UserCredentialStore>();
 
-        // ViewModels
+        // Root
         services.AddSingleton<MainWindowViewModel>();
+
+        // Screens
         services.AddTransient<MainViewModel>();
-        services.AddTransient<RegisterViewModel>();
         services.AddTransient<LoginViewModel>();
+        services.AddTransient<RegisterViewModel>();
+        services.AddTransient<GuideViewModel>();
         services.AddTransient<ShellViewModel>();
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<StudySessionViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<ChatViewModel>();
         services.AddTransient<StudyPlanViewModel>();
@@ -65,18 +66,24 @@ public partial class App : Application
     {
         DisableAvaloniaDataAnnotationValidation();
 
+        var mainVm = Services.GetRequiredService<MainWindowViewModel>();
+
+        // 🔴 DAS hat gefehlt
+        var navigationService = Services.GetRequiredService<INavigationService>();
+        navigationService.SetMainViewModel(mainVm);
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
+                DataContext = mainVm
             };
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime single)
         {
-            singleViewPlatform.MainView = new Views.Main.MainView
+            single.MainView = new MainHostView
             {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
+                DataContext = mainVm
             };
         }
 
@@ -85,12 +92,12 @@ public partial class App : Application
 
     private void DisableAvaloniaDataAnnotationValidation()
     {
-        var dataValidationPluginsToRemove =
-            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
+        var plugins =
+            BindingPlugins.DataValidators
+                .OfType<DataAnnotationsValidationPlugin>()
+                .ToArray();
 
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
+        foreach (var plugin in plugins)
             BindingPlugins.DataValidators.Remove(plugin);
-        }
     }
 }

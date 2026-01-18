@@ -5,9 +5,9 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
-using Microsoft.Extensions.DependencyInjection;
 using LehrplanGenerator.ViewModels.Chat;
 using LehrplanGenerator.ViewModels.StudyPlan;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LehrplanGenerator.ViewModels.Shell;
 
@@ -26,7 +26,10 @@ public partial class ShellViewModel : ViewModelBase
     [ObservableProperty]
     private string selectedTab = "Home";
 
-    public ShellViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public ShellViewModel(
+        UserCredentialStore store,
+        INavigationService navigationService,
+        AppState appState)
     {
         _store = store;
         _navigationService = navigationService;
@@ -40,13 +43,19 @@ public partial class ShellViewModel : ViewModelBase
         ShowHome();
     }
 
+    // =========================
+    // HOME / DASHBOARD
+    // =========================
     [RelayCommand]
     private void ShowHome()
     {
         SelectedTab = "Home";
-        CurrentContent = new DashboardViewModel(_appState);
+        CurrentContent = App.Services.GetRequiredService<DashboardViewModel>();
     }
 
+    // =========================
+    // SETTINGS
+    // =========================
     [RelayCommand]
     private void ShowSettings()
     {
@@ -54,6 +63,9 @@ public partial class ShellViewModel : ViewModelBase
         CurrentContent = App.Services.GetRequiredService<SettingsViewModel>();
     }
 
+    // =========================
+    // CHAT
+    // =========================
     [RelayCommand]
     private void ShowChat()
     {
@@ -61,6 +73,9 @@ public partial class ShellViewModel : ViewModelBase
         CurrentContent = App.Services.GetRequiredService<ChatViewModel>();
     }
 
+    // =========================
+    // STUDY PLAN / KALENDER
+    // =========================
     [RelayCommand]
     private void ShowStudyPlan()
     {
@@ -68,12 +83,14 @@ public partial class ShellViewModel : ViewModelBase
         CurrentContent = App.Services.GetRequiredService<StudyPlanViewModel>();
     }
 
+    // =========================
+    // LOGOUT
+    // =========================
     [RelayCommand]
     private void Logout()
     {
         _appState.CurrentUserId = null;
         _appState.CurrentUserDisplayName = null;
-
         _navigationService.NavigateTo<MainViewModel>();
     }
 }

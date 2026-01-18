@@ -1,0 +1,15 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="BgPrimary">#F8FAFC</Color>
+    <Color x:Key="BgSecondary">#FFFFFF</Color>
+    <Color x:Key="BgOverlay">#66000000</Color>
+
+    <Color x:Key="TextPrimary">#020617</Color>
+    <Color x:Key="TextSecondary">#475569</Color>
+    <Color x:Key="TextMuted">#64748B</Color>
+
+    <Color x:Key="AccentPrimary">#1E40AF</Color>
+    <Color x:Key="AccentHover">#1D4ED8</Color>
+    <Color x:Key="AccentPressed">#1E40AF</Color>
+
+</ResourceDictionary>

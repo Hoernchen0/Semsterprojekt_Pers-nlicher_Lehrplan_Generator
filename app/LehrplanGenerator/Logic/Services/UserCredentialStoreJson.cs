@@ -56,7 +56,7 @@ public class UserCredentialStore
     {
         var entity = await _repository.GetByUsernameAsync(username);
         if (entity == null) return null;
-        
+
         // Konvertiere UserCredentialEntity zu UserCredential
         return new UserCredential(
             entity.UserId,
@@ -77,7 +77,7 @@ public class UserCredentialStore
     {
         var entity = await _repository.GetByUserIdAsync(userId);
         if (entity == null) return null;
-        
+
         // Konvertiere UserCredentialEntity zu UserCredential
         return new UserCredential(
             entity.UserId,

@@ -6,7 +6,8 @@ using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
-using LehrplanGenerator.ViewModels.Shell;
+using LehrplanGenerator.ViewModels.Guide;
+using LehrplanGenerator.ViewModels.Main;
 
 namespace LehrplanGenerator.ViewModels.Auth;
 
@@ -22,7 +23,10 @@ public partial class RegisterViewModel : ViewModelBase
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
-    public RegisterViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public RegisterViewModel(
+        UserCredentialStore store,
+        INavigationService navigationService,
+        AppState appState)
     {
         _store = store;
         _navigationService = navigationService;
@@ -36,28 +40,27 @@ public partial class RegisterViewModel : ViewModelBase
         if (ErrorMessage != null)
             return;
 
-        var userId = Guid.NewGuid();
-
-        var user = new UserCredential(
-            userId,
+        // ✅ DOMAIN-OBJEKT (KEINE ENTITY!)
+        var credential = new UserCredential(
+            Guid.NewGuid(),
             FirstName,
             LastName,
             Username,
             PasswordHasher.Hash(Password)
         );
 
-        _store.Add(user);
+        _store.Add(credential);
 
-        _appState.CurrentUserId = user.UserId;
-        _appState.CurrentUserDisplayName = $"{user.FirstName} {user.LastName}";
+        _appState.CurrentUserId = credential.UserId;
+        _appState.CurrentUserDisplayName = $"{credential.FirstName} {credential.LastName}";
 
-        _navigationService.NavigateTo<ShellViewModel>();
+        _navigationService.NavigateTo<GuideViewModel>();
     }
 
     [RelayCommand]
     private void Menu()
     {
-        _navigationService.NavigateTo<LehrplanGenerator.ViewModels.Main.MainViewModel>();
+        _navigationService.NavigateTo<MainViewModel>();
     }
 
     private string? ValidateInput()
@@ -68,7 +71,8 @@ public partial class RegisterViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(LastName) || LastName.Length < 2)
             return "Nachname muss mindestens 2 Zeichen lang sein.";
 
-        if (string.IsNullOrWhiteSpace(Username) || !Username.All(c => char.IsLetterOrDigit(c) || c == '_'))
+        if (string.IsNullOrWhiteSpace(Username) ||
+            !Username.All(c => char.IsLetterOrDigit(c) || c == '_'))
             return "Username darf nur Buchstaben, Zahlen und Unterstriche enthalten.";
 
         if (_store.UsernameExists(Username))

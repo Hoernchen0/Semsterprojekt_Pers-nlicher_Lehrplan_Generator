@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Data.Repositories;
@@ -8,90 +9,127 @@ namespace LehrplanGenerator.Logic.Services;
 
 /// <summary>
 /// Service für die Verwaltung von AI-Chat-Sessions und Nachrichten
-/// Speichert Chats in der SQLite-Datenbank
+/// Erzwingt User-Isolation (kein User sieht fremde Chats)
 /// </summary>
 public class ChatServiceDb
 {
     private readonly IChatRepository _chatRepository;
     private Guid _currentSessionId = Guid.Empty;
+    private Guid _currentUserId = Guid.Empty;
 
     public ChatServiceDb(IChatRepository chatRepository)
     {
         _chatRepository = chatRepository;
     }
 
-    /// <summary>
-    /// Erstellt eine neue Chat-Session für einen Benutzer
-    /// </summary>
-    public async Task<ChatSessionEntity> CreateSessionAsync(Guid userId, string title, string topic = "")
+    // =========================
+    // SESSION
+    // =========================
+    public async Task<ChatSessionEntity> CreateSessionAsync(
+        Guid userId,
+        string title,
+        string topic = "")
     {
+        _currentUserId = userId;
+
         var session = await _chatRepository.CreateSessionAsync(userId, title, topic);
         _currentSessionId = session.SessionId;
+
         return session;
     }
 
-    /// <summary>
-    /// Lädt eine existierende Chat-Session
-    /// </summary>
-    public async Task<ChatSessionEntity?> GetSessionAsync(Guid sessionId)
+    public async Task<ChatSessionEntity?> GetSessionAsync(
+        Guid sessionId,
+        Guid userId)
     {
-        return await _chatRepository.GetSessionAsync(sessionId);
+        var session = await _chatRepository.GetSessionAsync(sessionId);
+
+        if (session == null || session.UserId != userId)
+            return null;
+
+        _currentUserId = userId;
+        _currentSessionId = sessionId;
+
+        return session;
     }
 
-    /// <summary>
-    /// Holt alle Chat-Sessions eines Benutzers
-    /// </summary>
     public async Task<IEnumerable<ChatSessionEntity>> GetUserSessionsAsync(Guid userId)
     {
-        return await _chatRepository.GetUserSessionsAsync(userId);
+        _currentUserId = userId;
+
+        // 🔒 ABSOLUTE USER-FILTERUNG
+        return (await _chatRepository.GetUserSessionsAsync(userId))
+            .Where(s => s.UserId == userId);
     }
 
-    /// <summary>
-    /// Speichert eine neue Nachricht in einem Chat
-    /// </summary>
+    // =========================
+    // MESSAGES
+    // =========================
     public async Task<ChatMessageEntity> SaveMessageAsync(
-        Guid sessionId, 
-        Guid userId, 
-        string sender, 
+        Guid sessionId,
+        Guid userId,
+        string sender,
         string text)
     {
+        var session = await _chatRepository.GetSessionAsync(sessionId);
+        if (session == null || session.UserId != userId)
+            throw new InvalidOperationException("Keine Berechtigung für diese Chat-Session");
+
+        _currentUserId = userId;
         _currentSessionId = sessionId;
-        return await _chatRepository.SaveMessageAsync(sessionId, userId, sender, text);
+
+        return await _chatRepository.SaveMessageAsync(
+            sessionId,
+            userId,
+            sender,
+            text
+        );
     }
 
-    /// <summary>
-    /// Holt alle Nachrichten einer Session
-    /// </summary>
-    public async Task<IEnumerable<ChatMessageEntity>> GetSessionMessagesAsync(Guid sessionId)
+    public async Task<IEnumerable<ChatMessageEntity>> GetSessionMessagesAsync(
+        Guid sessionId,
+        Guid userId)
     {
-        return await _chatRepository.GetSessionMessagesAsync(sessionId);
+        var session = await _chatRepository.GetSessionAsync(sessionId);
+        if (session == null || session.UserId != userId)
+            return Enumerable.Empty<ChatMessageEntity>();
+
+        _currentUserId = userId;
+        _currentSessionId = sessionId;
+
+        // 🔒 FILTER AUCH AUF MESSAGE-EBENE
+        return (await _chatRepository.GetSessionMessagesAsync(sessionId))
+            .Where(m => m.UserId == userId);
     }
 
-    /// <summary>
-    /// Speichert eine Nachricht in der aktuellen Session
-    /// </summary>
     public async Task<ChatMessageEntity> SaveMessageToCurrentSessionAsync(
-        Guid userId, 
-        string sender, 
+        Guid userId,
+        string sender,
         string text)
     {
         if (_currentSessionId == Guid.Empty)
-            throw new InvalidOperationException("Keine aktive Chat-Session. Bitte zuerst CreateSessionAsync aufrufen.");
+            throw new InvalidOperationException("Keine aktive Chat-Session");
 
-        return await _chatRepository.SaveMessageAsync(_currentSessionId, userId, sender, text);
+        return await SaveMessageAsync(
+            _currentSessionId,
+            userId,
+            sender,
+            text
+        );
     }
 
-    /// <summary>
-    /// Aktualisiert den Titel oder Thema einer Session
-    /// </summary>
+    // =========================
+    // UPDATE SESSION
+    // =========================
     public async Task<ChatSessionEntity> UpdateSessionAsync(
-        Guid sessionId, 
-        string? newTitle = null, 
+        Guid sessionId,
+        Guid userId,
+        string? newTitle = null,
         string? newTopic = null)
     {
         var session = await _chatRepository.GetSessionAsync(sessionId);
-        if (session == null)
-            throw new InvalidOperationException("Session nicht gefunden");
+        if (session == null || session.UserId != userId)
+            throw new InvalidOperationException("Keine Berechtigung für diese Session");
 
         if (!string.IsNullOrWhiteSpace(newTitle))
             session.Title = newTitle;
@@ -102,13 +140,14 @@ public class ChatServiceDb
         return await _chatRepository.UpdateSessionAsync(session);
     }
 
-    /// <summary>
-    /// Gibt die aktuelle Session-ID zurück
-    /// </summary>
+    // =========================
+    // STATE
+    // =========================
     public Guid GetCurrentSessionId() => _currentSessionId;
 
-    /// <summary>
-    /// Setzt eine neue aktuelle Session
-    /// </summary>
-    public void SetCurrentSession(Guid sessionId) => _currentSessionId = sessionId;
+    public void SetCurrentSession(Guid sessionId, Guid userId)
+    {
+        _currentSessionId = sessionId;
+        _currentUserId = userId;
+    }
 }

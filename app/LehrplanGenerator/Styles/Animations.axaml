@@ -1,0 +1,28 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="Button">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+    </Style>
+
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="Background" Value="#23262c" />
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover">
+        <Setter Property="Opacity" Value="0.92" />
+    </Style>
+
+    <Style Selector="Button.secondary:pressed">
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+</Styles>
