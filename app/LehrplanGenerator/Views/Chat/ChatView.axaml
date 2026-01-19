@@ -6,144 +6,213 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Chat"
     x:DataType="vm:ChatViewModel">
 
+    <Grid Background="{DynamicResource BgPrimary}">
 
-    <UserControl.Styles>
-        <Style Selector="TextBlock">
-            <Setter Property="FontFamily" Value="SF Pro Display" />
-        </Style>
-
-        <Style Selector="Button">
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="14 8" />
-            <Setter Property="FontWeight" Value="Medium" />
-        </Style>
-
-
-    </UserControl.Styles>
-
-    <Grid Background="#FFFFFF" RowDefinitions="Auto,*,Auto,Auto">
-
-        <TextBlock
-            Grid.Row="0"
-            Margin="0,16,0,16"
+        <!--  ================= EMPTY STATE =================  -->
+        <Grid
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            FontSize="28"
-            FontWeight="Bold"
-            Foreground="Black"
-            Text="Chat" />
+            IsVisible="{Binding HasNoMessages}">
 
-        <Border
-            Grid.Row="1"
-            Padding="16,0"
-            Background="#F9F9FB">
+            <StackPanel Width="720" Spacing="28">
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <TextBlock
+                    FontSize="32"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource TextPrimary}"
+                    Text="Willkommen zurück"
+                    TextAlignment="Center" />
 
-                <StackPanel Margin="0,16" Spacing="8">
-                    <ItemsControl ItemsSource="{Binding Messages}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:ChatMessage">
-                                <StackPanel Margin="0,0,0,8">
-                                    <!--  Nutzer-Nachricht: rechts, blau  -->
-                                    <!--  Assistent-Nachricht: links, grau  -->
+                <TextBlock
+                    FontSize="15"
+                    Foreground="{DynamicResource TextMuted}"
+                    Text="Sag mir, wobei ich dir helfen soll."
+                    TextAlignment="Center" />
 
-                                    <Border
-                                        MaxWidth="520"
-                                        Padding="12"
-                                        HorizontalAlignment="{Binding Sender, Converter={StaticResource SenderToAlignmentConverter}}"
-                                        Background="{Binding Sender, Converter={StaticResource SenderToColorConverter}}"
-                                        CornerRadius="16">
+                <Border
+                    Padding="14"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="24">
 
-                                        <StackPanel Spacing="4">
-                                            <TextBlock
-                                                FontSize="12"
-                                                FontWeight="SemiBold"
-                                                Foreground="#6E6E73"
-                                                Text="{Binding Sender}" />
+                    <StackPanel Spacing="8">
 
-                                            <TextBlock
-                                                FontSize="14"
-                                                Foreground="#1C1C1E"
-                                                Text="{Binding Text}"
-                                                TextWrapping="Wrap" />
-                                        </StackPanel>
+                        <!--  INPUT ROW  -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
 
-                                    </Border>
-                                </StackPanel>
+                            <!--  📎 UPLOAD  -->
+                            <Button
+                                Grid.Column="0"
+                                Classes="secondary"
+                                Command="{Binding UploadDocumentCommand}"
+                                Content="📎" />
 
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
+                            <!--  INPUT  -->
+                            <TextBox
+                                Grid.Column="1"
+                                AcceptsReturn="True"
+                                Text="{Binding InputText}"
+                                Watermark="Stelle eine Frage…">
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Command="{Binding SendCommand}" Gesture="Enter" />
+                                </TextBox.KeyBindings>
+                            </TextBox>
 
+                            <!--  SEND  -->
+                            <Button
+                                Grid.Column="2"
+                                Classes="send"
+                                Command="{Binding SendCommand}"
+                                Content="↑" />
+                        </Grid>
+
+                        <!--  ATTACHMENT PREVIEW  -->
+                        <Border
+                            Padding="8"
+                            Background="{DynamicResource BgPrimary}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            IsVisible="{Binding HasPendingFile}">
+
+                            <DockPanel>
+
+                                <TextBlock
+                                    DockPanel.Dock="Left"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="{Binding PendingFilePath}"
+                                    TextTrimming="CharacterEllipsis" />
+
+                                <!--  ❌ REMOVE  -->
+                                <Button
+                                    Classes="link"
+                                    Command="{Binding ClearAttachmentCommand}"
+                                    Content="✕"
+                                    DockPanel.Dock="Right"
+                                    ToolTip.Tip="Datei entfernen" />
+                            </DockPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!--  ================= CHAT STATE =================  -->
+        <Grid IsVisible="{Binding HasMessages}" RowDefinitions="*,Auto">
+
+            <!--  MESSAGES  -->
+            <ScrollViewer
+                x:Name="ChatScrollViewer"
+                Grid.Row="0"
+                Margin="0,24,0,120">
+
+                <ItemsControl
+                    MaxWidth="760"
+                    HorizontalAlignment="Center"
+                    ItemsSource="{Binding Messages}">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:ChatMessage">
+                            <Grid Margin="0,0,0,16">
+
+                                <Border
+                                    Padding="14"
+                                    HorizontalAlignment="Right"
+                                    Background="#E5E7EB"
+                                    CornerRadius="16"
+                                    IsVisible="{Binding IsUser}">
+                                    <TextBlock
+                                        Foreground="#020617"
+                                        Text="{Binding DisplayedText}"
+                                        TextWrapping="Wrap" />
+                                </Border>
+
+                                <Border
+                                    Padding="14"
+                                    HorizontalAlignment="Left"
+                                    Background="{DynamicResource BgSecondary}"
+                                    BorderBrush="{DynamicResource BorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="16"
+                                    IsVisible="{Binding IsAi}">
+                                    <TextBlock
+                                        Foreground="{DynamicResource TextPrimary}"
+                                        Text="{Binding DisplayedText}"
+                                        TextWrapping="Wrap" />
+                                </Border>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
             </ScrollViewer>
-        </Border>
 
+            <!--  BOTTOM INPUT  -->
+            <Border
+                Grid.Row="1"
+                Margin="24"
+                Padding="14"
+                Background="{DynamicResource BgSecondary}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="1"
+                CornerRadius="24">
 
-        <StackPanel
-            Grid.Row="2"
-            Margin="0,8,0,0"
-            IsVisible="{Binding CanCreateStudyPlan}"
-            Orientation="Vertical">
+                <StackPanel Spacing="8">
 
-            <Button
-                Padding="20,8"
-                HorizontalAlignment="Center"
-                Background="#fbfbff"
-                Command="{Binding CreateStudyPlanCommand}"
-                Content="Lernplan erstellen"
-                CornerRadius="20"
-                Foreground="Black"
-                IsEnabled="{Binding !IsSending}" />
-        </StackPanel>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
 
-        <Border
-            Grid.Row="3"
-            Margin="8,0,8,8"
-            Padding="12"
-            Background="#0d0d0e"
-            CornerRadius="25">
+                        <Button
+                            Grid.Column="0"
+                            Classes="secondary"
+                            Command="{Binding UploadDocumentCommand}"
+                            Content="📎" />
 
-            <Grid VerticalAlignment="Center" ColumnDefinitions="Auto,*,Auto">
+                        <TextBox
+                            Grid.Column="1"
+                            AcceptsReturn="True"
+                            Text="{Binding InputText}"
+                            Watermark="Nachricht schreiben…">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Command="{Binding SendCommand}" Gesture="Enter" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
 
-                <Button
-                    Grid.Column="0"
-                    Background="#fbfbff"
-                    Content="Upload"
-                    Foreground="Black" />
-                <TextBox
-                    Grid.Column="1"
-                    Margin="8,0"
-                    Background="#fbfbff"
-                    CaretBrush="Black"
-                    Foreground="Black"
-                    Text="{Binding InputText}"
-                    Watermark="Gebe den Zeitraum, deine Lernzeit pro Tag und die Themen an…">
+                        <Button
+                            Grid.Column="2"
+                            Classes="send"
+                            Command="{Binding SendCommand}"
+                            Content="↑" />
+                    </Grid>
 
-                    <TextBox.Styles>
-                        <Style Selector="TextBox">
-                            <Setter Property="FocusAdorner">
-                                <FocusAdornerTemplate />
-                            </Setter>
-                            <Setter Property="BorderThickness" Value="0" />
-                        </Style>
-                        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
-                            <Setter Property="Foreground" Value="#999999" />
-                        </Style>
-                    </TextBox.Styles>
+                    <Border
+                        Padding="8"
+                        Background="{DynamicResource BgPrimary}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        IsVisible="{Binding HasPendingFile}">
 
-                </TextBox>
+                        <DockPanel>
+                            <TextBlock
+                                DockPanel.Dock="Left"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="{Binding PendingFilePath}"
+                                TextTrimming="CharacterEllipsis" />
 
-                <Button
-                    Grid.Column="2"
-                    Background="#fbfbff"
-                    Command="{Binding SendCommand}"
-                    Content="Senden"
-                    Foreground="Black" />
-            </Grid>
-        </Border>
+                            <Button
+                                Classes="link"
+                                Command="{Binding ClearAttachmentCommand}"
+                                Content="✕"
+                                DockPanel.Dock="Right"
+                                ToolTip.Tip="Datei entfernen" />
+                        </DockPanel>
+                    </Border>
 
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
-
 </UserControl>

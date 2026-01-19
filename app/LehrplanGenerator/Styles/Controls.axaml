@@ -1,155 +1,80 @@
-<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Styles xmlns="https://github.com/avaloniaui">
 
-    <!--  =========================  -->
-    <!--  BOTTOM NAV (MOBILE ONLY)  -->
-    <!--  =========================  -->
+    <!--  ================= TEXTBOX =================  -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource InputBg}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextPrimary}" />
+    </Style>
 
-    <Style Selector="Button.nav">
+    <!--  🔥 FOCUS = GRÜN (nicht lila)  -->
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+    </Style>
+
+    <!--  ================= BUTTONS =================  -->
+    <Style Selector="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="20" />
-        <Setter Property="Padding" Value="8" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Setter Property="RenderTransform">
-            <ScaleTransform ScaleX="1" ScaleY="1" />
-        </Setter>
-
-        <Setter Property="Transitions">
-            <Transitions>
-                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
-                <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
-            </Transitions>
-        </Setter>
-    </Style>
-
-    <!--  Hover (Desktop only, Android ignoriert es)  -->
-    <Style Selector="Button.nav:pointerover">
-        <Setter Property="Background" Value="#2c2c2e" />
-    </Style>
-
-    <!--  Press (wichtig für Touch)  -->
-    <Style Selector="Button.nav:pressed">
-        <Setter Property="Background" Value="#3a3a3c" />
-        <Setter Property="RenderTransform">
-            <ScaleTransform ScaleX="0.92" ScaleY="0.92" />
-        </Setter>
-    </Style>
-
-
-
-    <!--  =========================  -->
-    <!--  TEXTBOX (GLOBAL)  -->
-    <!--  =========================  -->
-    <Style Selector="TextBox">
-        <Setter Property="Height" Value="42" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Padding" Value="10,8" />
         <Setter Property="CornerRadius" Value="8" />
-
-        <Setter Property="Background" Value="{DynamicResource BgSecondary}" />
+        <Setter Property="Padding" Value="14,10" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
-
-        <Setter Property="BorderBrush" Value="#CBD5E1" />
-        <Setter Property="BorderThickness" Value="1" />
-
-        <!--  Cursor & Text Selection  -->
-        <Setter Property="CaretBrush" Value="{DynamicResource AccentPrimary}" />
-        <Setter Property="SelectionBrush" Value="#BFDBFE" />
     </Style>
 
-    <!--  Hover  -->
-    <Style Selector="TextBox:pointerover">
-        <Setter Property="BorderBrush" Value="#94A3B8" />
-    </Style>
-
-    <!--  Focus (killt Fluent-Lila)  -->
-    <Style Selector="TextBox:focus /template/ Border">
-        <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
-        <Setter Property="BorderThickness" Value="2" />
-    </Style>
-
-    <!--  PointerOver im Template  -->
-    <Style Selector="TextBox:pointerover /template/ Border">
-        <Setter Property="BorderBrush" Value="#94A3B8" />
-    </Style>
-
-    <!--  Disabled  -->
-    <Style Selector="TextBox:disabled">
-        <Setter Property="Background" Value="#E5E7EB" />
-        <Setter Property="Foreground" Value="#94A3B8" />
-        <Setter Property="BorderBrush" Value="#CBD5E1" />
-    </Style>
-
-    <!--  =========================  -->
-    <!--  LISTBOX / COMBOBOX ITEMS  -->
-    <!--  🔥 DAS WAR DAS LILA 🔥  -->
-    <!--  =========================  -->
-
-    <!--  Normal  -->
-    <Style Selector="ListBoxItem">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
-        <Setter Property="Padding" Value="10,6" />
-    </Style>
-
-    <!--  Hover  -->
-    <Style Selector="ListBoxItem:pointerover">
-        <Setter Property="Background" Value="#E5E7EB" />
-    </Style>
-
-    <!--  Selected  -->
-    <Style Selector="ListBoxItem:selected">
-        <Setter Property="Background" Value="#BFDBFE" />
-        <Setter Property="Foreground" Value="#020617" />
-    </Style>
-
-    <!--  Selected + Hover  -->
-    <Style Selector="ListBoxItem:selected:pointerover">
-        <Setter Property="Background" Value="#93C5FD" />
-        <Setter Property="Foreground" Value="#020617" />
-    </Style>
-
-    <!--  =========================  -->
-    <!--  BUTTON: PRIMARY  -->
-    <!--  =========================  -->
     <Style Selector="Button.primary">
-        <Setter Property="Height" Value="44" />
-        <Setter Property="CornerRadius" Value="22" />
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccent}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <Style Selector="Button.primary:pointerover">
-        <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+        <Setter Property="Background" Value="{DynamicResource AccentPrimaryHover}" />
     </Style>
 
     <Style Selector="Button.primary:pressed">
-        <Setter Property="Background" Value="{DynamicResource AccentPressed}" />
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource AccentPrimaryPressed}" />
     </Style>
 
-    <!--  =========================  -->
-    <!--  BUTTON: SECONDARY  -->
-    <!--  =========================  -->
-    <Style Selector="Button.secondary">
-        <Setter Property="Height" Value="44" />
-        <Setter Property="CornerRadius" Value="22" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Background" Value="Transparent" />
+    <!--  ================= PROGRESS BAR =================  -->
+    <Style Selector="ProgressBar">
         <Setter Property="Foreground" Value="{DynamicResource AccentPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="CornerRadius" Value="6" />
     </Style>
 
-    <Style Selector="Button.secondary:pointerover">
-        <Setter Property="Opacity" Value="0.85" />
+    <!--  ================= LISTBOX =================  -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <Style Selector="Button.secondary:pressed">
-        <Setter Property="Opacity" Value="0.6" />
+    <Style Selector="ListBoxItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <!--  ❌ Default Lila komplett killen  -->
+    <Style Selector="ListBoxItem:selected">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ListBoxItem:pressed">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!--  ✅ UNSER aktiver Lernplan  -->
+    <Style Selector="ListBoxItem:selected Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource AccentPrimarySoft}" />
     </Style>
 
 </Styles>

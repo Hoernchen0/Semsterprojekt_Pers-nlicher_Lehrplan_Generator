@@ -5,49 +5,91 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Shell"
     x:DataType="vm:ShellViewModel">
 
-    <Grid>
+    <Grid Background="{DynamicResource BgPrimary}">
 
         <!--  ================= DESKTOP LAYOUT =================  -->
         <DockPanel x:Name="DesktopLayout">
 
-            <!--  Top Taskbar  -->
+            <!--  TOP TASKBAR  -->
             <Border
-                Padding="15"
-                Background="#2c3e50"
+                Height="72"
+                Padding="20,0"
+                Background="{DynamicResource AccentPrimary}"
                 BoxShadow="0 2 10 0 #40000000"
                 DockPanel.Dock="Top">
 
-                <StackPanel Orientation="Horizontal" Spacing="16">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="24">
+
+                    <!--  APP ICON (LOGO.PNG, BIG, CLEAN)  -->
+                    <Border
+                        Width="56"
+                        Height="56"
+                        VerticalAlignment="Center"
+                        Background="White"
+                        CornerRadius="28">
+
+                        <Image
+                            Margin="2"
+                            Source="avares://LehrplanGenerator/Assets/Images/logo.png"
+                            Stretch="Uniform" />
+                    </Border>
+
+                    <!--  USER NAME  -->
                     <TextBlock
-                        Margin="0,0,24,0"
                         VerticalAlignment="Center"
                         FontSize="16"
-                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextOnAccent}"
                         Text="{Binding CurrentUserName}" />
 
-                    <Button Command="{Binding ShowHomeCommand}" Content="Home" />
-                    <Button Command="{Binding ShowStudyPlanCommand}" Content="Kalender" />
-                    <Button Command="{Binding ShowChatCommand}" Content="Chat" />
-                    <Button Command="{Binding ShowSettingsCommand}" Content="Einstellungen" />
+                    <!--  NAV  -->
+                    <StackPanel
+                        Margin="32,0,0,0"
+                        Orientation="Horizontal"
+                        Spacing="16">
+
+                        <Button
+                            Classes="shell"
+                            Command="{Binding ShowHomeCommand}"
+                            Content="Home" />
+
+                        <Button
+                            Classes="shell"
+                            Command="{Binding ShowStudyPlanCommand}"
+                            Content="Kalender" />
+
+                        <Button
+                            Classes="shell"
+                            Command="{Binding ShowChatCommand}"
+                            Content="Chat" />
+
+                        <Button
+                            Classes="shell"
+                            Command="{Binding ShowSettingsCommand}"
+                            Content="Einstellungen" />
+
+                    </StackPanel>
+
                 </StackPanel>
             </Border>
 
-            <!--  Desktop Content  -->
+            <!--  CONTENT  -->
             <ContentControl Content="{Binding CurrentContent}" />
         </DockPanel>
 
         <!--  ================= MOBILE LAYOUT =================  -->
         <Grid x:Name="MobileLayout">
 
-            <!--  Content  -->
             <ContentControl Content="{Binding CurrentContent}" />
 
-            <!--  Floating Bottom Navigation  -->
             <Border
                 Height="64"
                 Margin="16,0,16,16"
                 VerticalAlignment="Bottom"
-                Background="#1c1c1e"
+                Background="{DynamicResource AccentPrimary}"
                 BoxShadow="0 10 30 0 #80000000"
                 CornerRadius="32">
 
@@ -58,19 +100,16 @@
                         Classes="nav"
                         Command="{Binding ShowHomeCommand}"
                         Content="🏠" />
-
                     <Button
                         Grid.Column="1"
                         Classes="nav"
                         Command="{Binding ShowStudyPlanCommand}"
                         Content="📅" />
-
                     <Button
                         Grid.Column="2"
                         Classes="nav"
                         Command="{Binding ShowChatCommand}"
                         Content="💬" />
-
                     <Button
                         Grid.Column="3"
                         Classes="nav"

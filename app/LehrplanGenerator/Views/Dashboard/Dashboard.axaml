@@ -5,52 +5,47 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
     x:DataType="vm:DashboardViewModel">
 
-    <Grid>
-
-        <!--  ================= DESKTOP =================  -->
-        <Border
-            x:Name="DesktopLayout"
-            Padding="32"
-            Background="#F8FAFC">
+    <Grid Background="{DynamicResource BgPrimary}">
+        <Border Padding="32" Background="{DynamicResource BgPrimary}">
 
             <Grid RowDefinitions="Auto,*">
 
-                <!--  Header  -->
+                <!--  HEADER  -->
                 <StackPanel Spacing="6">
                     <TextBlock
                         FontSize="28"
                         FontWeight="SemiBold"
-                        Foreground="#020617"
+                        Foreground="{DynamicResource TextPrimary}"
                         Text="Dashboard" />
 
                     <TextBlock
                         FontSize="14"
-                        Foreground="#475569"
+                        Foreground="{DynamicResource TextMuted}"
                         Text="{Binding WelcomeMessage}" />
                 </StackPanel>
 
-                <!--  Content  -->
+                <!--  CONTENT  -->
                 <Grid
                     Grid.Row="1"
                     Margin="0,24,0,0"
-                    ColumnDefinitions="2*,1*"
+                    ColumnDefinitions="1*,1*"
                     ColumnSpacing="24"
-                    RowDefinitions="Auto,*"
+                    RowDefinitions="Auto,Auto"
                     RowSpacing="24">
 
-                    <!--  Lernfortschritt  -->
+                    <!--  LERNFORTSCHRITT – OBEN LINKS  -->
                     <Border
+                        Grid.Row="0"
+                        Grid.Column="0"
                         Padding="24"
-                        Background="White"
-                        BorderBrush="#E5E7EB"
-                        BorderThickness="1"
+                        Background="{DynamicResource BgSecondary}"
                         CornerRadius="16">
 
                         <StackPanel Spacing="14">
                             <TextBlock
                                 FontSize="18"
                                 FontWeight="Medium"
-                                Foreground="#020617"
+                                Foreground="{DynamicResource TextPrimary}"
                                 Text="Lernfortschritt" />
 
                             <ProgressBar
@@ -60,64 +55,59 @@
 
                             <TextBlock
                                 FontSize="13"
-                                Foreground="#64748B"
+                                Foreground="{DynamicResource TextMuted}"
                                 Text="{Binding ProgressPercent, StringFormat='{}{0} % des aktuellen Lernplans abgeschlossen'}" />
                         </StackPanel>
                     </Border>
 
-                    <!--  Nächste Einheit  -->
+                    <!--  NÄCHSTE LERNEINHEIT – OBEN RECHTS  -->
                     <Border
+                        Grid.Row="0"
                         Grid.Column="1"
                         Padding="24"
-                        Background="White"
-                        BorderBrush="#E5E7EB"
-                        BorderThickness="1"
+                        Background="{DynamicResource BgSecondary}"
                         CornerRadius="16">
 
                         <StackPanel Spacing="12">
                             <TextBlock
                                 FontSize="18"
                                 FontWeight="Medium"
-                                Foreground="#020617"
+                                Foreground="{DynamicResource TextPrimary}"
                                 Text="Nächste Lerneinheit" />
 
                             <TextBlock
                                 FontSize="14"
                                 FontWeight="SemiBold"
-                                Foreground="#020617"
+                                Foreground="{DynamicResource TextPrimary}"
                                 Text="{Binding NextUnitTitle}" />
 
                             <TextBlock
                                 FontSize="13"
-                                Foreground="#64748B"
+                                Foreground="{DynamicResource TextMuted}"
                                 Text="{Binding NextUnitTime}" />
 
                             <Button
                                 Height="40"
-                                Background="#2563EB"
+                                Classes="primary"
                                 Command="{Binding ContinueLearningCommand}"
                                 Content="Weiterlernen"
-                                CornerRadius="10"
-                                Foreground="White"
                                 IsEnabled="{Binding SelectedStudyPlan}" />
                         </StackPanel>
                     </Border>
 
-                    <!--  Aktive Lernpläne  -->
+                    <!--  AKTIVE LERNPLÄNE – UNTEN LINKS  -->
                     <Border
                         Grid.Row="1"
-                        Grid.ColumnSpan="2"
-                        Padding="24"
-                        Background="White"
-                        BorderBrush="#E5E7EB"
-                        BorderThickness="1"
+                        Grid.Column="0"
+                        Padding="20"
+                        Background="{DynamicResource BgSecondary}"
                         CornerRadius="16">
 
-                        <StackPanel Spacing="16">
+                        <StackPanel Spacing="12">
                             <TextBlock
                                 FontSize="18"
                                 FontWeight="Medium"
-                                Foreground="#020617"
+                                Foreground="{DynamicResource TextPrimary}"
                                 Text="Aktive Lernpläne" />
 
                             <ListBox
@@ -129,21 +119,21 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Border
-                                            Margin="0,0,0,8"
-                                            Padding="16"
-                                            Background="#F8FAFC"
-                                            CornerRadius="12">
+                                            Padding="12"
+                                            Background="{DynamicResource BgPrimary}"
+                                            CornerRadius="10">
 
-                                            <StackPanel>
+                                            <StackPanel Spacing="4">
                                                 <TextBlock
+                                                    FontSize="14"
                                                     FontWeight="SemiBold"
-                                                    Foreground="#020617"
+                                                    Foreground="{DynamicResource TextPrimary}"
                                                     Text="{Binding Title}" />
 
                                                 <TextBlock
-                                                    FontSize="13"
-                                                    Foreground="#64748B"
-                                                    Text="Klicken, um diesen Lernplan fortzusetzen" />
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource TextMuted}"
+                                                    Text="Klicken zum Fortsetzen" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -155,50 +145,5 @@
                 </Grid>
             </Grid>
         </Border>
-
-        <!--  ================= MOBILE =================  -->
-        <ScrollViewer
-            x:Name="MobileLayout"
-            Padding="16"
-            Background="#F8FAFC">
-
-            <StackPanel Spacing="16">
-
-                <TextBlock
-                    FontSize="22"
-                    FontWeight="Bold"
-                    Foreground="#020617"
-                    Text="Dashboard" />
-
-                <TextBlock
-                    FontSize="13"
-                    Foreground="#475569"
-                    Text="{Binding WelcomeMessage}" />
-
-                <Border
-                    Padding="16"
-                    Background="White"
-                    CornerRadius="14">
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontWeight="SemiBold"
-                            Foreground="#020617"
-                            Text="Lernfortschritt" />
-
-                        <ProgressBar
-                            Height="8"
-                            Maximum="100"
-                            Value="{Binding ProgressPercent}" />
-
-                        <TextBlock
-                            FontSize="12"
-                            Foreground="#64748B"
-                            Text="{Binding ProgressPercent, StringFormat='{}{0} % abgeschlossen'}" />
-                    </StackPanel>
-                </Border>
-
-            </StackPanel>
-        </ScrollViewer>
-
     </Grid>
 </UserControl>

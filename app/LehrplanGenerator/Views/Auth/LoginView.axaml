@@ -1,104 +1,100 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
-             x:Class="LehrplanGenerator.Views.Auth.LoginView"
-             x:DataType="vm:LoginViewModel"
-             Background="#FFFFFF">
+<UserControl
+    x:Class="LehrplanGenerator.Views.Auth.LoginView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
+    x:DataType="vm:LoginViewModel">
 
-    <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+    <!--  ================= PAGE =================  -->
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-        <StackPanel Width="420"
-                    Spacing="32"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+        <!--  Background Image  -->
+        <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
 
-            <!-- Header -->
-            <StackPanel Spacing="6"
-                        HorizontalAlignment="Center">
-                <TextBlock Text="Willkommen zurück"
-                           FontSize="26"
-                           FontWeight="SemiBold"
-                           Foreground="#020617"
-                           TextAlignment="Center"/>
+        <!--  Centered Card  -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid
+                Margin="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
 
-                <TextBlock Text="Melde dich an, um fortzufahren"
-                           FontSize="14"
-                           Foreground="#64748B"
-                           TextAlignment="Center"/>
-            </StackPanel>
+                <Border
+                    Width="440"
+                    Padding="40"
+                    Background="{DynamicResource BgSecondary}"
+                    CornerRadius="24">
 
-            <!-- Form -->
-            <Border Background="#F1F5F9"
-                    CornerRadius="16"
-                    Padding="24">
+                    <StackPanel Spacing="28">
 
-                <StackPanel Spacing="16">
+                        <!--  ================= HEADER =================  -->
+                        <StackPanel Spacing="8">
+                            <TextBlock
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Willkommen zurück"
+                                TextAlignment="Center" />
 
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="E-Mail oder Telefonnummer"
-                                   FontSize="12"
-                                   Foreground="#475569"/>
-                        <TextBox Text="{Binding Username}"
-                                 Height="40"/>
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="{DynamicResource TextMuted}"
+                                Text="Melde dich an, um fortzufahren"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!--  ================= FORM =================  -->
+                        <StackPanel Spacing="16">
+
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="E-Mail oder Telefonnummer" />
+                                <TextBox Text="{Binding Username}" Watermark="E-Mail oder Telefonnummer" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="Passwort" />
+                                <TextBox
+                                    PasswordChar="*"
+                                    Text="{Binding Password}"
+                                    Watermark="Passwort" />
+                            </StackPanel>
+
+                        </StackPanel>
+
+                        <!--  ================= PRIMARY ACTION =================  -->
+                        <Button
+                            Classes="primary"
+                            Command="{Binding LoginCommand}"
+                            Content="Anmelden" />
+
+                        <!--  ================= SECONDARY ACTION =================  -->
+                        <Button
+                            HorizontalAlignment="Center"
+                            Classes="link"
+                            Command="{Binding CancelCommand}">
+                            <TextBlock Text="Abbrechen" />
+                        </Button>
+
+                        <!--  ================= RESULT =================  -->
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource TextMuted}"
+                            Text="{Binding Result}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+
                     </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
 
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="Passwort"
-                                   FontSize="12"
-                                   Foreground="#475569"/>
-                        <TextBox Text="{Binding Password}"
-                                 PasswordChar="*"
-                                 Height="40"/>
-                    </StackPanel>
-
-                </StackPanel>
-            </Border>
-
-           <!-- ACTIONS – GLEICHE GRÖSSE, HOVER-SICHER -->
-<StackPanel Spacing="12"
-            HorizontalAlignment="Center">
-
-    <!-- LOGIN -->
-    <Border Width="240"
-            Height="44"
-            Background="#E5E7EB"
-            CornerRadius="12"
-            Padding="1">
-
-        <Button Content="Login"
-                Width="240"
-                Height="44"
-                Foreground="#020617"
-                FontWeight="SemiBold"
-                Command="{Binding LoginCommand}"/>
-    </Border>
-
-    <!-- ABBRECHEN -->
-    <Border Width="240"
-            Height="44"
-            Background="#E5E7EB"
-            CornerRadius="12"
-            Padding="1">
-
-        <Button Content="Abbrechen"
-                Width="240"
-                Height="44"
-                Foreground="#020617"
-                FontWeight="SemiBold"
-                Command="{Binding CancelCommand}"/>
-    </Border>
-
-</StackPanel>
-
-
-            <!-- Result -->
-            <TextBlock Text="{Binding Result}"
-                       FontSize="13"
-                       Foreground="#475569"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap"/>
-
-        </StackPanel>
     </Grid>
 </UserControl>

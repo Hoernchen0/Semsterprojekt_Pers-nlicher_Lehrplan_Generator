@@ -1,40 +1,193 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Settings"
-             x:Class="LehrplanGenerator.Views.Settings.SettingsView"
-             x:DataType="vm:SettingsViewModel">
-    
-    <Grid Margin="20">
-        <StackPanel Spacing="20">
-            
-            <TextBlock Text="Einstellungen" 
-                       FontSize="28"
-                       FontWeight="Bold"/>
-            
-            <Separator/>
-            
-            <StackPanel Spacing="15">
-                <TextBlock Text="Benutzerkonto" 
-                           FontSize="20"
-                           FontWeight="SemiBold"/>
-                
-                <Border Background="#163c45ff"
-                        CornerRadius="5"
-                        Padding="15">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="Account-Aktionen"/>
-                        <Button Content="Ausloggen" 
+<UserControl
+    x:Class="LehrplanGenerator.Views.Settings.SettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Settings"
+    x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer Background="{DynamicResource BgPrimary}">
+
+        <!--  OUTER PADDING  -->
+        <Border Padding="32">
+
+            <StackPanel
+                MaxWidth="900"
+                HorizontalAlignment="Center"
+                Spacing="32">
+
+                <!--  ================= HEADER =================  -->
+                <StackPanel Spacing="6">
+                    <TextBlock
+                        FontSize="28"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Text="Einstellungen" />
+
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource TextMuted}"
+                        Text="Verwalte dein Konto, Lernen, KI-Funktionen und App-Darstellung" />
+                </StackPanel>
+
+                <!--  ================= ACCOUNT =================  -->
+                <Border
+                    Padding="24"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20">
+
+                    <StackPanel Spacing="18">
+
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="Benutzerkonto" />
+
+                        <StackPanel Spacing="8">
+                            <TextBlock Foreground="{DynamicResource TextMuted}" Text="Name" />
+                            <TextBlock FontWeight="SemiBold" Text="Oliver Jehle" />
+                        </StackPanel>
+
+                        <Separator />
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Content="Profil bearbeiten" />
+                            <Button Content="Passwort ändern" />
+                            <Button
+                                Background="#FEE2E2"
                                 Command="{Binding LogOutCommand}"
-                                Background="#e74c3c"
-                                Foreground="White"
-                                Width="150"
-                                HorizontalAlignment="Left"/>
+                                Content="Ausloggen"
+                                Foreground="#991B1B" />
+                        </StackPanel>
+
                     </StackPanel>
                 </Border>
+
+                <!--  ================= LEARNING =================  -->
+                <Border
+                    Padding="24"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20">
+
+                    <StackPanel Spacing="18">
+
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="Lernen und Planung" />
+
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="Standard-Lerneinheit: 50 Minuten" />
+                            <TextBlock Text="Pausenlänge: 10 Minuten" />
+                            <TextBlock Foreground="{DynamicResource HFU.Green}" Text="Automatischer Start der nächsten Session" />
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!--  ================= AI =================  -->
+                <Border
+                    Padding="24"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20">
+
+                    <StackPanel Spacing="18">
+
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="KI-Assistent" />
+
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="Antwortstil: strukturiert und verständlich" />
+                            <TextBlock Foreground="{DynamicResource HFU.Green}" Text="Lernplan automatisch generieren" />
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!--  ================= APPEARANCE =================  -->
+                <Border
+                    Padding="24"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20">
+
+                    <StackPanel Spacing="18">
+
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="Darstellung" />
+
+                        <StackPanel Spacing="14">
+
+                            <TextBlock Foreground="{DynamicResource TextMuted}" Text="Designmodus" />
+
+                            <!--  THEME BUTTON  -->
+                            <Button
+                                Padding="14,10"
+                                HorizontalAlignment="Left"
+                                Background="{DynamicResource HFU.Green}"
+                                Command="{Binding ToggleThemeCommand}"
+                                Content="{Binding ThemeButtonText}"
+                                CornerRadius="999"
+                                Foreground="White" />
+
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource TextMuted}"
+                                Text="Wechselt zwischen hellem und dunklem Farbschema" />
+
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!--  ================= PRIVACY =================  -->
+                <Border
+                    Padding="24"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20">
+
+                    <StackPanel Spacing="18">
+
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="Datenschutz und Sicherheit" />
+
+                        <TextBlock Foreground="{DynamicResource TextMuted}" Text="Alle Daten werden DSGVO-konform verarbeitet." />
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Content="Daten exportieren" />
+                            <Button Content="Chat-Verlauf löschen" />
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!--  ================= FOOTER =================  -->
+                <StackPanel HorizontalAlignment="Center" Spacing="4">
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource TextMuted}"
+                        Text="LehrplanGenerator · HFU Informatik" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource TextMuted}"
+                        Text="Version 1.0.0" />
+                </StackPanel>
+
             </StackPanel>
-            
-            
-        </StackPanel>
-    </Grid>
-    
+        </Border>
+    </ScrollViewer>
 </UserControl>

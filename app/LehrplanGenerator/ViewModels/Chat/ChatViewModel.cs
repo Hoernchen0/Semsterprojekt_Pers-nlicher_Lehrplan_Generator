@@ -3,13 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
+using LehrplanGenerator.Models.Chat;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Text;
 using System.Threading.Tasks;
 using System;
-using Avalonia.Platform.Storage;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia;
-using LehrplanGenerator.Models.Chat;
 
 namespace LehrplanGenerator.ViewModels.Chat;
 
@@ -17,121 +18,144 @@ public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
-    private readonly LearningProgressService _learningProgressService;
 
-    public ChatViewModel(
-        INavigationService navigationService,
-        AppState appState,
-        LearningProgressService learningProgressService)
+    public ChatViewModel(INavigationService navigationService, AppState appState)
     {
         _navigationService = navigationService;
         _appState = appState;
-        _learningProgressService = learningProgressService;
+
+        Messages.CollectionChanged += OnMessagesChanged;
     }
 
+    // =========================
+    // MESSAGES
+    // =========================
     public ObservableCollection<ChatMessage> Messages => _appState.ChatMessages;
 
+    public bool HasMessages => Messages.Count > 0;
+    public bool HasNoMessages => Messages.Count == 0;
+
+    private void OnMessagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(HasMessages));
+        OnPropertyChanged(nameof(HasNoMessages));
+    }
+
+    // =========================
+    // INPUT
+    // =========================
     [ObservableProperty]
-    private string _inputText = string.Empty;
+    private string inputText = string.Empty;
 
     [ObservableProperty]
-    private bool _isSending;
+    private bool isSending;
 
+    // =========================
+    // ATTACHMENT (TEMP)
+    // =========================
     [ObservableProperty]
-    private bool _canCreateStudyPlan;
+    private string? pendingFilePath;
+
+    public bool HasPendingFile => !string.IsNullOrWhiteSpace(PendingFilePath);
+
+    partial void OnPendingFilePathChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasPendingFile));
+    }
+
+    // =========================
+    // COMMANDS
+    // =========================
+
+    [RelayCommand]
+    private async Task UploadDocumentAsync()
+    {
+        var dialog = new OpenFileDialog
+        {
+            AllowMultiple = false,
+            Title = "Dokument auswählen",
+            Filters =
+            {
+                new FileDialogFilter
+                {
+                    Name = "Dokumente",
+                    Extensions = { "pdf", "txt", "docx" }
+                }
+            }
+        };
+
+        if (Avalonia.Application.Current?.ApplicationLifetime
+            is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+
+        var parent = desktop.MainWindow;
+        if (parent is null)
+            return;
+
+        var result = await dialog.ShowAsync(parent);
+
+        if (result is { Length: > 0 })
+        {
+            PendingFilePath = result[0];
+        }
+    }
+
+    [RelayCommand]
+    private void ClearAttachment()
+    {
+        PendingFilePath = null;
+    }
 
     [RelayCommand]
     private async Task SendAsync()
     {
-        if (string.IsNullOrWhiteSpace(InputText) || IsSending)
-            return;
-
-        var userMessage = InputText.Trim();
-        InputText = string.Empty;
-
-        Messages.Add(new ChatMessage
-        {
-            Sender = _appState.CurrentUserDisplayName ?? "Benutzer",
-            Text = userMessage
-        });
-
-        CanCreateStudyPlan = true;
-        IsSending = true;
-
-        try
-        {
-            var response = await _appState.AiService.AskGptAsync(userMessage);
-
-            if (!string.IsNullOrEmpty(response))
-            {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "KI-Assistent",
-                    Text = response
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            Messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Text = $"Fehler bei der Kommunikation mit der KI: {ex.Message}"
-            });
-        }
-        finally
-        {
-            IsSending = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task CreateStudyPlanAsync()
-    {
         if (IsSending)
             return;
 
-        IsSending = true;
+        if (string.IsNullOrWhiteSpace(InputText) && !HasPendingFile)
+            return;
+
+        var userText = InputText.Trim();
+        var filePath = PendingFilePath;
+
+        InputText = string.Empty;
+        PendingFilePath = null;
+
+        var displayText = userText;
+
+        if (!string.IsNullOrWhiteSpace(filePath))
+        {
+            var fileName = System.IO.Path.GetFileName(filePath);
+            displayText = string.IsNullOrWhiteSpace(userText)
+                ? $"📎 {fileName}"
+                : $"{userText}\n📎 {fileName}";
+        }
 
         Messages.Add(new ChatMessage
         {
-            Sender = "System",
-            Text = "Erstelle Lernplan..."
+            Sender = "User",
+            FullText = displayText,
+            DisplayedText = displayText
         });
+
+        IsSending = true;
 
         try
         {
-            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
+            var response = await _appState.AiService.AskGptAsync(userText);
 
-            if (studyPlan == null)
+            if (!string.IsNullOrWhiteSpace(response))
             {
-                Messages.Add(new ChatMessage
+                var aiMessage = new ChatMessage
                 {
-                    Sender = "System",
-                    Text = "Lernplan konnte nicht erstellt werden."
-                });
-                return;
+                    Sender = "AI",
+                    FullText = response,
+                    DisplayedText = ""
+                };
+
+                Messages.Add(aiMessage);
+                await TypeTextAsync(aiMessage);
             }
-
-            // ✅ KORREKT: nur 2 Parameter
-            await _learningProgressService.SaveStudyPlanAsync(
-                _appState.CurrentUserId!.Value,
-                studyPlan
-            );
-
-            Messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Text = $"✓ Lernplan gespeichert\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
-            });
-        }
-        catch (Exception ex)
-        {
-            Messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Text = $"Fehler beim Erstellen oder Speichern des Lernplans: {ex.Message}"
-            });
         }
         finally
         {
@@ -139,64 +163,27 @@ public partial class ChatViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
-    private async Task UploadAsync()
+    // =========================
+    // TYPING EFFECT
+    // =========================
+    private async Task TypeTextAsync(ChatMessage message)
     {
-        try
+        var sb = new StringBuilder();
+
+        foreach (var ch in message.FullText)
         {
-            var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-            var mainWindow = lifetime?.MainWindow;
-
-            if (mainWindow == null)
-                return;
-
-            var options = new FilePickerOpenOptions
-            {
-                Title = "PDF-Datei auswählen",
-                AllowMultiple = false,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType("PDF-Dateien")
-                    {
-                        Patterns = new[] { "*.pdf" },
-                        MimeTypes = new[] { "application/pdf" }
-                    }
-                }
-            };
-
-            var files = await mainWindow.StorageProvider.OpenFilePickerAsync(options);
-            if (files.Count == 0)
-                return;
-
-            var file = files[0];
-            var success = await _appState.AiService.UploadPdfAsync(file.Path.LocalPath);
-
-            Messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Text = success
-                    ? $"✓ PDF '{file.Name}' verarbeitet"
-                    : $"❌ Fehler beim Verarbeiten von '{file.Name}'"
-            });
-        }
-        catch (Exception ex)
-        {
-            Messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Text = $"Upload-Fehler: {ex.Message}"
-            });
+            sb.Append(ch);
+            message.DisplayedText = sb.ToString();
+            await Task.Delay(15);
         }
     }
 
+    // =========================
+    // NAVIGATION
+    // =========================
     [RelayCommand]
     private void GoBack()
     {
         _navigationService.NavigateTo<MainViewModel>();
     }
-
-    partial void OnInputTextChanged(string value)
-        => OnPropertyChanged(nameof(HasInput));
-
-    public bool HasInput => !string.IsNullOrWhiteSpace(InputText);
 }

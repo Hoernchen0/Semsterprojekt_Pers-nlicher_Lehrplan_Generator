@@ -4,20 +4,25 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
+
+using LehrplanGenerator.Logic;
 using LehrplanGenerator.Logic.Services;
+using LehrplanGenerator.Logic.State;
+using LehrplanGenerator.Logic.Utils;
+
 using LehrplanGenerator.ViewModels.Windows;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.ViewModels.Auth;
-using LehrplanGenerator.Views.Windows;
-using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
 using LehrplanGenerator.ViewModels.Chat;
 using LehrplanGenerator.ViewModels.StudyPlan;
-using LehrplanGenerator.Logic;
 using LehrplanGenerator.ViewModels.Guide;
 using LehrplanGenerator.ViewModels.Shell;
+
+using LehrplanGenerator.Views.Windows;
 
 namespace LehrplanGenerator;
 
@@ -29,6 +34,23 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
 
+        // ===============================
+        // THEME BINDING (WICHTIG!)
+        // ===============================
+        RequestedThemeVariant = ThemeManager.Instance.ThemeVariant;
+
+        ThemeManager.Instance.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ThemeManager.ThemeVariant))
+            {
+                RequestedThemeVariant = ThemeManager.Instance.ThemeVariant;
+            }
+        };
+
+
+        // ===============================
+        // DEPENDENCY INJECTION
+        // ===============================
         var services = new ServiceCollection();
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
@@ -68,7 +90,6 @@ public partial class App : Application
 
         var mainVm = Services.GetRequiredService<MainWindowViewModel>();
 
-        // 🔴 DAS hat gefehlt
         var navigationService = Services.GetRequiredService<INavigationService>();
         navigationService.SetMainViewModel(mainVm);
 

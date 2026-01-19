@@ -10,9 +10,13 @@ public class DayPlanViewModel : ViewModelBase
 {
     public string Date { get; }
 
+    public DateTime ParsedDate =>
+        DateTime.ParseExact(Date, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+
     public string DisplayDate =>
-        DateTime.ParseExact(Date, "dd.MM.yyyy", CultureInfo.InvariantCulture)
-            .ToString("dddd, dd.MM.yyyy");
+        ParsedDate.ToString("dddd, dd.MM.yyyy");
+
+    public string DayNumber => ParsedDate.Day.ToString();
 
     public ObservableCollection<TaskItemViewModel> Tasks { get; }
 

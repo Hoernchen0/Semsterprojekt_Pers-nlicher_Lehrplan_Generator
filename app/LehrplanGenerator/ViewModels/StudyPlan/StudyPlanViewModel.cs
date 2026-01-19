@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace LehrplanGenerator.ViewModels.StudyPlan;
 
+public enum StudyPlanViewMode
+{
+    List,
+    Calendar
+}
+
 public partial class StudyPlanViewModel : ViewModelBase
 {
     private readonly AppState _appState;
@@ -32,6 +38,21 @@ public partial class StudyPlanViewModel : ViewModelBase
 
     [ObservableProperty]
     private string? errorMessage;
+
+    // =================================================
+    // 🔥 NEU: VIEW MODE
+    // =================================================
+
+    [ObservableProperty]
+    private StudyPlanViewMode viewMode = StudyPlanViewMode.List;
+
+    public bool IsListView => ViewMode == StudyPlanViewMode.List;
+    public bool IsCalendarView => ViewMode == StudyPlanViewMode.Calendar;
+
+    public string CurrentViewModeLabel =>
+        ViewMode == StudyPlanViewMode.List ? "Kalender" : "Liste";
+
+    // =================================================
 
     public StudyPlanViewModel(
         AppState appState,
@@ -91,9 +112,25 @@ public partial class StudyPlanViewModel : ViewModelBase
         SelectedDay = Days.FirstOrDefault();
     }
 
+    // =================================================
+    // COMMANDS
+    // =================================================
+
     [RelayCommand]
     private void SelectDay(DayPlanViewModel day)
     {
         SelectedDay = day;
+    }
+
+    [RelayCommand]
+    private void ToggleViewMode()
+    {
+        ViewMode = ViewMode == StudyPlanViewMode.List
+            ? StudyPlanViewMode.Calendar
+            : StudyPlanViewMode.List;
+
+        OnPropertyChanged(nameof(IsListView));
+        OnPropertyChanged(nameof(IsCalendarView));
+        OnPropertyChanged(nameof(CurrentViewModeLabel));
     }
 }

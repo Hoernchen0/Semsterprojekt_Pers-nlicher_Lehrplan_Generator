@@ -3,15 +3,14 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:LehrplanGenerator"
-    RequestedThemeVariant="Default">
+    RequestedThemeVariant="Light">
 
+    <!--  DATA TEMPLATES  -->
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
-    <!--  =====================  -->
-    <!--  RESOURCES (FARBEN)  -->
-    <!--  =====================  -->
+    <!--  RESOURCES  -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,25 +19,26 @@
         </ResourceDictionary>
     </Application.Resources>
 
-    <!--  =====================  -->
-    <!--  STYLES (LOOK & FEEL)  -->
-    <!--  =====================  -->
+    <!--  STYLES  -->
     <Application.Styles>
-        <FluentTheme />
 
-        <!--  Global Font  -->
-        <Style Selector="Window">
-            <Setter Property="FontFamily" Value="Inter" />
-            <Setter Property="FontSize" Value="14" />
-        </Style>
+        <!--  ✅ FLUENT THEME MIT GRÜNEM ACCENT  -->
+        <FluentTheme>
+            <FluentTheme.Palettes>
 
-        <Style Selector="UserControl">
-            <Setter Property="FontFamily" Value="Inter" />
-            <Setter Property="FontSize" Value="14" />
-        </Style>
+                <!--  LIGHT MODE  -->
+                <ColorPaletteResources x:Key="Light" Accent="#2E7D32" />
 
-        <!--  Controls  -->
+                <!--  DARK MODE  -->
+                <ColorPaletteResources x:Key="Dark" Accent="#2E7D32" />
+
+            </FluentTheme.Palettes>
+        </FluentTheme>
+
+        <!--  Deine Styles  -->
         <StyleInclude Source="avares://LehrplanGenerator/Styles/Controls.axaml" />
+        <StyleInclude Source="avares://LehrplanGenerator/Styles/Animations.axaml" />
+
     </Application.Styles>
 
 </Application>

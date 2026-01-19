@@ -1,25 +1,82 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--  Farbpaletten  -->
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://LehrplanGenerator/Styles/Colors.Dark.axaml" />
-        <ResourceInclude Source="avares://LehrplanGenerator/Styles/Colors.Light.axaml" />
-    </ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary.ThemeDictionaries>
 
-    <!--  ===============================  -->
-    <!--  FLUENT ACCENT OVERRIDES  -->
-    <!--  ===============================  -->
+        <!--  =====================  -->
+        <!--  LIGHT  -->
+        <!--  =====================  -->
+        <ResourceDictionary x:Key="Light">
 
-    <!--  Accent Brush  -->
-    <SolidColorBrush x:Key="SystemAccentBrush" Color="{DynamicResource AccentPrimary}" />
+            <!--  COLORS  -->
+            <Color x:Key="SystemAccentColor">#2E7D32</Color>
+            <Color x:Key="SystemAccentColorLight1">#3E8F45</Color>
+            <Color x:Key="SystemAccentColorDark1">#256628</Color>
 
-    <!--  Fokus-Rahmen (DAS war lila)  -->
-    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{DynamicResource AccentPrimary}" />
+            <!--  BACKGROUND  -->
+            <Color x:Key="BgPrimaryColor">#F8FAFC</Color>
+            <Color x:Key="BgSecondaryColor">#FFFFFF</Color>
+            <Color x:Key="InputBgColor">#FFFFFF</Color>
 
-    <!--  Hover  -->
-    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource TextMuted}" />
+            <!--  TEXT  -->
+            <Color x:Key="TextPrimaryColor">#020617</Color>
+            <Color x:Key="TextMutedColor">#64748B</Color>
 
-    <!--  Fokus-Glow AUS  -->
-    <SolidColorBrush x:Key="FocusAdornerBrush" Color="Transparent" />
+            <!--  BORDERS  -->
+            <Color x:Key="BorderSubtleColor">#CBD5E1</Color>
 
+            <!--  ACCENT  -->
+            <Color x:Key="AccentPrimaryColor">#2E7D32</Color>
+
+            <!--  BRUSHES  -->
+            <SolidColorBrush x:Key="BgPrimary" Color="{DynamicResource BgPrimaryColor}" />
+            <SolidColorBrush x:Key="BgSecondary" Color="{DynamicResource BgSecondaryColor}" />
+            <SolidColorBrush x:Key="InputBg" Color="{DynamicResource InputBgColor}" />
+            <SolidColorBrush x:Key="TextPrimary" Color="{DynamicResource TextPrimaryColor}" />
+            <SolidColorBrush x:Key="TextMuted" Color="{DynamicResource TextMutedColor}" />
+            <SolidColorBrush x:Key="BorderSubtle" Color="{DynamicResource BorderSubtleColor}" />
+
+            <SolidColorBrush x:Key="AccentPrimary" Color="{DynamicResource AccentPrimaryColor}" />
+            <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFF" />
+
+            <!--  🔥 FOCUS / TEXTBOX  -->
+            <SolidColorBrush x:Key="TextBoxBorderFocusedBrush" Color="{DynamicResource AccentPrimaryColor}" />
+
+            <SolidColorBrush x:Key="ControlFocusVisualBrush" Color="Transparent" />
+        </ResourceDictionary>
+
+        <!--  =====================  -->
+        <!--  DARK  -->
+        <!--  =====================  -->
+        <ResourceDictionary x:Key="Dark">
+
+            <Color x:Key="SystemAccentColor">#2E7D32</Color>
+            <Color x:Key="SystemAccentColorLight1">#3E8F45</Color>
+            <Color x:Key="SystemAccentColorDark1">#256628</Color>
+
+            <Color x:Key="BgPrimaryColor">#0F0F0F</Color>
+            <Color x:Key="BgSecondaryColor">#1A1A1A</Color>
+            <Color x:Key="InputBgColor">#1E1E1E</Color>
+
+            <Color x:Key="TextPrimaryColor">#EDEDED</Color>
+            <Color x:Key="TextMutedColor">#9CA3AF</Color>
+            <Color x:Key="BorderSubtleColor">#2A2A2A</Color>
+
+            <Color x:Key="AccentPrimaryColor">#2E7D32</Color>
+
+            <SolidColorBrush x:Key="BgPrimary" Color="{DynamicResource BgPrimaryColor}" />
+            <SolidColorBrush x:Key="BgSecondary" Color="{DynamicResource BgSecondaryColor}" />
+            <SolidColorBrush x:Key="InputBg" Color="{DynamicResource InputBgColor}" />
+            <SolidColorBrush x:Key="TextPrimary" Color="{DynamicResource TextPrimaryColor}" />
+            <SolidColorBrush x:Key="TextMuted" Color="{DynamicResource TextMutedColor}" />
+            <SolidColorBrush x:Key="BorderSubtle" Color="{DynamicResource BorderSubtleColor}" />
+
+            <SolidColorBrush x:Key="AccentPrimary" Color="{DynamicResource AccentPrimaryColor}" />
+            <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFF" />
+
+            <SolidColorBrush x:Key="TextBoxBorderFocusedBrush" Color="{DynamicResource AccentPrimaryColor}" />
+
+            <SolidColorBrush x:Key="ControlFocusVisualBrush" Color="Transparent" />
+        </ResourceDictionary>
+
+    </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

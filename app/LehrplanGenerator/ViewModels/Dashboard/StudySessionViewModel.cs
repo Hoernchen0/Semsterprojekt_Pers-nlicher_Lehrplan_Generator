@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Avalonia.Threading;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Logic.Services;
-using Avalonia.Threading;
+using LehrplanGenerator.ViewModels.Shell;
 using System;
 using System.Threading.Tasks;
-using LehrplanGenerator.ViewModels.Shell;
 
 namespace LehrplanGenerator.ViewModels.Dashboard;
 
@@ -14,29 +14,17 @@ public partial class StudySessionViewModel : ViewModelBase
     private readonly LearningProgressService _learningProgressService;
     private readonly INavigationService _navigationService;
 
-    private LearningProgressEntity _unit = null!;
     private DispatcherTimer _timer = null!;
+    private TimeSpan _total;
     private TimeSpan _remaining;
 
-    // =====================
-    // Bindings
-    // =====================
+    private const double CircleLength = 603; // korrekt berechnet
 
-    [ObservableProperty]
-    private string title = string.Empty;
-
-    [ObservableProperty]
-    private string remainingTimeText = "00:00";
-
-    [ObservableProperty]
-    private bool isRunning;
-
-    [ObservableProperty]
-    private bool isPaused;
-
-    // =====================
-    // Constructor
-    // =====================
+    [ObservableProperty] private string title = "";
+    [ObservableProperty] private string remainingTimeText = "00:00";
+    [ObservableProperty] private double progressDashOffset;
+    [ObservableProperty] private bool isRunning;
+    [ObservableProperty] private bool isPaused;
 
     public StudySessionViewModel(
         LearningProgressService learningProgressService,
@@ -46,38 +34,23 @@ public partial class StudySessionViewModel : ViewModelBase
         _navigationService = navigationService;
     }
 
-    // =====================
-    // Init
-    // =====================
-
     public void Init(LearningProgressEntity unit)
     {
-        _unit = unit;
+        Title = $"{unit.Subject} – {unit.ModuleName}";
 
-        Title = $"{_unit.Subject} – {_unit.ModuleName}";
+        _total = unit.PlannedEnd.TimeOfDay - unit.PlannedStart.TimeOfDay;
+        _remaining = _total;
 
-        // 🔑 NUR Dauer, Datum egal
-        _remaining =
-            _unit.PlannedEnd.TimeOfDay -
-            _unit.PlannedStart.TimeOfDay;
-
-        if (_remaining < TimeSpan.Zero)
-            _remaining = TimeSpan.Zero;
-
-        UpdateText();
+        UpdateUi();
 
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
-        _timer.Tick += (_, __) => Tick();
+        _timer.Tick += (_, _) => Tick();
 
         Start();
     }
-
-    // =====================
-    // Timer
-    // =====================
 
     private void Tick()
     {
@@ -87,19 +60,18 @@ public partial class StudySessionViewModel : ViewModelBase
             return;
         }
 
-        _remaining = _remaining.Subtract(TimeSpan.FromSeconds(1));
-        UpdateText();
+        _remaining -= TimeSpan.FromSeconds(1);
+        UpdateUi();
     }
 
-    private void UpdateText()
+    private void UpdateUi()
     {
         RemainingTimeText =
             $"{(int)_remaining.TotalMinutes:D2}:{_remaining.Seconds:D2}";
-    }
 
-    // =====================
-    // Commands
-    // =====================
+        var progress = _remaining.TotalSeconds / _total.TotalSeconds;
+        ProgressDashOffset = CircleLength * (1 - progress);
+    }
 
     [RelayCommand]
     private void Start()
@@ -112,8 +84,8 @@ public partial class StudySessionViewModel : ViewModelBase
     [RelayCommand]
     private void Pause()
     {
-        IsPaused = true;
         IsRunning = false;
+        IsPaused = true;
         _timer.Stop();
     }
 
@@ -121,9 +93,7 @@ public partial class StudySessionViewModel : ViewModelBase
     private async Task FinishAsync()
     {
         _timer.Stop();
-
-        await _learningProgressService.MarkCompletedAsync(_unit.Id);
-
+        await _learningProgressService.MarkCompletedAsync(Guid.NewGuid());
         _navigationService.NavigateTo<ShellViewModel>();
     }
 }

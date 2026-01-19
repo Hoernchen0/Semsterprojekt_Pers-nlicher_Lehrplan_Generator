@@ -87,4 +87,10 @@ public partial class RegisterViewModel : ViewModelBase
 
         return null;
     }
+
+    [RelayCommand]
+    private void NavigateToLogin()
+    {
+        _navigationService.NavigateTo<LoginViewModel>();
+    }
 }

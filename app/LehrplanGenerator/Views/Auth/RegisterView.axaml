@@ -9,6 +9,7 @@
     <Grid>
 
         <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
+
         <!--  Centered Card  -->
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <Grid
@@ -88,25 +89,38 @@
                         <!--  Error  -->
                         <TextBlock
                             FontSize="13"
-                            Foreground="#DC2626"
+                            Foreground="{DynamicResource TextError}"
                             Text="{Binding ErrorMessage}"
                             TextWrapping="Wrap" />
 
                         <!--  Primary Action  -->
-                        <Button Classes="primary" Command="{Binding RegisterCommand}">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Text="Konto erstellen" />
-                        </Button>
+                        <Button
+                            Classes="primary"
+                            Command="{Binding RegisterCommand}"
+                            Content="Konto erstellen" />
 
                         <!--  Secondary Action  -->
-                        <TextBlock
-                            Cursor="Hand"
-                            FontSize="13"
-                            Foreground="{DynamicResource AccentPrimary}"
-                            Text="Du hast bereits ein Konto? Anmelden"
-                            TextAlignment="Center" />
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="4">
+
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="13"
+                                Foreground="{DynamicResource TextSecondary}"
+                                Text="Du hast bereits ein Konto?" />
+
+                            <Button
+                                MinHeight="0"
+                                Padding="0"
+                                VerticalAlignment="Center"
+                                Classes="link"
+                                Command="{Binding NavigateToLoginCommand}"
+                                Content="Anmelden"
+                                FontSize="13" />
+                        </StackPanel>
 
                     </StackPanel>
                 </Border>

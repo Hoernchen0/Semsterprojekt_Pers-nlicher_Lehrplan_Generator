@@ -1,5 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--  ================= BUTTON TRANSITIONS =================  -->
+    <!--  Sanfte, ruhige Animationen – kein UI-Gewackel  -->
+
     <Style Selector="Button">
         <Setter Property="Transitions">
             <Transitions>
@@ -9,20 +12,32 @@
         </Setter>
     </Style>
 
+    <!--  ================= PRIMARY BUTTON =================  -->
+    <!--  Hover: leicht dunkler  -->
     <Style Selector="Button.primary:pointerover">
-        <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+        <Setter Property="Background" Value="{DynamicResource AccentPrimaryHover}" />
     </Style>
 
+    <!--  Pressed: minimal dunkler + etwas weniger Opacity  -->
     <Style Selector="Button.primary:pressed">
-        <Setter Property="Background" Value="#23262c" />
+        <Setter Property="Background" Value="{DynamicResource AccentPrimaryPressed}" />
+        <Setter Property="Opacity" Value="0.95" />
     </Style>
 
-    <Style Selector="Button.secondary:pointerover">
-        <Setter Property="Opacity" Value="0.92" />
-    </Style>
-
-    <Style Selector="Button.secondary:pressed">
+    <!--  ================= LINK BUTTON =================  -->
+    <!--  Nur Opacity, kein Farbwechsel  -->
+    <Style Selector="Button.link:pointerover">
         <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+    <Style Selector="Button.link:pressed">
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+    <!--  ================= LISTBOX ITEM =================  -->
+    <!--  Subtiler Hover, KEINE Farbe (Selection kommt aus Controls)  -->
+    <Style Selector="ListBoxItem:pointerover">
+        <Setter Property="Opacity" Value="0.97" />
     </Style>
 
 </Styles>

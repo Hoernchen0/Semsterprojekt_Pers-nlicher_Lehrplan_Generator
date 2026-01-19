@@ -12,28 +12,53 @@ public partial class GuideViewModel : ViewModelBase
     private readonly AppState _appState;
     private readonly INavigationService _navigationService;
 
-    [ObservableProperty]
-    private int currentStep = 1;
-
-    public int totalSteps => 3;
+    // =====================
+    // DATA
+    // =====================
 
     public IReadOnlyList<string> StudyPrograms { get; } =
         new[] { "AIN", "ITP" };
 
-    [ObservableProperty]
-    private string? selectedStudyProgram;
-
     public IReadOnlyList<int> Semesters { get; } =
         new[] { 1, 2, 3, 4, 5, 6, 7 };
+
+    // =====================
+    // STATE
+    // =====================
+
+    [ObservableProperty]
+    private string? selectedStudyProgram;
 
     [ObservableProperty]
     private int? selectedSemester;
 
+    // OPTIONAL
     [ObservableProperty]
     private string? schedulePdfPath;
 
     [ObservableProperty]
     private string? errorMessage;
+
+    // 🔥 NEU: Wurde bereits versucht zu submitten?
+    [ObservableProperty]
+    private bool triedSubmit;
+
+    // =====================
+    // VALIDATION FLAGS (für View)
+    // =====================
+
+    public bool ShowStudyProgramError =>
+        TriedSubmit && string.IsNullOrWhiteSpace(SelectedStudyProgram);
+
+    public bool ShowSemesterError =>
+        TriedSubmit && SelectedSemester is null;
+
+    public bool HasGlobalError =>
+        TriedSubmit && !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    // =====================
+    // CTOR
+    // =====================
 
     public GuideViewModel(AppState appState, INavigationService navigationService)
     {
@@ -41,51 +66,58 @@ public partial class GuideViewModel : ViewModelBase
         _navigationService = navigationService;
     }
 
+    // =====================
+    // COMMAND
+    // =====================
+
     [RelayCommand]
-    private void Next()
+    private void Generate()
     {
-        ErrorMessage = ValidateStep();
+        TriedSubmit = true;
+
+        ErrorMessage = ValidateInput();
+        NotifyValidationChanged();
+
         if (ErrorMessage != null)
             return;
 
-        if (CurrentStep < totalSteps)
-        {
-            CurrentStep++;
-            return;
-        }
+        // TODO: später sauber ins AppState schreiben
+        // _appState.StudyProgram = SelectedStudyProgram!;
+        // _appState.Semester = SelectedSemester!.Value;
+        // _appState.SchedulePdfPath = SchedulePdfPath;
 
-        FinishGuide();
+        _navigationService.NavigateTo<ShellViewModel>();
     }
 
-    [RelayCommand]
-    private void Back()
-    {
-        if (CurrentStep > 1)
-            CurrentStep--;
-    }
+    // =====================
+    // VALIDATION
+    // =====================
 
-    [RelayCommand]
-    private void Skip()
+    private string? ValidateInput()
     {
-        FinishGuide();
-    }
+        if (string.IsNullOrWhiteSpace(SelectedStudyProgram))
+            return "Bitte wähle deinen Studiengang aus.";
 
-    private string? ValidateStep()
-    {
-        if (CurrentStep == 1)
-        {
-            if (string.IsNullOrWhiteSpace(SelectedStudyProgram))
-                return "Bitte wähle deinen Studiengang aus.";
-
-            if (SelectedSemester is null)
-                return "Bitte wähle dein aktuelles Semester aus.";
-        }
+        if (SelectedSemester is null)
+            return "Bitte wähle dein aktuelles Semester aus.";
 
         return null;
     }
 
-    private void FinishGuide()
+    // =====================
+    // CHANGE TRACKING
+    // =====================
+
+    partial void OnSelectedStudyProgramChanged(string? value)
+        => NotifyValidationChanged();
+
+    partial void OnSelectedSemesterChanged(int? value)
+        => NotifyValidationChanged();
+
+    private void NotifyValidationChanged()
     {
-        _navigationService.NavigateTo<ShellViewModel>();
+        OnPropertyChanged(nameof(ShowStudyProgramError));
+        OnPropertyChanged(nameof(ShowSemesterError));
+        OnPropertyChanged(nameof(HasGlobalError));
     }
 }
