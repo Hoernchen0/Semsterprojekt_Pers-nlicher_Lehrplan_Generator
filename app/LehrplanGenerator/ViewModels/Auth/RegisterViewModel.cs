@@ -32,26 +32,53 @@ public partial class RegisterViewModel : ViewModelBase
     [RelayCommand]
     private void Register()
     {
-        ErrorMessage = ValidateInput();
-        if (ErrorMessage != null)
-            return;
+        try
+        {
+            Console.WriteLine("=== Registrierung Start ===");
+            
+            ErrorMessage = ValidateInput();
+            if (ErrorMessage != null)
+            {
+                Console.WriteLine($"❌ Validierung fehlgeschlagen: {ErrorMessage}");
+                return;
+            }
 
-        var userId = Guid.NewGuid();
+            Console.WriteLine("✓ Validierung erfolgreich");
 
-        var user = new UserCredential(
-            userId,
-            FirstName,
-            LastName,
-            Username,
-            PasswordHasher.Hash(Password)
-        );
+            var userId = Guid.NewGuid();
+            Console.WriteLine($"✓ UserID erstellt: {userId}");
 
-        _store.Add(user);
+            var user = new UserCredential(
+                userId,
+                FirstName,
+                LastName,
+                Username,
+                PasswordHasher.Hash(Password)
+            );
+            
+            Console.WriteLine($"✓ UserCredential erstellt");
 
-        _appState.CurrentUserId = user.UserId;
-        _appState.CurrentUserDisplayName = $"{user.FirstName} {user.LastName}";
+            _store.Add(user);
+            Console.WriteLine($"✓ Benutzer in Store hinzugefügt");
 
-        _navigationService.NavigateTo<ShellViewModel>();
+            _appState.CurrentUserId = user.UserId;
+            _appState.CurrentUserDisplayName = $"{user.FirstName} {user.LastName}";
+            
+            Console.WriteLine($"✓ AppState aktualisiert");
+
+            Console.WriteLine($"✓ Benutzer {Username} erfolgreich registriert");
+
+            _navigationService.NavigateTo<ShellViewModel>();
+            Console.WriteLine("✓ Navigation zu ShellViewModel erfolgreich");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ FEHLER bei Registrierung: {ex.GetType().Name}");
+            Console.WriteLine($"❌ Nachricht: {ex.Message}");
+            Console.WriteLine($"❌ Stack Trace: {ex.StackTrace}");
+            
+            ErrorMessage = $"Fehler bei der Registrierung: {ex.Message}";
+        }
     }
 
     [RelayCommand]

@@ -60,6 +60,24 @@ public class ChatRepository : IChatRepository
 
     public async Task<ChatMessageEntity> SaveMessageAsync(Guid sessionId, Guid userId, string sender, string text)
     {
+        // Überprüfe ob die Session existiert, sonst erstelle sie
+        var session = await _context.ChatSessions.FindAsync(sessionId);
+        if (session == null)
+        {
+            Console.WriteLine($"⚠ Chat-Session {sessionId} existiert nicht. Erstelle sie jetzt...");
+            session = new ChatSessionEntity
+            {
+                SessionId = sessionId,
+                UserId = userId,
+                Title = $"Chat vom {DateTime.UtcNow:dd.MM.yyyy HH:mm}",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.ChatSessions.Add(session);
+            await _context.SaveChangesAsync();
+            Console.WriteLine($"✓ Chat-Session erstellt");
+        }
+
         var message = new ChatMessageEntity
         {
             MessageId = Guid.NewGuid(),
@@ -73,14 +91,11 @@ public class ChatRepository : IChatRepository
         _context.ChatMessages.Add(message);
 
         // Update session UpdatedAt
-        var session = await _context.ChatSessions.FindAsync(sessionId);
-        if (session != null)
-        {
-            session.UpdatedAt = DateTime.UtcNow;
-            _context.ChatSessions.Update(session);
-        }
+        session.UpdatedAt = DateTime.UtcNow;
+        _context.ChatSessions.Update(session);
 
         await _context.SaveChangesAsync();
+        Console.WriteLine($"✓ Nachricht gespeichert ({sender}): {text.Substring(0, Math.Min(50, text.Length))}...");
         return message;
     }
 

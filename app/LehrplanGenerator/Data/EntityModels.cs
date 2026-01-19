@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Models.Chat;
 
@@ -91,6 +92,13 @@ public class DayPlanEntity
     // Navigation Properties
     public UserCredentialEntity? User { get; set; }
     public ICollection<TaskItemEntity> Tasks { get; set; } = new List<TaskItemEntity>();
+
+    // Konvertierung zu DayPlan Model
+    public DayPlan ToDayPlan()
+    {
+        var tasks = Tasks.Select(t => t.ToTaskItem()).ToList();
+        return new DayPlan(Day, tasks);
+    }
 }
 
 // Task Item Entity (einzelne Aufgabe im Kalender)

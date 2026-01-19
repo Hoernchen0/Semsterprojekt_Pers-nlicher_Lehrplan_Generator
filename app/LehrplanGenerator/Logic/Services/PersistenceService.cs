@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LehrplanGenerator.Data.Repositories;
 using LehrplanGenerator.Logic.Models;
@@ -33,6 +34,8 @@ public class PersistenceService
     /// </summary>
     public async Task SaveCalendarAsync(Guid userId, string day, DayPlan dayPlan)
     {
+        Console.WriteLine($"📅 Speichere DayPlan für {day} mit {dayPlan.Tasks?.Count ?? 0} Tasks");
+        
         // Überprüfe ob ein DayPlan für diesen Tag bereits existiert
         var existingDayPlan = await _calendarRepository.GetDayPlanAsync(userId, day);
 
@@ -40,12 +43,14 @@ public class PersistenceService
 
         if (existingDayPlan != null)
         {
+            Console.WriteLine($"  → Update existierenden DayPlan");
             // Update existierenden DayPlan
             dayPlanEntity = existingDayPlan;
             dayPlanEntity.Tasks.Clear();
         }
         else
         {
+            Console.WriteLine($"  → Erstelle neuen DayPlan");
             // Neuen DayPlan erstellen
             dayPlanEntity = new DayPlanEntity
             {
@@ -56,12 +61,14 @@ public class PersistenceService
         }
 
         // Füge alle Tasks hinzu
-        if (dayPlan.Tasks != null)
+        if (dayPlan.Tasks != null && dayPlan.Tasks.Any())
         {
+            Console.WriteLine($"  → Füge {dayPlan.Tasks.Count} Tasks hinzu");
             foreach (var task in dayPlan.Tasks)
             {
                 var taskEntity = TaskItemEntity.FromTaskItem(task, dayPlanEntity.DayPlanId);
                 dayPlanEntity.Tasks.Add(taskEntity);
+                Console.WriteLine($"    • {task.Title}");
             }
         }
 
@@ -69,10 +76,12 @@ public class PersistenceService
         if (existingDayPlan != null)
         {
             await _calendarRepository.UpdateDayPlanAsync(dayPlanEntity);
+            Console.WriteLine($"✓ DayPlan aktualisiert");
         }
         else
         {
             await _calendarRepository.AddDayPlanAsync(dayPlanEntity);
+            Console.WriteLine($"✓ DayPlan gespeichert");
         }
     }
 

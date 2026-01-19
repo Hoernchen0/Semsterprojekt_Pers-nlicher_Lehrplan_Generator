@@ -26,14 +26,38 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        AvaloniaXamlLoader.Load(this);
+        try
+        {
+            Console.WriteLine("=== App.Initialize() Start ===");
+            AvaloniaXamlLoader.Load(this);
 
-        var services = new ServiceCollection();
-        ConfigureServices(services);
-        Services = services.BuildServiceProvider();
-        
-        // Initialisiere die Datenbank (erstelle Tabellen, falls nicht vorhanden)
-        ServiceExtensions.InitializeDatabase(Services);
+            Console.WriteLine("✓ XAML geladen");
+
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            Services = services.BuildServiceProvider();
+            
+            Console.WriteLine("✓ ServiceProvider erstellt");
+            
+            // Initialisiere die Datenbank (erstelle Tabellen, falls nicht vorhanden)
+            Console.WriteLine("→ InitializeDatabase()");
+            ServiceExtensions.InitializeDatabase(Services);
+            Console.WriteLine("✓ Datenbank initialisiert");
+            
+            Console.WriteLine("=== App.Initialize() erfolgreich ===");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ KRITISCHER FEHLER in App.Initialize():");
+            Console.WriteLine($"   Type: {ex.GetType().Name}");
+            Console.WriteLine($"   Message: {ex.Message}");
+            Console.WriteLine($"   Stack: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"   Inner: {ex.InnerException.Message}");
+            }
+            throw; // Re-throw so app shows error
+        }
     }
 
     private void ConfigureServices(IServiceCollection services)
