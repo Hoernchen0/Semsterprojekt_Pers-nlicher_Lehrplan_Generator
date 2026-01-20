@@ -13,7 +13,7 @@ namespace LehrplanGenerator.Logic.AI;
 
 public class StudyPlanGeneratorService
 {
-    private readonly OpenAIClient? _client;
+    private readonly OpenAIClient _client;
     private readonly List<Message> _conversation;
     private const string ModelName = "gpt-5-chat";
 
@@ -25,21 +25,11 @@ public class StudyPlanGeneratorService
         if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(apiKey))
         {
             _client = null;
-            Console.WriteLine("⚠ Azure OpenAI nicht konfiguriert (fehlende Umgebungsvariablen)");
         }
         else
         {
-            try
-            {
-                var settings = new OpenAISettings(domain: endpoint);
-                _client = new OpenAIClient(apiKey, settings);
-                Console.WriteLine("✓ Azure OpenAI verbunden");
-            }
-            catch (Exception ex)
-            {
-                _client = null;
-                Console.WriteLine($"❌ Azure OpenAI Fehler: {ex.Message}");
-            }
+            var settings = new OpenAISettings(resourceName: endpoint, deploymentId: ModelName, apiVersion: "2025-03-01-preview");
+            _client = new OpenAIClient(apiKey, settings);
         }
 
         _conversation = new List<Message>
@@ -58,14 +48,6 @@ public class StudyPlanGeneratorService
 
     public async Task<StudyPlan?> CreateStudyPlanAsync()
     {
-        // Wenn keine KI konfiguriert ist, gib Fehler zurück
-        if (_client == null)
-        {
-            Console.WriteLine("❌ Fehler: Azure OpenAI ist nicht konfiguriert.");
-            Console.WriteLine("   AZURE_OPENAI_ENDPOINT und OPENAI_API_KEY müssen gesetzt sein.");
-            return null;
-        }
-
         var heute = DateTime.Now.ToString("dd.MM.yyyy");
 
         var systemMessage = new Message(Role.System,
@@ -84,7 +66,7 @@ public class StudyPlanGeneratorService
 
             if (studyPlan == null)
             {
-                Console.WriteLine("❌ Fehler: Antwort konnte nicht in StudyPlan geparst werden.");
+                Console.WriteLine("Fehler: Antwort konnte nicht in StudyPlan geparst werden.");
                 return null;
             }
 
@@ -100,15 +82,9 @@ public class StudyPlanGeneratorService
     }
     public async Task<bool> UploadPdfAsync(string pdfPath)
     {
-        if (_client == null)
-        {
-            Console.WriteLine("❌ Fehler: Azure OpenAI ist nicht konfiguriert. PDF kann nicht verarbeitet werden.");
-            return false;
-        }
-
         if (!File.Exists(pdfPath))
         {
-            Console.WriteLine("❌ Datei existiert nicht!");
+            Console.WriteLine("Datei existiert nicht!");
             return false;
         }
 
@@ -121,7 +97,7 @@ public class StudyPlanGeneratorService
 
             if (string.IsNullOrWhiteSpace(extractedText))
             {
-                Console.WriteLine("❌ Fehler: Kein Text aus der PDF extrahiert.");
+                Console.WriteLine("Fehler: Kein Text aus der PDF extrahiert.");
                 return false;
             }
 
@@ -134,12 +110,12 @@ public class StudyPlanGeneratorService
                 "Nutze den bereitgestellten PDF-Inhalt als Grundlage für Zusammenfassungen und den Lernplan."
             ));
 
-            Console.WriteLine($"✓ PDF-Text erfolgreich extrahiert und zur Konversation hinzugefügt.");
+            Console.WriteLine($"PDF-Text erfolgreich extrahiert und zur Konversation hinzugefügt.");
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Fehler beim Verarbeiten der PDF: {ex.Message}");
+            Console.WriteLine($"Fehler beim Verarbeiten der PDF: {ex.Message}");
             return false;
         }
     }
