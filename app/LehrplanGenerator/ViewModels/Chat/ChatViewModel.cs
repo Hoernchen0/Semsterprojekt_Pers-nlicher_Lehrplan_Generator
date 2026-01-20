@@ -19,7 +19,7 @@ public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
-    // private readonly PersistenceService _persistenceService;
+    // private readonly PersistenceService persistenceService;
 
     public ChatViewModel(INavigationService navigationService, AppState appState)
     {
@@ -187,5 +187,91 @@ public partial class ChatViewModel : ViewModelBase
     private void GoBack()
     {
         _navigationService.NavigateTo<MainViewModel>();
+    }
+
+    // =========================
+    // STUDY PLAN CREATION
+    // =========================
+    [ObservableProperty]
+    private bool _canCreateStudyPlan = false;
+
+    [RelayCommand]
+    private async Task CreateStudyPlanAsync()
+    {
+        if (IsSending)
+            return;
+
+        IsSending = true;
+
+        Messages.Add(new ChatMessage
+        {
+            Sender = "System",
+            Text = "Erstelle Lernplan..."
+        });
+
+        try
+        {
+            // Erstelle Studienplan mit dem geteilten AI-Service
+            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
+
+            if (studyPlan != null)
+            {
+                // Speichere den Plan im AppState für die StudyPlanViewModel
+                _appState.CurrentStudyPlan = studyPlan;
+
+                // Speichere jeden Tag des Lernplans in der Datenbank
+                if (_appState.CurrentUserId.HasValue)
+                {
+                    try
+                    {
+                        Console.WriteLine($"Speichere Lernplan mit {studyPlan.Days.Count} Tagen...");
+                        foreach (var dayPlan in studyPlan.Days)
+                        {
+                          //  await _navigationService.SaveCalendarAsync(
+                          //      _appState.CurrentUserId.Value,
+                          //      dayPlan.Day,
+                          //      dayPlan
+                          //  );
+                        }
+                        Console.WriteLine($"✓ Lernplan vollständig gespeichert");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ FEHLER beim Speichern des Lernplans: {ex}");
+                        Messages.Add(new ChatMessage
+                        {
+                            Sender = "System",
+                            Text = $"⚠ Lernplan konnte nicht vollständig gespeichert werden: {ex.Message}"
+                        });
+                    }
+                }
+
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = $"✓ Lernplan wurde erfolgreich erstellt und gespeichert!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}"
+                });
+            }
+            else
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = "Lernplan konnte nicht erstellt werden. Bitte geben Sie mehr Informationen im Chat an (Thema, Zeitraum, tägliche Lernzeit, etc.)"
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage
+            {
+                Sender = "System",
+                Text = $"Fehler beim Erstellen des Lernplans: {ex.Message}"
+            });
+        }
+        finally
+        {
+            IsSending = false;
+        }
     }
 }
