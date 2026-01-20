@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using LehrplanGenerator.Models.Chat;
+using Avalonia.Platform.Storage;
+
 
 namespace LehrplanGenerator.ViewModels.Chat;
 
@@ -53,59 +54,87 @@ public partial class ChatViewModel : ViewModelBase
     private bool isSending;
 
     // =========================
-    // ATTACHMENT (TEMP)
-    // =========================
-    [ObservableProperty]
-    private string? pendingFilePath;
-
-    public bool HasPendingFile => !string.IsNullOrWhiteSpace(PendingFilePath);
-
-    partial void OnPendingFilePathChanged(string? value)
-    {
-        OnPropertyChanged(nameof(HasPendingFile));
-    }
-
-    // =========================
     // COMMANDS
     // =========================
 
     [RelayCommand]
-    private async Task UploadDocumentAsync()
+    private async Task UploadAsync()
     {
-        var dialog = new OpenFileDialog
+        try
         {
-            AllowMultiple = false,
-            Title = "Dokument auswählen",
-            Filters =
+            // StorageProvider vom Hauptfenster holen
+            var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            var mainWindow = lifetime?.MainWindow;
+            
+            if (mainWindow == null)
             {
-                new FileDialogFilter
+                Messages.Add(new ChatMessage
                 {
-                    Name = "Dokumente",
-                    Extensions = { "pdf", "txt", "docx" }
-                }
+                    Sender = "System",
+                    FullText = "Fehler: Hauptfenster nicht verfügbar.",
+                    DisplayedText = "Fehler: Hauptfenster nicht verfügbar."
+                });
+                return;
             }
-        };
 
-        if (Avalonia.Application.Current?.ApplicationLifetime
-            is not IClassicDesktopStyleApplicationLifetime desktop)
-            return;
+            // File-Picker konfigurieren
+            var options = new FilePickerOpenOptions
+            {
+                Title = "PDF-Datei auswählen",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("PDF-Dateien")
+                    {
+                        Patterns = new[] { "*.pdf" },
+                        MimeTypes = new[] { "application/pdf" }
+                    }
+                }
+            };
 
-        var parent = desktop.MainWindow;
-        if (parent is null)
-            return;
+            // Datei-Dialog öffnen
+            var files = await mainWindow.StorageProvider.OpenFilePickerAsync(options);
+            
+            if (files.Count == 0)
+            {
+                // Benutzer hat abgebrochen
+                return;
+            }
 
-        var result = await dialog.ShowAsync(parent);
+            var selectedFile = files[0];
+            var filePath = selectedFile.Path.LocalPath;
 
-        if (result is { Length: > 0 })
-        {
-            PendingFilePath = result[0];
+            // PDF an AI-Service übergeben
+            var success = await _appState.AiService.UploadPdfAsync(filePath);
+
+            if (success)
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    FullText = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!",
+                    DisplayedText = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!"
+                });
+            }
+            else
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    FullText = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'.",
+                    DisplayedText = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'."
+                });
+            }
         }
-    }
-
-    [RelayCommand]
-    private void ClearAttachment()
-    {
-        PendingFilePath = null;
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage
+            {
+                Sender = "System",
+                FullText = $"Fehler beim Hochladen: {ex.Message}",
+                DisplayedText = $"Fehler beim Hochladen: {ex.Message}"
+            });
+        }
     }
 
     [RelayCommand]
@@ -114,30 +143,17 @@ public partial class ChatViewModel : ViewModelBase
         if (IsSending)
             return;
 
-        if (string.IsNullOrWhiteSpace(InputText) && !HasPendingFile)
+        if (string.IsNullOrWhiteSpace(InputText))
             return;
 
         var userText = InputText.Trim();
-        var filePath = PendingFilePath;
-
         InputText = string.Empty;
-        PendingFilePath = null;
-
-        var displayText = userText;
-
-        if (!string.IsNullOrWhiteSpace(filePath))
-        {
-            var fileName = System.IO.Path.GetFileName(filePath);
-            displayText = string.IsNullOrWhiteSpace(userText)
-                ? $"📎 {fileName}"
-                : $"{userText}\n📎 {fileName}";
-        }
 
         Messages.Add(new ChatMessage
         {
             Sender = "User",
-            FullText = displayText,
-            DisplayedText = displayText
+            FullText = userText,
+            DisplayedText = userText
         });
 
         IsSending = true;
