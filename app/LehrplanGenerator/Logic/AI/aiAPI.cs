@@ -13,7 +13,7 @@ namespace LehrplanGenerator.Logic.AI;
 
 public class StudyPlanGeneratorService
 {
-    private readonly OpenAIClient _client;
+    private readonly OpenAIClient? _client;
     private readonly List<Message> _conversation;
     private const string ModelName = "gpt-5-chat";
 
@@ -48,6 +48,12 @@ public class StudyPlanGeneratorService
 
     public async Task<StudyPlan?> CreateStudyPlanAsync()
     {
+        if (_client == null)
+        {
+            Console.WriteLine("Fehler: Azure OpenAI ist nicht konfiguriert.");
+            return null;
+        }
+
         var heute = DateTime.Now.ToString("dd.MM.yyyy");
 
         var systemMessage = new Message(Role.System,
@@ -78,6 +84,7 @@ try
     }
     
     }
+
     public async Task<bool> UploadPdfAsync(string pdfPath)
     {
         if (!File.Exists(pdfPath))

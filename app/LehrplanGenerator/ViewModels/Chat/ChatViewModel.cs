@@ -3,9 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
+using LehrplanGenerator.Data.Repositories;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
@@ -17,12 +19,71 @@ public partial class ChatViewModel : ViewModelBase
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
     private readonly PersistenceService _persistenceService;
+    private readonly IChatRepository _chatRepository;
 
-    public ChatViewModel(INavigationService navigationService, AppState appState, PersistenceService persistenceService)
+    public ChatViewModel(INavigationService navigationService, AppState appState, PersistenceService persistenceService, IChatRepository chatRepository)
     {
         _navigationService = navigationService;
         _appState = appState;
         _persistenceService = persistenceService;
+        _chatRepository = chatRepository;
+        
+        // Lade alte Chat-Nachrichten beim Initialisieren
+        LoadPreviousChatMessagesAsync();
+    }
+    
+    private async void LoadPreviousChatMessagesAsync()
+    {
+        if (!_appState.CurrentUserId.HasValue)
+            return;
+            
+        try
+        {
+            // Hole alle Chat-Sessions des Benutzers
+            var sessions = await _chatRepository.GetUserSessionsAsync(_appState.CurrentUserId.Value);
+            var sessionList = sessions.ToList();
+            
+            if (sessionList.Count == 0)
+            {
+                Console.WriteLine("Keine alten Chat-Sessions gefunden");
+                return;
+            }
+            
+            Console.WriteLine($"{sessionList.Count} Chat-Session(s) gefunden");
+            
+            // Lade Nachrichten der neuesten Session
+            var latestSession = sessionList.First();
+            _appState.CurrentChatSessionId = latestSession.SessionId;
+            
+            var messages = await _chatRepository.GetSessionMessagesAsync(latestSession.SessionId);
+            var messageList = messages.ToList();
+            
+            if (messageList.Count == 0)
+            {
+                Console.WriteLine("ℹ Keine Nachrichten in dieser Session");
+                return;
+            }
+            
+            Console.WriteLine($"Lade {messageList.Count} Nachrichten...");
+            
+            // Füge alle Nachrichten in die UI ein
+            Messages.Clear();
+            foreach (var msg in messageList.OrderBy(m => m.CreatedAt))
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Sender = msg.Sender,
+                    Text = msg.Text
+                });
+                Console.WriteLine($"  • {msg.Sender}: {msg.Text.Substring(0, Math.Min(50, msg.Text.Length))}...");
+            }
+            
+            Console.WriteLine($"{messageList.Count} Nachrichten wiederhergestellt");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Laden der Chat-Nachrichten: {ex}");
+        }
     }
 
     public ObservableCollection<ChatMessage> Messages => _appState.ChatMessages;
@@ -65,16 +126,23 @@ public partial class ChatViewModel : ViewModelBase
         {
             try
             {
+                Console.WriteLine($"Speichere User-Nachricht: '{userMessage}'");
                 await _persistenceService.SaveChatMessageAsync(
                     _appState.CurrentUserId.Value,
                     _appState.CurrentChatSessionId.Value,
                     displayMessage.Sender,
                     userMessage
                 );
+                Console.WriteLine($"User-Nachricht gespeichert");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Speichern der User-Nachricht: {ex.Message}");
+                Console.WriteLine($"FEHLER beim Speichern der User-Nachricht: {ex}");
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = $"Nachricht konnte nicht gespeichert werden: {ex.Message}"
+                });
             }
         }
 
@@ -84,10 +152,30 @@ public partial class ChatViewModel : ViewModelBase
         try
         {
             // API aufrufen
+
             var response = await _appState.AiService.AskGptAsync(userMessage);
 
-            if (!string.IsNullOrEmpty(response))
+            if (response == null)
             {
+                Console.WriteLine($"SendAsync: API hat NULL zurückgegeben!");
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = "Fehler: Die KI hat nicht geantwortet. Bitte überprüfe die Konsole für Details."
+                });
+            }
+            else if (string.IsNullOrEmpty(response))
+            {
+                Console.WriteLine($"⚠ SendAsync: API hat leeren String zurückgegeben");
+                Messages.Add(new ChatMessage
+                {
+                    Sender = "System",
+                    Text = "⚠ Die KI hat eine leere Antwort gegeben."
+                });
+            }
+            else
+            {
+                Console.WriteLine($"✓ SendAsync: Gültige Response erhalten");
                 // Assistant-Antwort hinzufügen
                 var aiMessage = new ChatMessage
                 {
@@ -101,26 +189,35 @@ public partial class ChatViewModel : ViewModelBase
                 {
                     try
                     {
+                        Console.WriteLine($"💾 Speichere KI-Antwort ({response.Length} Zeichen)");
                         await _persistenceService.SaveChatMessageAsync(
                             _appState.CurrentUserId.Value,
                             _appState.CurrentChatSessionId.Value,
                             "KI-Assistent",
                             response
                         );
+                        Console.WriteLine($"✓ KI-Antwort gespeichert");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Fehler beim Speichern der KI-Antwort: {ex.Message}");
+                        Console.WriteLine($"❌ FEHLER beim Speichern der KI-Antwort: {ex}");
+                        Messages.Add(new ChatMessage
+                        {
+                            Sender = "System",
+                            Text = $"⚠ KI-Antwort konnte nicht gespeichert werden: {ex.Message}"
+                        });
                     }
                 }
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"❌ SendAsync EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"   Stack: {ex.StackTrace}");
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                Text = $"Fehler bei der Kommunikation mit der KI: {ex.Message}"
+                Text = $"❌ Fehler bei der Kommunikation mit der KI: {ex.Message}"
             });
         }
         finally
@@ -158,6 +255,7 @@ public partial class ChatViewModel : ViewModelBase
                 {
                     try
                     {
+                        Console.WriteLine($"📅 Speichere Lernplan mit {studyPlan.Days.Count} Tagen...");
                         foreach (var dayPlan in studyPlan.Days)
                         {
                             await _persistenceService.SaveCalendarAsync(
@@ -166,10 +264,16 @@ public partial class ChatViewModel : ViewModelBase
                                 dayPlan
                             );
                         }
+                        Console.WriteLine($"✓ Lernplan vollständig gespeichert");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Fehler beim Speichern des Kalenders: {ex.Message}");
+                        Console.WriteLine($"❌ FEHLER beim Speichern des Lernplans: {ex}");
+                        Messages.Add(new ChatMessage
+                        {
+                            Sender = "System",
+                            Text = $"⚠ Lernplan konnte nicht vollständig gespeichert werden: {ex.Message}"
+                        });
                     }
                 }
 
