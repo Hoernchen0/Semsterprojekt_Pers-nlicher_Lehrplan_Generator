@@ -1,0 +1,80 @@
+<Styles xmlns="https://github.com/avaloniaui">
+
+    <!--  ================= TEXTBOX =================  -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource InputBg}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <!--  🔥 FOCUS = GRÜN (nicht lila)  -->
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+    </Style>
+
+    <!--  ================= BUTTONS =================  -->
+    <Style Selector="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccent}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AccentPrimaryHover}" />
+    </Style>
+
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="Background" Value="{DynamicResource AccentPrimaryPressed}" />
+    </Style>
+
+    <!--  ================= PROGRESS BAR =================  -->
+    <Style Selector="ProgressBar">
+        <Setter Property="Foreground" Value="{DynamicResource AccentPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <!--  ================= LISTBOX =================  -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="ListBoxItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <!--  ❌ Default Lila komplett killen  -->
+    <Style Selector="ListBoxItem:selected">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ListBoxItem:pressed">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!--  ✅ UNSER aktiver Lernplan  -->
+    <Style Selector="ListBoxItem:selected Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource AccentPrimarySoft}" />
+    </Style>
+
+</Styles>

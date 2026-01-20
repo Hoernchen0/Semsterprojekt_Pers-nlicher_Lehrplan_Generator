@@ -6,10 +6,9 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
-using Microsoft.Extensions.DependencyInjection;
 using LehrplanGenerator.ViewModels.Chat;
 using LehrplanGenerator.ViewModels.StudyPlan;
-using LehrplanGenerator.Data.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LehrplanGenerator.ViewModels.Shell;
 
@@ -28,7 +27,10 @@ public partial class ShellViewModel : ViewModelBase
     [ObservableProperty]
     private string selectedTab = "Home";
 
-    public ShellViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public ShellViewModel(
+        UserCredentialStore store,
+        INavigationService navigationService,
+        AppState appState)
     {
         _store = store;
         _navigationService = navigationService;
@@ -43,43 +45,19 @@ public partial class ShellViewModel : ViewModelBase
         ShowHome();
     }
 
+    // =========================
+    // HOME / DASHBOARD
+    // =========================
     [RelayCommand]
     private void ShowHome()
     {
-        try
-        {
-            Console.WriteLine("ShowHome() Start");
-            SelectedTab = "Home";
-            
-            Console.WriteLine("  → GetRequiredService<ICalendarRepository>");
-            var calendarRepository = App.Services.GetRequiredService<ICalendarRepository>();
-            Console.WriteLine($"  ✓ CalendarRepository erhalten");
-            
-            Console.WriteLine("  → Erstelle DashboardViewModel");
-            CurrentContent = new DashboardViewModel(_appState, calendarRepository);
-            Console.WriteLine("✓ Dashboard geladen");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ FEHLER beim Laden des Dashboards: {ex.GetType().Name}");
-            Console.WriteLine($"❌ Nachricht: {ex.Message}");
-            Console.WriteLine($"❌ Stack Trace: {ex.StackTrace}");
-            
-            // Fallback
-            try
-            {
-                Console.WriteLine("  → Fallback: Erstelle DashboardViewModel ohne Repository");
-                SelectedTab = "Home";
-                CurrentContent = new DashboardViewModel(_appState, null!);
-                Console.WriteLine("✓ Dashboard (Fallback) geladen");
-            }
-            catch (Exception fallbackEx)
-            {
-                Console.WriteLine($"❌ FEHLER auch beim Fallback: {fallbackEx}");
-            }
-        }
+        SelectedTab = "Home";
+        CurrentContent = App.Services.GetRequiredService<DashboardViewModel>();
     }
 
+    // =========================
+    // SETTINGS
+    // =========================
     [RelayCommand]
     private void ShowSettings()
     {
@@ -87,6 +65,9 @@ public partial class ShellViewModel : ViewModelBase
         CurrentContent = App.Services.GetRequiredService<SettingsViewModel>();
     }
 
+    // =========================
+    // CHAT
+    // =========================
     [RelayCommand]
     private void ShowChat()
     {
@@ -102,6 +83,9 @@ public partial class ShellViewModel : ViewModelBase
         }
     }
 
+    // =========================
+    // STUDY PLAN / KALENDER
+    // =========================
     [RelayCommand]
     private void ShowStudyPlan()
     {
@@ -109,12 +93,14 @@ public partial class ShellViewModel : ViewModelBase
         CurrentContent = App.Services.GetRequiredService<StudyPlanViewModel>();
     }
 
+    // =========================
+    // LOGOUT
+    // =========================
     [RelayCommand]
     private void Logout()
     {
         _appState.CurrentUserId = null;
         _appState.CurrentUserDisplayName = null;
-
         _navigationService.NavigateTo<MainViewModel>();
     }
 }

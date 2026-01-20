@@ -1,14 +1,14 @@
 ﻿using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.ViewModels.Auth;
 using CommunityToolkit.Mvvm.Input;
+using LehrplanGenerator.ViewModels.Guide;
+using LehrplanGenerator.ViewModels.Shell;
 
 namespace LehrplanGenerator.ViewModels.Main;
 
 public class MainViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
-
-    public string Greeting { get; } = "Willkommen!";
 
     public MainViewModel(INavigationService navigationService)
     {

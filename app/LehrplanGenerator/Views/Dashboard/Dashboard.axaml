@@ -1,148 +1,149 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
-             mc:Ignorable="d"
-             x:Class="LehrplanGenerator.Views.Dashboard.DashboardView"
-             x:DataType="vm:DashboardViewModel">
+<UserControl
+    x:Class="LehrplanGenerator.Views.Dashboard.DashboardView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
+    x:DataType="vm:DashboardViewModel">
 
-    <!-- ÄUSSERER CONTAINER MIT PADDING -->
-    <Border Background="#F8FAFC"
-            Padding="32">
+    <Grid Background="{DynamicResource BgPrimary}">
+        <Border Padding="32" Background="{DynamicResource BgPrimary}">
 
-        <Grid RowDefinitions="Auto,*">
+            <Grid RowDefinitions="Auto,*">
 
-            <!-- Header -->
-            <StackPanel Spacing="6">
-                <TextBlock Text="Dashboard"
-                           FontSize="28"
-                           FontWeight="SemiBold"
-                           Foreground="#020617"/>
+                <!--  HEADER  -->
+                <StackPanel Spacing="6">
+                    <TextBlock
+                        FontSize="28"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Text="Dashboard" />
 
-                <TextBlock Text="Willkommen zurück – dein Lernfortschritt im Überblick"
-                           FontSize="14"
-                           Foreground="#475569"/>
-            </StackPanel>
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource TextMuted}"
+                        Text="{Binding WelcomeMessage}" />
+                </StackPanel>
 
-            <!-- Content -->
-            <Grid Grid.Row="1"
-                  Margin="0,24,0,0"
-                  ColumnDefinitions="2*,1*"
-                  RowDefinitions="Auto,*"
-                  ColumnSpacing="24"
-                  RowSpacing="24">
+                <!--  CONTENT  -->
+                <Grid
+                    Grid.Row="1"
+                    Margin="0,24,0,0"
+                    ColumnDefinitions="1*,1*"
+                    ColumnSpacing="24"
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="24">
 
-                <!-- Lernfortschritt -->
-                <Border Background="#FFFFFF"
-                        BorderBrush="#E5E7EB"
-                        BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24">
+                    <!--  LERNFORTSCHRITT – OBEN LINKS  -->
+                    <Border
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Padding="24"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="16">
 
-                    <StackPanel Spacing="14">
-                        <TextBlock Text="Lernfortschritt"
-                                   FontSize="18"
-                                   FontWeight="Medium"
-                                   Foreground="#020617"/>
+                        <StackPanel Spacing="14">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Lernfortschritt" />
 
-                        <ProgressBar Value="65"
-                                     Maximum="100"
-                                     Height="10"
-                                     Background="#E5E7EB"
-                                     Foreground="#2563EB"/>
+                            <ProgressBar
+                                Height="10"
+                                Maximum="100"
+                                Value="{Binding ProgressPercent}" />
 
-                        <TextBlock Text="65 % des aktuellen Lernplans abgeschlossen"
-                                   FontSize="13"
-                                   Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource TextMuted}"
+                                Text="{Binding ProgressPercent, StringFormat='{}{0} % des aktuellen Lernplans abgeschlossen'}" />
+                        </StackPanel>
+                    </Border>
 
-                <!-- Nächste Lerneinheit -->
-                <Border Grid.Column="1"
-                        Background="#FFFFFF"
-                        BorderBrush="#E5E7EB"
-                        BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24">
+                    <!--  NÄCHSTE LERNEINHEIT – OBEN RECHTS  -->
+                    <Border
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Padding="24"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="16">
 
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="Nächste Lerneinheit"
-                                   FontSize="18"
-                                   FontWeight="Medium"
-                                   Foreground="#020617"/>
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Nächste Lerneinheit" />
 
-                        <TextBlock Text="Betriebssysteme – Threads und Synchronisation"
-                                   FontSize="14"
-                                   FontWeight="SemiBold"
-                                   Foreground="#020617"/>
+                            <TextBlock
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="{Binding NextUnitTitle}" />
 
-                        <TextBlock Text="Heute • 45 Minuten"
-                                   FontSize="13"
-                                   Foreground="#64748B"/>
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource TextMuted}"
+                                Text="{Binding NextUnitTime}" />
 
-                        <Button Content="Weiterlernen"
+                            <Button
                                 Height="40"
-                                Background="#1D4ED8"
-                                Foreground="White"
-                                CornerRadius="10"
-                                HorizontalContentAlignment="Center"
-                                Theme="{x:Null}"/>
-                    </StackPanel>
-                </Border>
+                                Classes="primary"
+                                Command="{Binding ContinueLearningCommand}"
+                                Content="Weiterlernen"
+                                IsEnabled="{Binding SelectedStudyPlan}" />
+                        </StackPanel>
+                    </Border>
 
-                <!-- Aktive Lernpläne -->
-                <Border Grid.Row="1"
-                        Grid.ColumnSpan="2"
-                        Background="#FFFFFF"
-                        BorderBrush="#E5E7EB"
-                        BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24">
+                    <!--  AKTIVE LERNPLÄNE – UNTEN LINKS  -->
+                    <Border
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Padding="20"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="16">
 
-                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Aktive Lernpläne" />
 
-                        <TextBlock Text="Aktive Lernpläne"
-                                   FontSize="18"
-                                   FontWeight="Medium"
-                                   Foreground="#020617"/>
+                            <ListBox
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ItemsSource="{Binding ActiveStudyPlans}"
+                                SelectedItem="{Binding SelectedStudyPlan}">
 
-                        <Border Background="#F8FAFC"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="16">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Algorithmen und Datenstrukturen"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"
-                                           Foreground="#020617"/>
-                                <TextBlock Text="Fortschritt: 40 %"
-                                           FontSize="13"
-                                           Foreground="#64748B"/>
-                            </StackPanel>
-                        </Border>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border
+                                            Padding="12"
+                                            Background="{DynamicResource BgPrimary}"
+                                            CornerRadius="10">
 
-                        <Border Background="#F8FAFC"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="16">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Netzwerke und Protokolle"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"
-                                           Foreground="#020617"/>
-                                <TextBlock Text="Fortschritt: 70 %"
-                                           FontSize="13"
-                                           Foreground="#64748B"/>
-                            </StackPanel>
-                        </Border>
+                                            <StackPanel Spacing="4">
+                                                <TextBlock
+                                                    FontSize="14"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextPrimary}"
+                                                    Text="{Binding Title}" />
 
-                    </StackPanel>
-                </Border>
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource TextMuted}"
+                                                    Text="Klicken zum Fortsetzen" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
 
+                </Grid>
             </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </UserControl>

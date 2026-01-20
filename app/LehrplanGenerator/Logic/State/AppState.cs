@@ -9,21 +9,43 @@ namespace LehrplanGenerator.Logic.State;
 
 public partial class AppState : ObservableObject
 {
+    // =========================
+    // AUTH / USER
+    // =========================
     [ObservableProperty]
-    private Guid? _currentUserId;
+    private Guid? currentUserId;
 
     [ObservableProperty]
-    private string? _currentUserDisplayName;
+    private string? currentUserDisplayName;
 
+    // =========================
+    // STUDY PLAN STATE
+    // =========================
     [ObservableProperty]
     private Guid? _currentChatSessionId; // Aktuelle Chat-Session für Datenbank-Persistierung
 
     [ObservableProperty]
     private StudyPlan? _currentStudyPlan;
+    private Guid? currentStudyPlanId;
 
-    // Chat-Nachrichten bleiben während der Session erhalten
-    public ObservableCollection<ChatMessage> ChatMessages { get; } = new ObservableCollection<ChatMessage>();
+    // (optional, falls du später eine Plan-Liste brauchst)
+    public ObservableCollection<StudyPlanEntity> StudyPlans { get; }
+        = new ObservableCollection<StudyPlanEntity>();
 
-    // Geteiltes AI-Service für Chat und StudyPlan
-    public StudyPlanGeneratorService AiService { get; } = new StudyPlanGeneratorService();
+    // =========================
+    // CHAT STATE
+    // =========================
+    public ObservableCollection<ChatMessage> ChatMessages { get; }
+        = new ObservableCollection<ChatMessage>();
+
+    // =========================
+    // SERVICES
+    // =========================
+    public StudyPlanGeneratorService AiService { get; }
+        = new StudyPlanGeneratorService();
+
+    // =========================
+    // DASHBOARD / SESSION
+    // =========================
+    public LearningProgressEntity? CurrentStudySession { get; set; }
 }

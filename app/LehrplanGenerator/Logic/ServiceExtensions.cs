@@ -47,6 +47,7 @@ public static class ServiceExtensions
         services.AddScoped<AuthServiceDb>();
         services.AddScoped<ChatServiceDb>();
         services.AddScoped<PersistenceService>();
+        services.AddScoped<LearningProgressService>();
 
         return services;
     }
