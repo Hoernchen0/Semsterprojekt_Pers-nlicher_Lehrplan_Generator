@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Models;
+using LehrplanGenerator.Logic.AI;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -20,6 +21,7 @@ public partial class StudyPlanViewModel : ViewModelBase
 {
     private readonly AppState _appState;
     private readonly LearningProgressService _learningProgressService;
+    private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
 
     [ObservableProperty]
     private ObservableCollection<StudyPlanEntity> studyPlans = new();
@@ -56,10 +58,12 @@ public partial class StudyPlanViewModel : ViewModelBase
 
     public StudyPlanViewModel(
         AppState appState,
-        LearningProgressService learningProgressService)
+        LearningProgressService learningProgressService,
+        StudyPlanGeneratorService studyPlanGeneratorService)
     {
         _appState = appState;
         _learningProgressService = learningProgressService;
+        _studyPlanGeneratorService = studyPlanGeneratorService;
         _ = LoadPlansAsync();
     }
 
@@ -132,5 +136,73 @@ public partial class StudyPlanViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsListView));
         OnPropertyChanged(nameof(IsCalendarView));
         OnPropertyChanged(nameof(CurrentViewModeLabel));
+    }
+
+    // =================================================
+    // CREATE NEW STUDY PLAN
+    // =================================================
+    [RelayCommand]
+    private async Task CreateNewPlan()
+    {
+        if (_appState.CurrentUserId == null)
+        {
+            ErrorMessage = "Kein Benutzer angemeldet!";
+            return;
+        }
+
+        IsLoading = true;
+        ErrorMessage = null;
+
+        try
+        {
+            Console.WriteLine($"📋 Starte KI-Lernplan-Generierung...");
+
+            // Frage KI um einen Plan zu erstellen
+            var planResponse = await _studyPlanGeneratorService.AskGptAsync(
+                "Erstelle einen Lernplan für Softwareentwicklung. " +
+                "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
+                "Das Studium beginnt morgen."
+            );
+
+            if (string.IsNullOrEmpty(planResponse))
+            {
+                ErrorMessage = "Fehler bei der KI-Generierung";
+                IsLoading = false;
+                return;
+            }
+
+            Console.WriteLine($"🤖 KI hat Lernplan geplant");
+
+            // Generiere den StudyPlan
+            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
+
+            if (studyPlan == null)
+            {
+                ErrorMessage = "Fehler beim Generieren des Lernplans";
+                IsLoading = false;
+                return;
+            }
+
+            Console.WriteLine($"📊 StudyPlan generiert mit {studyPlan.Days.Count} Tagen");
+
+            // Speichere den Plan in der Datenbank
+            await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
+
+            Console.WriteLine($"✅ Lernplan gespeichert: {studyPlan.Topic}");
+
+            // Lade die Plans neu
+            await LoadPlansAsync();
+
+            ErrorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
+            ErrorMessage = $"Fehler: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LehrplanGenerator.Data;
 using LehrplanGenerator.Data.Repositories;
 using LehrplanGenerator.Logic.Services;
+using LehrplanGenerator.Logic.AI;
 
 namespace LehrplanGenerator.Logic;
 
@@ -48,6 +49,7 @@ public static class ServiceExtensions
         services.AddScoped<ChatServiceDb>();
         // services.AddScoped<PersistenceService>();
         services.AddScoped<LearningProgressService>();
+        services.AddScoped<StudyPlanGeneratorService>();
 
         return services;
     }
