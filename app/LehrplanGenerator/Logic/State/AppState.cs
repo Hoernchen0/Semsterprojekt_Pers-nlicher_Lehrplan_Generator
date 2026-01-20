@@ -26,6 +26,8 @@ public partial class AppState : ObservableObject
 
     [ObservableProperty]
     private StudyPlan? _currentStudyPlan;
+
+    [ObservableProperty]
     private Guid? currentStudyPlanId;
 
     // (optional, falls du später eine Plan-Liste brauchst)

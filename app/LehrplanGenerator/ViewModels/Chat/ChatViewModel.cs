@@ -19,9 +19,9 @@ public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
-    private readonly PersistenceService _persistenceService;
+    // private readonly PersistenceService _persistenceService;
 
-    public ChatViewModel(INavigationService navigationService, AppState appState, PersistenceService persistenceService)
+    public ChatViewModel(INavigationService navigationService, AppState appState)
     {
         _navigationService = navigationService;
         _appState = appState;
