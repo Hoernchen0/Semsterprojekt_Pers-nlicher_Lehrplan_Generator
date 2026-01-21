@@ -149,10 +149,27 @@
                                     ItemsSource="{Binding ActiveStudyPlans}"
                                     SelectedItem="{Binding SelectedStudyPlan}">
 
+                                    <ListBox.Styles>
+                                        <Style Selector="ListBoxItem">
+                                            <Setter Property="Padding" Value="0,1" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="CornerRadius" Value="10" />
+                                            <Setter Property="BorderThickness" Value="2" />
+                                            <Setter Property="BorderBrush" Value="Transparent" />
+                                        </Style>
+                                        <Style Selector="ListBoxItem:pointerover">
+                                            <Setter Property="Background" Value="#10059669" />
+                                        </Style>
+                                        <Style Selector="ListBoxItem:selected">
+                                            <Setter Property="Background" Value="#20059669" />
+                                            <Setter Property="BorderBrush" Value="#059669" />
+                                        </Style>
+                                    </ListBox.Styles>
+
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Border
-                                                Margin="0,0,0,8"
+                                                Margin="0,0,0,0"
                                                 Padding="12"
                                                 Background="{DynamicResource BgPrimary}"
                                                 CornerRadius="10">

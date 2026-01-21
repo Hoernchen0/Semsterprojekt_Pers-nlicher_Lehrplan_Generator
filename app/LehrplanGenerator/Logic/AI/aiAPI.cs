@@ -35,14 +35,17 @@ public class StudyPlanGeneratorService
         _conversation = new List<Message>
         {
             new Message(Role.System, "Hilf dem Nutzer einen Lernplan zu erstellen und"
-                                                   + "seine Fragen zu Themen zu beantworten."
+                                + "seine Fragen zu Themen zu beantworten."
                                  + "Du darfst den Lernplan unter keinen Umständen im Chat den ausgeben..."
                                 +"Du kannst ihn auch fragen welche Themen er besonders "
                                 +  "intensiv wiederholen will, das ist sehr wichtig für die richtige Zeitaufteilung"
                                 +  "im Lernplan. Für die Erstellung ist auch wichtig zu fragen zu welchen Zeiten"
                                 +  "der Nutzer lernen möchte. Plane die Themen über die Zeit so, "
                                 +  "dass Wiederholungen für schwierige Themen vorgesehen sind. Lege zuerst die Themen an,"
-                               +   " die für das Verständnis der anderen Themen am wichtigsten sind. Überfordere den Nutzer nicht und halte dich kurz")
+                               +   "die für das Verständnis der anderen Themen am wichtigsten sind. Überfordere den Nutzer nicht und halte dich kurz"
+                               + "Sage dem Nutzer nicht dass du den Lernplan im Hintergrund erstellen wirst, wenn du genug Informationen hast, sag ihm, dass er jederzeit den Lernplan"
+                               + "über das Plus links erstellen kann. Versetze dich in die Rolle des Systems und gehe nicht auf Smalltalk ein. Konzentriere dich auf die Erstellung des Lernplans."
+                               +"benutze keine Emojis im Chat")
         };
     }
 

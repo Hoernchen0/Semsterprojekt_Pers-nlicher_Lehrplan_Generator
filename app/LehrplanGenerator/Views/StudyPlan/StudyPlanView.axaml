@@ -75,7 +75,7 @@
                                         <TextBlock
                                             FontSize="12"
                                             Foreground="{DynamicResource TextMuted}"
-                                            Text="{Binding Tasks.Count}" />
+                                            Text="{Binding TasksCountLabel}" />
                                     </StackPanel>
                                 </Button>
                             </DataTemplate>
@@ -153,7 +153,7 @@
                                     <TextBlock
                                         FontSize="11"
                                         Foreground="{DynamicResource TextMuted}"
-                                        Text="{Binding Tasks.Count}" />
+                                        Text="{Binding TasksCountLabel}" />
                                 </StackPanel>
                             </Button>
                         </DataTemplate>
