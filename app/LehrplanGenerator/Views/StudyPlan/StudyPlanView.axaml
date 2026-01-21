@@ -8,7 +8,7 @@
     <Grid Background="{DynamicResource BgPrimary}" RowDefinitions="Auto,*">
 
         <!--  HEADER  -->
-        <Grid Margin="32,24,32,16" ColumnDefinitions="*,Auto,Auto">
+        <Grid Margin="32,24,32,16" ColumnDefinitions="*,Auto,Auto,Auto">
 
             <TextBlock
                 FontSize="24"
@@ -27,6 +27,15 @@
 
             <Button
                 Grid.Column="2"
+                Classes="secondary"
+                Command="{Binding DeleteStudyPlanCommand}"
+                IsEnabled="{Binding SelectedStudyPlan, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Margin="0,0,12,0">
+                <TextBlock Text="Plan löschen" />
+            </Button>
+
+            <Button
+                Grid.Column="3"
                 Classes="secondary"
                 Command="{Binding ToggleViewModeCommand}">
                 <TextBlock Text="{Binding CurrentViewModeLabel}" />

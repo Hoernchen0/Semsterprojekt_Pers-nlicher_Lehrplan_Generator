@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using LehrplanGenerator.Logic.AI;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Models.Chat;
+using LehrplanGenerator.ViewModels.Shell;
 
 namespace LehrplanGenerator.Logic.State;
 
@@ -48,4 +49,6 @@ public partial class AppState : ObservableObject
     // DASHBOARD / SESSION
     // =========================
     public LearningProgressEntity? CurrentStudySession { get; set; }
+    public ShellViewModel? Shell { get; set; }
+
 }
