@@ -90,7 +90,7 @@
                             <Button
                                 Padding="14,10"
                                 HorizontalAlignment="Left"
-                                Background="{DynamicResource HFU.Green}"
+                                Background="{DynamicResource AccentPrimary}"
                                 Command="{Binding ToggleThemeCommand}"
                                 Content="{Binding ThemeButtonText}"
                                 CornerRadius="999"
