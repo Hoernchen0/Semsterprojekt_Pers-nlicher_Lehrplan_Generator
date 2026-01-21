@@ -41,6 +41,9 @@ public partial class StudyPlanViewModel : ViewModelBase
     [ObservableProperty]
     private string? errorMessage;
 
+    [ObservableProperty]
+    private bool isCreatingPlan;
+
     // =================================================
     // 🔥 NEU: VIEW MODE
     // =================================================
@@ -138,15 +141,67 @@ public partial class StudyPlanViewModel : ViewModelBase
         OnPropertyChanged(nameof(CurrentViewModeLabel));
     }
 
+
+
     // =================================================
     // CREATE NEW STUDY PLAN
     // =================================================
     [RelayCommand]
     private async Task CreateNewPlan()
     {
+        if (IsCreatingPlan)
+            return;
+
         if (_appState.CurrentUserId == null)
         {
-            ErrorMessage = "Kein Benutzer angemeldet!";
+            ErrorMessage = "Fehler: Kein Benutzer angemeldet!";
+            return;
+        }
+
+        IsCreatingPlan = true;
+        IsLoading = true;
+        ErrorMessage = null;
+
+        try
+        {
+            // Generiere den StudyPlan
+            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
+
+            if (studyPlan == null)
+            {
+                ErrorMessage = "Fehler beim Generieren des Lernplans";
+                return;
+            }
+
+            // Speichere den Plan in der Datenbank
+            await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
+
+            // Lade die Pläne neu, um den neuen Plan anzuzeigen
+            await LoadPlansAsync();
+
+            ErrorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
+            ErrorMessage = $"Fehler: {ex.Message}";
+        }
+        finally
+        {
+            IsCreatingPlan = false;
+            IsLoading = false;
+        }
+    }
+
+    // =================================================
+    // DELETE STUDY PLAN
+    // =================================================
+    [RelayCommand]
+    private async Task DeleteStudyPlan()
+    {
+        if (SelectedStudyPlan == null)
+        {
+            ErrorMessage = "Kein Lernplan ausgewählt!";
             return;
         }
 
@@ -155,54 +210,12 @@ public partial class StudyPlanViewModel : ViewModelBase
 
         try
         {
-            Console.WriteLine($"📋 Starte KI-Lernplan-Generierung...");
-
-            // Nutze den Chat-Kontext wenn vorhanden, sonst Standard-Prompt
-            string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
-                "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
-                "Das Studium beginnt morgen.";
-
-            // Wenn es aktuelle Chat-Messages gibt, nutze diese als Kontext
-            if (_appState.ChatMessages.Count > 0)
-            {
-                var lastUserMessage = _appState.ChatMessages
-                    .LastOrDefault(m => m.Sender == "User");
-                
-                if (lastUserMessage != null)
-                {
-                    prompt = lastUserMessage.FullText;
-                }
-            }
-
-            // Frage KI um einen Plan zu erstellen
-            var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
-
-            if (string.IsNullOrEmpty(planResponse))
-            {
-                ErrorMessage = "Fehler bei der KI-Generierung";
-                IsLoading = false;
-                return;
-            }
-
-            Console.WriteLine($"🤖 KI hat Lernplan geplant");
-
-            // Generiere den StudyPlan
-            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
-
-            if (studyPlan == null)
-            {
-                ErrorMessage = "Fehler beim Generieren des Lernplans";
-                IsLoading = false;
-                return;
-            }
-
-            Console.WriteLine($"📊 StudyPlan generiert mit {studyPlan.Days.Count} Tagen");
-
-            // Speichere den Plan in der Datenbank
-            await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
-
-            Console.WriteLine($"✅ Lernplan gespeichert: {studyPlan.Topic}");
-
+            await _learningProgressService.DeleteStudyPlanAsync(SelectedStudyPlan.Id);
+            
+            // Leere die Tages-Ansicht
+            Days.Clear();
+            SelectedDay = null;
+            
             // Lade die Plans neu
             await LoadPlansAsync();
 
@@ -210,7 +223,7 @@ public partial class StudyPlanViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
+            Console.WriteLine($"Fehler beim Löschen des Lernplans: {ex.Message}\n{ex.StackTrace}");
             ErrorMessage = $"Fehler: {ex.Message}";
         }
         finally
