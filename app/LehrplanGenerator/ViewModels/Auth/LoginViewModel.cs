@@ -50,6 +50,8 @@ public partial class LoginViewModel : ViewModelBase
             _appState.CurrentUserId = cred.UserId;
             _appState.CurrentUserDisplayName = $"{cred.FirstName} {cred.LastName}";
 
+            // Chat wird von ChatViewModel geladen
+
             Result = "Login erfolgreich";
             Console.WriteLine($"✓ Login erfolgreich für {Username}");
 

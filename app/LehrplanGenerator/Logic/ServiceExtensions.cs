@@ -47,6 +47,8 @@ public static class ServiceExtensions
         // Services registrieren
         services.AddScoped<AuthServiceDb>();
         services.AddScoped<ChatServiceDb>();
+        services.AddScoped<ChatBufferService>();
+        services.AddScoped<ExportService>();
         // services.AddScoped<PersistenceService>();
         services.AddScoped<LearningProgressService>();
         services.AddScoped<StudyPlanGeneratorService>();

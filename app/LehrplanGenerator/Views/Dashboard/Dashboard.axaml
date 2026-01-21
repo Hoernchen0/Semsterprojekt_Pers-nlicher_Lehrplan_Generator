@@ -11,7 +11,7 @@
         <Grid x:Name="DesktopLayout">
 
             <Border Padding="32" Background="{DynamicResource BgPrimary}">
-                <Grid RowDefinitions="Auto,*">
+                <Grid RowDefinitions="Auto,Auto,*">
 
                     <!--  HEADER  -->
                     <StackPanel Spacing="6">
@@ -27,9 +27,39 @@
                             Text="{Binding WelcomeMessage}" />
                     </StackPanel>
 
+                    <!--  CTA: Lernplan erstellen  -->
+                    <Border
+                        Grid.Row="1"
+                        Margin="0,24,0,0"
+                        Padding="28"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="18"
+                        IsVisible="{Binding HasNoStudyPlans}">
+
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="20"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Starte deinen ersten Lernplan" />
+
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="{DynamicResource TextMuted}"
+                                Text="Erstelle jetzt einen personalisierten Lernplan und leg direkt los." />
+
+                            <Button
+                                Height="48"
+                                Classes="primary"
+                                Command="{Binding CreateStudyPlanCommand}"
+                                Content="Lernplan erstellen"
+                                FontSize="16" />
+                        </StackPanel>
+                    </Border>
+
                     <!--  CONTENT  -->
                     <Grid
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Margin="0,24,0,0"
                         ColumnDefinitions="1*,1*"
                         ColumnSpacing="24"
@@ -94,7 +124,7 @@
                                     Classes="primary"
                                     Command="{Binding ContinueLearningCommand}"
                                     Content="Weiterlernen"
-                                    IsEnabled="{Binding SelectedStudyPlan}" />
+                                    IsVisible="{Binding HasNextUnit}" />
                             </StackPanel>
                         </Border>
 
@@ -119,10 +149,27 @@
                                     ItemsSource="{Binding ActiveStudyPlans}"
                                     SelectedItem="{Binding SelectedStudyPlan}">
 
+                                    <ListBox.Styles>
+                                        <Style Selector="ListBoxItem">
+                                            <Setter Property="Padding" Value="0,1" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="CornerRadius" Value="10" />
+                                            <Setter Property="BorderThickness" Value="2" />
+                                            <Setter Property="BorderBrush" Value="Transparent" />
+                                        </Style>
+                                        <Style Selector="ListBoxItem:pointerover">
+                                            <Setter Property="Background" Value="#10059669" />
+                                        </Style>
+                                        <Style Selector="ListBoxItem:selected">
+                                            <Setter Property="Background" Value="#20059669" />
+                                            <Setter Property="BorderBrush" Value="#059669" />
+                                        </Style>
+                                    </ListBox.Styles>
+
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Border
-                                                Margin="0,0,0,8"
+                                                Margin="0,0,0,0"
                                                 Padding="12"
                                                 Background="{DynamicResource BgPrimary}"
                                                 CornerRadius="10">
@@ -170,6 +217,35 @@
                             Foreground="{DynamicResource TextMuted}"
                             Text="{Binding WelcomeMessage}" />
                     </StackPanel>
+
+
+                    <!--  CTA: Lernplan erstellen (Mobile)  -->
+                    <Border
+                        Padding="16"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="14"
+                        IsVisible="{Binding HasNoStudyPlans}">
+
+                        <StackPanel Spacing="10">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Ersten Lernplan erstellen" />
+
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource TextMuted}"
+                                Text="Starte mit einem personalisierten Lernplan." />
+
+                            <Button
+                                Height="44"
+                                Classes="primary"
+                                Command="{Binding CreateStudyPlanCommand}"
+                                Content="Lernplan erstellen" />
+                        </StackPanel>
+                    </Border>
+
 
                     <!--  Lernfortschritt  -->
                     <Border
@@ -225,7 +301,7 @@
                                 Classes="primary"
                                 Command="{Binding ContinueLearningCommand}"
                                 Content="Weiterlernen"
-                                IsEnabled="{Binding SelectedStudyPlan}" />
+                                IsVisible="{Binding HasNextUnit}" />
                         </StackPanel>
                     </Border>
 

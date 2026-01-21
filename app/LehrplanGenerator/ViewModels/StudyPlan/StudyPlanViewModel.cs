@@ -45,6 +45,9 @@ public partial class StudyPlanViewModel : ViewModelBase
     [ObservableProperty]
     private string? errorMessage;
 
+    [ObservableProperty]
+    private bool isCreatingPlan;
+
     // =================================================
     // VIEW MODE
     // =================================================
@@ -167,6 +170,8 @@ public partial class StudyPlanViewModel : ViewModelBase
         OnPropertyChanged(nameof(CurrentViewModeLabel));
     }
 
+
+
     // =================================================
     // POPUP COMMANDS
     // =================================================
@@ -192,9 +197,59 @@ public partial class StudyPlanViewModel : ViewModelBase
     [RelayCommand]
     private async Task CreateNewPlan()
     {
+        if (IsCreatingPlan)
+            return;
+
         if (_appState.CurrentUserId == null)
         {
-            ErrorMessage = "Kein Benutzer angemeldet!";
+            ErrorMessage = "Fehler: Kein Benutzer angemeldet!";
+            return;
+        }
+
+        IsCreatingPlan = true;
+        IsLoading = true;
+        ErrorMessage = null;
+
+        try
+        {
+            // Generiere den StudyPlan
+            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
+
+            if (studyPlan == null)
+            {
+                ErrorMessage = "Fehler beim Generieren des Lernplans";
+                return;
+            }
+
+            // Speichere den Plan in der Datenbank
+            await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
+
+            // Lade die Pläne neu, um den neuen Plan anzuzeigen
+            await LoadPlansAsync();
+
+            ErrorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
+            ErrorMessage = $"Fehler: {ex.Message}";
+        }
+        finally
+        {
+            IsCreatingPlan = false;
+            IsLoading = false;
+        }
+    }
+
+    // =================================================
+    // DELETE STUDY PLAN
+    // =================================================
+    [RelayCommand]
+    private async Task DeleteStudyPlan()
+    {
+        if (SelectedStudyPlan == null)
+        {
+            ErrorMessage = "Kein Lernplan ausgewählt!";
             return;
         }
 
@@ -239,11 +294,19 @@ public partial class StudyPlanViewModel : ViewModelBase
                 studyPlan
             );
 
+            await _learningProgressService.DeleteStudyPlanAsync(SelectedStudyPlan.Id);
+            
+            // Leere die Tages-Ansicht
+            Days.Clear();
+            SelectedDay = null;
+            
+            // Lade die Plans neu
             await LoadPlansAsync();
             ErrorMessage = null;
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Fehler beim Löschen des Lernplans: {ex.Message}\n{ex.StackTrace}");
             ErrorMessage = $"Fehler: {ex.Message}";
         }
         finally

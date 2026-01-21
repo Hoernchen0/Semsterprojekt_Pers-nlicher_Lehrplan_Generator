@@ -35,6 +35,7 @@ public partial class ShellViewModel : ViewModelBase
         _store = store;
         _navigationService = navigationService;
         _appState = appState;
+        _appState.Shell = this;
 
         if (!string.IsNullOrWhiteSpace(_appState.CurrentUserDisplayName))
         {
@@ -99,6 +100,8 @@ public partial class ShellViewModel : ViewModelBase
     [RelayCommand]
     private void Logout()
     {
+        _appState.ChatMessages.Clear();
+        _appState.CurrentSessionId = null;
         _appState.CurrentUserId = null;
         _appState.CurrentUserDisplayName = null;
         _navigationService.NavigateTo<MainViewModel>();

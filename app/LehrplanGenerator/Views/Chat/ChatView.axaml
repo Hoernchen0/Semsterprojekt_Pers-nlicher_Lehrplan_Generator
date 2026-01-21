@@ -9,178 +9,286 @@
 
     <Grid Background="{DynamicResource BgPrimary}">
 
-        <!--  ================= EMPTY STATE =================  -->
-        <Grid
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            IsVisible="{Binding HasNoMessages}">
+        <!--  ================= DESKTOP (UNVERÄNDERT) =================  -->
+        <Grid x:Name="DesktopLayout">
 
-            <StackPanel Width="720" Spacing="28">
+            <!--  EMPTY STATE  -->
+            <Grid
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding HasNoMessages}">
 
-                <TextBlock
-                    FontSize="32"
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource TextPrimary}"
-                    Text="Willkommen zurück"
-                    TextAlignment="Center" />
+                <StackPanel Width="720" Spacing="28">
 
-                <TextBlock
-                    FontSize="15"
-                    Foreground="{DynamicResource TextMuted}"
-                    Text="Sag mir, wobei ich dir helfen soll."
-                    TextAlignment="Center" />
+                    <TextBlock
+                        FontSize="32"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Text="Willkommen zurück"
+                        TextAlignment="Center" />
+
+                    <TextBlock
+                        FontSize="15"
+                        Foreground="{DynamicResource TextMuted}"
+                        Text="Sag mir, wobei ich dir helfen soll."
+                        TextAlignment="Center" />
+
+                    <Border
+                        Padding="14"
+                        Background="{DynamicResource BgSecondary}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="24">
+
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
+                            <Button
+                                Grid.Column="0"
+                                Classes="secondary"
+                                Command="{Binding CreateNewPlanCommand}"
+                                Content="➕" />
+                            <Button
+                                Grid.Column="1"
+                                Classes="secondary"
+                                Command="{Binding UploadCommand}"
+                                Content="📎" />
+                            <TextBox
+                                Grid.Column="2"
+                                AcceptsReturn="False"
+                                Text="{Binding InputText}"
+                                Watermark="Stelle eine Frage…">
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                                </TextBox.KeyBindings>
+                            </TextBox>
+                            <Button
+                                Grid.Column="3"
+                                Classes="send"
+                                Command="{Binding SendCommand}"
+                                Content="↑" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <!--  CHAT STATE  -->
+            <Grid IsVisible="{Binding HasMessages}" RowDefinitions="*,Auto">
+
+                <ScrollViewer
+                    x:Name="ChatScrollViewer"
+                    Grid.Row="0"
+                    Margin="0,24,0,120">
+                    <ItemsControl
+                        MaxWidth="760"
+                        HorizontalAlignment="Center"
+                        ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:ChatMessage">
+                                <Grid Margin="0,0,0,16">
+
+                                    <Border
+                                        Padding="14"
+                                        HorizontalAlignment="Right"
+                                        Background="#E5E7EB"
+                                        CornerRadius="16"
+                                        IsVisible="{Binding IsUser}">
+                                        <TextBlock Text="{Binding DisplayedText}" TextWrapping="Wrap" />
+                                    </Border>
+
+                                    <Border
+                                        Padding="14"
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource BgSecondary}"
+                                        BorderBrush="{DynamicResource BorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="16"
+                                        IsVisible="{Binding IsAi}">
+                                        <md:MarkdownScrollViewer Markdown="{Binding DisplayedText}" />
+                                    </Border>
+
+                                    <Border
+                                        Padding="12,8"
+                                        HorizontalAlignment="Center"
+                                        Background="#FEF3C7"
+                                        BorderBrush="#FCD34D"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        IsVisible="{Binding IsSystem}">
+                                        <TextBlock
+                                            Foreground="#92400E"
+                                            FontSize="13"
+                                            Text="{Binding DisplayedText}"
+                                            TextAlignment="Center"
+                                            TextWrapping="Wrap" />
+                                    </Border>
+
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
                 <Border
+                    Grid.Row="1"
+                    Margin="24"
                     Padding="14"
                     Background="{DynamicResource BgSecondary}"
                     BorderBrush="{DynamicResource BorderSubtle}"
                     BorderThickness="1"
                     CornerRadius="24">
 
-                    <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
+                        <Button
+                            Grid.Column="0"
+                            Classes="secondary"
+                            Command="{Binding CreateNewPlanCommand}"
+                            Content="➕" />
+                        <Button
+                            Grid.Column="1"
+                            Classes="secondary"
+                            Command="{Binding UploadCommand}"
+                            Content="📎" />
+                        <TextBox
+                            Grid.Column="2"
+                            AcceptsReturn="True"
+                            Text="{Binding InputText}"
+                            Watermark="Nachricht schreiben…">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
+                        <Button
+                            Grid.Column="3"
+                            Classes="send"
+                            Command="{Binding SendCommand}"
+                            Content="↑" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
 
-                        <!--  INPUT ROW  -->
-                        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
+        <!--  ================= MOBILE LAYOUT =================  -->
+        <Grid x:Name="MobileLayout" IsVisible="False">
 
-                            <!--  ➕ CREATE PLAN  -->
+            <!--  ================= EMPTY STATE =================  -->
+            <Grid
+                MaxWidth="380"
+                Margin="16"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding HasNoMessages}">
+
+                <StackPanel Spacing="16">
+
+                    <TextBlock
+                        FontSize="22"
+                        Text="Wobei kann ich dir helfen?"
+                        TextAlignment="Center" />
+
+                    <!--  INPUT  -->
+                    <Border
+                        Padding="10"
+                        Background="{DynamicResource BgSecondary}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="20">
+
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="6">
+
                             <Button
                                 Grid.Column="0"
                                 Classes="secondary"
                                 Command="{Binding CreateNewPlanCommand}"
-                                IsEnabled="{Binding !IsCreatingPlan}"
-                                ToolTip.Tip="Erstelle einen Lernplan">
-                                <TextBlock Text="➕" />
-                            </Button>
+                                Content="➕" />
 
-                            <!--  📎 UPLOAD  -->
                             <Button
                                 Grid.Column="1"
                                 Classes="secondary"
                                 Command="{Binding UploadCommand}"
                                 Content="📎" />
 
-                            <!--  INPUT  -->
                             <TextBox
                                 Grid.Column="2"
-                                AcceptsReturn="True"
+                                MinHeight="40"
+                                VerticalContentAlignment="Center"
+                                AcceptsReturn="False"
                                 Text="{Binding InputText}"
-                                Watermark="Stelle eine Frage…">
-                                <TextBox.KeyBindings>
-                                    <KeyBinding Command="{Binding SendCommand}" Gesture="Enter" />
-                                </TextBox.KeyBindings>
-                            </TextBox>
+                                Watermark="Stelle eine Frage…" />
 
-                            <!--  SEND  -->
                             <Button
                                 Grid.Column="3"
                                 Classes="send"
                                 Command="{Binding SendCommand}"
                                 Content="↑" />
-
-                            <Button Grid.Row="3"
-                Content="Lernplan erstellen"
-                HorizontalAlignment="Center"
-                HorizontalContentAlignment ="Center"
-                VerticalContentAlignment ="Center"
-                Background="#fbfbff"
-                Foreground="Black"
-                BorderBrush="#0d0d0e"
-                BorderThickness="6"
-                CornerRadius="20"
-
-                IsEnabled="{Binding !IsSending}"/>
                         </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
 
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </Grid>
+            <!--  ================= CHAT STATE =================  -->
+            <Grid IsVisible="{Binding HasMessages}" RowDefinitions="*,Auto">
 
-        <!--  ================= CHAT STATE =================  -->
-        <Grid IsVisible="{Binding HasMessages}" RowDefinitions="*,Auto">
+                <!--  CHAT  -->
+                <ScrollViewer
+                    x:Name="MobileScroll"
+                    Grid.Row="0"
+                    Margin="12"
+                    VerticalScrollBarVisibility="Auto">
 
-            <!--  MESSAGES  -->
-            <ScrollViewer
-                x:Name="ChatScrollViewer"
-                Grid.Row="0"
-                Margin="0,24,0,120">
+                    <ItemsControl ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:ChatMessage">
+                                <Grid>
 
-                <ItemsControl
-                    MaxWidth="760"
+                                    <!--  USER  -->
+                                    <Border
+                                        Padding="14"
+                                        HorizontalAlignment="Right"
+                                        Background="#E5E7EB"
+                                        CornerRadius="16"
+                                        IsVisible="{Binding IsUser}">
+                                        <TextBlock
+                                            Foreground="#020617"
+                                            Text="{Binding DisplayedText}"
+                                            TextWrapping="Wrap" />
+                                    </Border>
+
+                                    <!--  AI  -->
+                                    <Border
+                                        Padding="14"
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource BgSecondary}"
+                                        BorderBrush="{DynamicResource BorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="16"
+                                        IsVisible="{Binding IsAi}">
+                                        <md:MarkdownScrollViewer Markdown="{Binding DisplayedText}" />
+                                    </Border>
+
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!--  INPUT FIXIERT ÜBER TASKLEISTE  -->
+                <Border
+                    Grid.Row="1"
+                    MaxWidth="380"
+                    Margin="12,12,12,96"
+                    Padding="10"
                     HorizontalAlignment="Center"
-                    ItemsSource="{Binding Messages}">
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20">
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:ChatMessage">
-                            <Grid Margin="0,0,0,16">
-
-                                <Border
-                                    Padding="14"
-                                    HorizontalAlignment="Right"
-                                    Background="#E5E7EB"
-                                    CornerRadius="16"
-                                    IsVisible="{Binding IsUser}">
-                                    <TextBlock
-                                        Foreground="#020617"
-                                        Text="{Binding DisplayedText}"
-                                        TextWrapping="Wrap" />
-                                </Border>
-
-                                <Border
-                                    Padding="14"
-                                    HorizontalAlignment="Left"
-                                    Background="{DynamicResource BgSecondary}"
-                                    BorderBrush="{DynamicResource BorderSubtle}"
-                                    BorderThickness="1"
-                                    CornerRadius="16"
-                                    IsVisible="{Binding IsAi}">
-                                    <md:MarkdownScrollViewer 
-                                        Markdown="{Binding DisplayedText}" />
-                                </Border>
-
-                                <Border
-                                    Padding="14"
-                                    HorizontalAlignment="Center"
-                                    Background="#FEF3C7"
-                                    BorderBrush="#FCD34D"
-                                    BorderThickness="1"
-                                    CornerRadius="16"
-                                    IsVisible="{Binding IsSystem}">
-                                    <TextBlock
-                                        Foreground="#78350F"
-                                        Text="{Binding DisplayedText}"
-                                        TextWrapping="Wrap" />
-                                </Border>
-
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                </ItemsControl>
-            </ScrollViewer>
-
-            <!--  BOTTOM INPUT  -->
-            <Border
-                Grid.Row="1"
-                Margin="24"
-                Padding="14"
-                Background="{DynamicResource BgSecondary}"
-                BorderBrush="{DynamicResource BorderSubtle}"
-                BorderThickness="1"
-                CornerRadius="24">
-
-                <StackPanel Spacing="8">
-
-                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="6">
 
                         <Button
                             Grid.Column="0"
                             Classes="secondary"
                             Command="{Binding CreateNewPlanCommand}"
-                            IsEnabled="{Binding !IsCreatingPlan}"
-                            ToolTip.Tip="Erstelle einen Lernplan">
-                            <TextBlock Text="➕" />
-                        </Button>
+                            Content="➕" />
 
                         <Button
                             Grid.Column="1"
@@ -190,13 +298,11 @@
 
                         <TextBox
                             Grid.Column="2"
-                            AcceptsReturn="True"
+                            MinHeight="40"
+                            VerticalContentAlignment="Center"
+                            AcceptsReturn="False"
                             Text="{Binding InputText}"
-                            Watermark="Nachricht schreiben…">
-                            <TextBox.KeyBindings>
-                                <KeyBinding Command="{Binding SendCommand}" Gesture="Enter" />
-                            </TextBox.KeyBindings>
-                        </TextBox>
+                            Watermark="Nachricht schreiben…" />
 
                         <Button
                             Grid.Column="3"
@@ -204,9 +310,11 @@
                             Command="{Binding SendCommand}"
                             Content="↑" />
                     </Grid>
-
-                </StackPanel>
-            </Border>
+                </Border>
+            </Grid>
         </Grid>
+
+
     </Grid>
 </UserControl>
+

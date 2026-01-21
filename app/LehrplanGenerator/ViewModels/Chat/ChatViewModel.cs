@@ -5,6 +5,7 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.Models.Chat;
 using LehrplanGenerator.Logic.AI;
+using LehrplanGenerator.Data;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
@@ -24,19 +25,74 @@ public partial class ChatViewModel : ViewModelBase
     private readonly AppState _appState;
     private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
     private readonly LearningProgressService _learningProgressService;
+    private readonly ChatServiceDb _chatServiceDb;
+    private Guid? _lastUserId;
 
     public ChatViewModel(
         INavigationService navigationService, 
         AppState appState,
         StudyPlanGeneratorService studyPlanGeneratorService,
-        LearningProgressService learningProgressService)
+        LearningProgressService learningProgressService,
+        ChatServiceDb chatServiceDb)
     {
         _navigationService = navigationService;
         _appState = appState;
         _studyPlanGeneratorService = studyPlanGeneratorService;
         _learningProgressService = learningProgressService;
+        _chatServiceDb = chatServiceDb;
+        _lastUserId = _appState.CurrentUserId;
 
         Messages.CollectionChanged += OnMessagesChanged;
+        _appState.PropertyChanged += OnAppStatePropertyChanged;
+        InitializeAsync();
+    }
+
+    private void OnAppStatePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AppState.CurrentUserId) && _appState.CurrentUserId != _lastUserId)
+        {
+            _lastUserId = _appState.CurrentUserId;
+            // Reload chat when user changes
+            if (_appState.CurrentUserId.HasValue)
+            {
+                _ = ReloadChatAsync();
+            }
+        }
+    }
+
+    private async void InitializeAsync()
+    {
+        if (_appState.CurrentUserId.HasValue)
+        {
+            await LoadUserChatAsync();
+        }
+    }
+
+    public async Task ReloadChatAsync()
+    {
+        Messages.Clear();
+        _appState.CurrentSessionId = null;
+        if (_appState.CurrentUserId.HasValue)
+        {
+            await LoadUserChatAsync();
+        }
+    }
+
+    private async Task LoadUserChatAsync()
+    {
+        if (_appState.CurrentUserId == null) return;
+        var sessions = (await _chatServiceDb.GetUserSessionsAsync(_appState.CurrentUserId.Value))
+            .OrderByDescending(s => s.UpdatedAt)
+            .ToList();
+        if (sessions.Count == 0) return;
+        var lastSession = sessions.First();
+        _appState.CurrentSessionId = lastSession.SessionId;
+        var messages = await _chatServiceDb.GetSessionMessagesAsync(lastSession.SessionId, _appState.CurrentUserId.Value);
+        Messages.Clear();
+        foreach (var msg in messages)
+        {
+            Messages.Add(new ChatMessage { Sender = msg.Sender, FullText = msg.Text, DisplayedText = msg.Text });
+        }
     }
 
     // =========================
@@ -155,15 +211,37 @@ public partial class ChatViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(InputText))
             return;
 
+        // Ensure we have a session - create one if needed
+        if (_appState.CurrentSessionId == null && _appState.CurrentUserId.HasValue)
+        {
+            var session = await _chatServiceDb.CreateSessionAsync(
+                _appState.CurrentUserId.Value,
+                "Chat Session",
+                "");
+            _appState.CurrentSessionId = session.SessionId;
+        }
+
         var userText = InputText.Trim();
         InputText = string.Empty;
 
-        Messages.Add(new ChatMessage
+        var userMessage = new ChatMessage
         {
             Sender = "User",
             FullText = userText,
             DisplayedText = userText
-        });
+        };
+
+        Messages.Add(userMessage);
+
+        // Save user message to database
+        if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+        {
+            await _chatServiceDb.SaveMessageAsync(
+                _appState.CurrentSessionId.Value,
+                _appState.CurrentUserId.Value,
+                "User",
+                userText);
+        }
 
         IsSending = true;
 
@@ -181,6 +259,17 @@ public partial class ChatViewModel : ViewModelBase
                 };
 
                 Messages.Add(aiMessage);
+                
+                // Save AI message to database
+                if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+                {
+                    await _chatServiceDb.SaveMessageAsync(
+                        _appState.CurrentSessionId.Value,
+                        _appState.CurrentUserId.Value,
+                        "AI",
+                        response);
+                }
+
                 await TypeTextAsync(aiMessage);
             }
         }
@@ -241,41 +330,6 @@ public partial class ChatViewModel : ViewModelBase
 
         try
         {
-            Console.WriteLine($"📋 Starte KI-Lernplan-Generierung aus Chat...");
-
-            // Nutze den Chat-Kontext: Nimm die letzte User-Nachricht als Prompt
-            string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
-                "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
-                "Das Studium beginnt morgen.";
-
-            // Wenn es aktuelle Chat-Messages gibt, nutze die letzte User-Nachricht
-            if (Messages.Count > 0)
-            {
-                var lastUserMessage = Messages.LastOrDefault(m => m.Sender == "User");
-                if (lastUserMessage != null)
-                {
-                    prompt = lastUserMessage.FullText;
-                    Console.WriteLine($"📝 Nutze Chat-Kontext: {prompt}");
-                }
-            }
-
-            // Frage KI um einen Plan zu erstellen
-            var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
-
-            if (string.IsNullOrEmpty(planResponse))
-            {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    FullText = "Fehler bei der KI-Generierung",
-                    DisplayedText = "Fehler bei der KI-Generierung"
-                });
-                return;
-            }
-
-            Console.WriteLine($"🤖 KI hat Lernplan geplant");
-
-            // Generiere den StudyPlan
             var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
 
             if (studyPlan == null)
@@ -289,23 +343,17 @@ public partial class ChatViewModel : ViewModelBase
                 return;
             }
 
-            Console.WriteLine($"📊 StudyPlan generiert mit {studyPlan.Days.Count} Tagen");
-
-            // Speichere den Plan in der Datenbank
             await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
-
-            Console.WriteLine($"✅ Lernplan gespeichert: {studyPlan.Topic}");
 
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                FullText = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen.",
-                DisplayedText = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen."
+                FullText = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)",
+                DisplayedText = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)"
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
@@ -318,4 +366,5 @@ public partial class ChatViewModel : ViewModelBase
             IsCreatingPlan = false;
         }
     }
+
 }
