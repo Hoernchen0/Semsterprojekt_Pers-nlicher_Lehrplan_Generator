@@ -26,7 +26,7 @@
                     <TextBlock
                         FontSize="14"
                         Foreground="{DynamicResource TextMuted}"
-                        Text="Verwalte dein Konto, Lernen, KI-Funktionen und App-Darstellung" />
+                        Text="Verwalte dein Konto und App-Darstellung" />
                 </StackPanel>
 
                 <!--  ================= ACCOUNT =================  -->
@@ -66,54 +66,8 @@
                     </StackPanel>
                 </Border>
 
-                <!--  ================= LEARNING =================  -->
-                <Border
-                    Padding="24"
-                    Background="{DynamicResource BgSecondary}"
-                    BorderBrush="{DynamicResource BorderSubtle}"
-                    BorderThickness="1"
-                    CornerRadius="20">
-
-                    <StackPanel Spacing="18">
-
-                        <TextBlock
-                            FontSize="20"
-                            FontWeight="SemiBold"
-                            Text="Lernen und Planung" />
-
-                        <StackPanel Spacing="14">
-                            <TextBlock Text="Standard-Lerneinheit: 50 Minuten" />
-                            <TextBlock Text="Pausenlänge: 10 Minuten" />
-                            <TextBlock Foreground="{DynamicResource HFU.Green}" Text="Automatischer Start der nächsten Session" />
-                        </StackPanel>
-
-                    </StackPanel>
-                </Border>
-
-                <!--  ================= AI =================  -->
-                <Border
-                    Padding="24"
-                    Background="{DynamicResource BgSecondary}"
-                    BorderBrush="{DynamicResource BorderSubtle}"
-                    BorderThickness="1"
-                    CornerRadius="20">
-
-                    <StackPanel Spacing="18">
-
-                        <TextBlock
-                            FontSize="20"
-                            FontWeight="SemiBold"
-                            Text="KI-Assistent" />
-
-                        <StackPanel Spacing="14">
-                            <TextBlock Text="Antwortstil: strukturiert und verständlich" />
-                            <TextBlock Foreground="{DynamicResource HFU.Green}" Text="Lernplan automatisch generieren" />
-                        </StackPanel>
-
-                    </StackPanel>
-                </Border>
-
                 <!--  ================= APPEARANCE =================  -->
+
                 <Border
                     Padding="24"
                     Background="{DynamicResource BgSecondary}"
