@@ -54,22 +54,55 @@ public partial class SettingsViewModel : ViewModelBase
     [RelayCommand]
     private void EditProfile()
     {
+        var lifetime = Avalonia.Application.Current?.ApplicationLifetime
+            as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+
+        var mainWindow = lifetime?.MainWindow;
+
+        UsernameModificationView? window = null;
+
         var vm = new UsernameModificationViewModel(
             _appState.CurrentUsername,
             _store,
             _appState,
             result =>
             {
-                OnPropertyChanged(nameof(CurrentUserDisplayName));
-                OnPropertyChanged(nameof(CurrentUsername));
+                if (result != null)
+                {
+                    OnPropertyChanged(nameof(CurrentUserDisplayName));
+                    OnPropertyChanged(nameof(CurrentUsername));
+                }
+
+                window?.Close();
             });
 
+        window = new UsernameModificationView
+        {
+            DataContext = vm
+        };
+        window.ShowDialog(mainWindow);
+    }
+
+
+
+    [RelayCommand]
+    private void EditPassword()
+    {
         var lifetime = Avalonia.Application.Current?.ApplicationLifetime
-                       as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+            as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
 
         var mainWindow = lifetime?.MainWindow;
 
-        var window = new UsernameModificationView
+        PasswordModificationView? window = null;
+
+        var vm = new PasswordModificationViewModel(
+            _appState.CurrentUsername,
+            _store,
+            _appState,
+            _ => window?.Close()
+        );
+
+        window = new PasswordModificationView
         {
             DataContext = vm
         };
@@ -77,26 +110,6 @@ public partial class SettingsViewModel : ViewModelBase
         window.ShowDialog(mainWindow);
     }
 
-
-    [RelayCommand]
-    private void EditPassword()
-    {
-        var vm = new PasswordModificationViewModel(
-            _appState.CurrentUsername,
-            _store,
-            _appState,
-            _ => { });
-
-        var lifetime = Avalonia.Application.Current?.ApplicationLifetime
-            as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
-
-        var window = new PasswordModificationView
-        {
-            DataContext = vm
-        };
-
-        window.ShowDialog(lifetime?.MainWindow);
-    }
 
 
 
