@@ -67,7 +67,7 @@ public partial class ChatViewModel : ViewModelBase
     // =========================
 
     [RelayCommand]
-    private async Task UploadAsync()
+    private async Task Upload()
     {
         try
         {
@@ -147,7 +147,7 @@ public partial class ChatViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task SendAsync()
+    private async Task Send()
     {
         if (IsSending)
             return;
@@ -231,7 +231,8 @@ public partial class ChatViewModel : ViewModelBase
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                Text = "Fehler: Kein Benutzer angemeldet!"
+                FullText = "Fehler: Kein Benutzer angemeldet!",
+                DisplayedText = "Fehler: Kein Benutzer angemeldet!"
             });
             return;
         }
@@ -266,7 +267,8 @@ public partial class ChatViewModel : ViewModelBase
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
-                    Text = "Fehler bei der KI-Generierung"
+                    FullText = "Fehler bei der KI-Generierung",
+                    DisplayedText = "Fehler bei der KI-Generierung"
                 });
                 return;
             }
@@ -281,7 +283,8 @@ public partial class ChatViewModel : ViewModelBase
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
-                    Text = "Fehler beim Generieren des Lernplans"
+                    FullText = "Fehler beim Generieren des Lernplans",
+                    DisplayedText = "Fehler beim Generieren des Lernplans"
                 });
                 return;
             }
@@ -296,7 +299,8 @@ public partial class ChatViewModel : ViewModelBase
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                Text = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen."
+                FullText = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen.",
+                DisplayedText = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen."
             });
         }
         catch (Exception ex)
@@ -305,7 +309,8 @@ public partial class ChatViewModel : ViewModelBase
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                Text = $"Fehler: {ex.Message}"
+                FullText = $"Fehler: {ex.Message}",
+                DisplayedText = $"Fehler: {ex.Message}"
             });
         }
         finally

@@ -173,7 +173,7 @@
                         <Button
                             Grid.Column="1"
                             Classes="secondary"
-                            Command="{Binding UploadDocumentCommand}"
+                            Command="{Binding UploadCommand}"
                             Content="📎" />
 
                         <TextBox
