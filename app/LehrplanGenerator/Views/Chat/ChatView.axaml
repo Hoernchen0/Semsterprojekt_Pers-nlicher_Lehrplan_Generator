@@ -213,41 +213,34 @@
                     <ItemsControl ItemsSource="{Binding Messages}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="models:ChatMessage">
-                                <Border
-                                    Padding="14"
-                                    HorizontalAlignment="Right"
-                                    Background="#E5E7EB"
-                                    CornerRadius="16"
-                                    IsVisible="{Binding IsUser}">
-                                    <TextBlock
-                                        Foreground="#020617"
-                                        Text="{Binding DisplayedText}"
-                                        TextWrapping="Wrap" />
-                                </Border>
+                                <Grid>
 
-                                <Border
-                                    Padding="14"
-                                    HorizontalAlignment="Left"
-                                    Background="{DynamicResource BgSecondary}"
-                                    BorderBrush="{DynamicResource BorderSubtle}"
-                                    BorderThickness="1"
-                                    CornerRadius="16"
-                                    IsVisible="{Binding IsAi}">
-                                    <md:MarkdownScrollViewer 
-                                        Markdown="{Binding DisplayedText}" />
-                                </Border>
+                                    <!--  USER  -->
+                                    <Border
+                                        Padding="14"
+                                        HorizontalAlignment="Right"
+                                        Background="#E5E7EB"
+                                        CornerRadius="16"
+                                        IsVisible="{Binding IsUser}">
+                                        <TextBlock
+                                            Foreground="#020617"
+                                            Text="{Binding DisplayedText}"
+                                            TextWrapping="Wrap" />
+                                    </Border>
 
-                                <Border
-                                    Padding="14"
-                                    MaxWidth="380"
-                                    Margin="8,0,8,10"
-                                    Padding="10"
-                                    HorizontalAlignment="Center"
-                                    Background="{DynamicResource BgSecondary}"
-                                    CornerRadius="16">
+                                    <!--  AI  -->
+                                    <Border
+                                        Padding="14"
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource BgSecondary}"
+                                        BorderBrush="{DynamicResource BorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="16"
+                                        IsVisible="{Binding IsAi}">
+                                        <md:MarkdownScrollViewer Markdown="{Binding DisplayedText}" />
+                                    </Border>
 
-                                    <TextBlock Text="{Binding DisplayedText}" TextWrapping="Wrap" />
-                                </Border>
+                                </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
