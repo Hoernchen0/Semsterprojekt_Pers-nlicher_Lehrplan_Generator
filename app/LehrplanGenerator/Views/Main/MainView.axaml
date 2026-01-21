@@ -108,13 +108,15 @@
                                         <StackPanel Spacing="18">
 
                                                 <TextBlock
+                                                        VerticalAlignment="Center"
                                                         FontSize="22"
                                                         FontWeight="Bold"
                                                         Foreground="#020617"
-                                                        Text="KI-gestützter Lehrplangenerator"
+                                                        Text="KI-gestützter Lehrplangenerator - Mobile"
                                                         TextWrapping="Wrap" />
 
                                                 <TextBlock
+                                                        VerticalAlignment="Center"
                                                         FontSize="14"
                                                         Foreground="#475569"
                                                         Text="Plane dein Studium so, wie es zu dir passt"
@@ -127,6 +129,7 @@
                                                         CornerRadius="22">
 
                                                         <TextBlock
+                                                                VerticalAlignment="Center"
                                                                 FontSize="14"
                                                                 FontWeight="SemiBold"
                                                                 Foreground="White"
@@ -140,6 +143,7 @@
                                                         CornerRadius="22">
 
                                                         <TextBlock
+                                                                VerticalAlignment="Center"
                                                                 FontSize="14"
                                                                 FontWeight="Medium"
                                                                 Foreground="#1D4ED8"

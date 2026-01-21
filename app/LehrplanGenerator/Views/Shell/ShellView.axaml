@@ -2,15 +2,21 @@
     x:Class="LehrplanGenerator.Views.Shell.ShellView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LehrplanGenerator.Views.Shell"
     xmlns:vm="using:LehrplanGenerator.ViewModels.Shell"
     x:DataType="vm:ShellViewModel">
 
+    <!--  ================= RESOURCES =================  -->
+    <UserControl.Resources>
+        <local:StringEqualsConverter x:Key="StringEqualsConverter" />
+        <local:StringNotEqualsConverter x:Key="StringNotEqualsConverter" />
+    </UserControl.Resources>
+
     <Grid Background="{DynamicResource BgPrimary}">
 
-        <!--  ================= DESKTOP LAYOUT =================  -->
+        <!--  ================= DESKTOP =================  -->
         <DockPanel x:Name="DesktopLayout">
 
-            <!--  TOP TASKBAR  -->
             <Border
                 Height="72"
                 Padding="20,0"
@@ -23,21 +29,14 @@
                     Orientation="Horizontal"
                     Spacing="24">
 
-                    <!--  APP ICON (LOGO.PNG, BIG, CLEAN)  -->
                     <Border
                         Width="56"
                         Height="56"
-                        VerticalAlignment="Center"
                         Background="White"
                         CornerRadius="28">
-
-                        <Image
-                            Margin="2"
-                            Source="avares://LehrplanGenerator/Assets/Images/logo.png"
-                            Stretch="Uniform" />
+                        <Image Source="avares://LehrplanGenerator/Assets/Images/logo.png" Stretch="Uniform" />
                     </Border>
 
-                    <!--  USER NAME  -->
                     <TextBlock
                         VerticalAlignment="Center"
                         FontSize="16"
@@ -45,7 +44,6 @@
                         Foreground="{DynamicResource TextOnAccent}"
                         Text="{Binding CurrentUserName}" />
 
-                    <!--  NAV  -->
                     <StackPanel
                         Margin="32,0,0,0"
                         Orientation="Horizontal"
@@ -70,56 +68,196 @@
                             Classes="shell"
                             Command="{Binding ShowSettingsCommand}"
                             Content="Einstellungen" />
-
                     </StackPanel>
-
                 </StackPanel>
             </Border>
 
-            <!--  CONTENT  -->
             <ContentControl Content="{Binding CurrentContent}" />
         </DockPanel>
 
-        <!--  ================= MOBILE LAYOUT =================  -->
+        <!--  ================= MOBILE =================  -->
         <Grid x:Name="MobileLayout">
 
             <ContentControl Content="{Binding CurrentContent}" />
 
             <Border
-                Height="64"
-                Margin="16,0,16,16"
+                Height="72"
+                Margin="0,0,0,16"
+                Padding="24,0"
                 VerticalAlignment="Bottom"
                 Background="{DynamicResource AccentPrimary}"
                 BoxShadow="0 10 30 0 #80000000"
-                CornerRadius="32">
+                CornerRadius="36">
 
-                <Grid VerticalAlignment="Center" ColumnDefinitions="*,*,*,*">
+                <Grid
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    ColumnDefinitions="*,*,*,*">
 
+                    <!--  ========= HOME =========  -->
                     <Button
                         Grid.Column="0"
                         Classes="nav"
-                        Command="{Binding ShowHomeCommand}"
-                        Content="🏠" />
+                        Command="{Binding ShowHomeCommand}">
+                        <StackPanel
+                            Width="72"
+                            Height="64"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="4">
+
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="White"
+                                CornerRadius="24"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Home}">
+                                <Image
+                                    Width="28"
+                                    Height="28"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+                            </Border>
+
+                            <Image
+                                Width="36"
+                                Height="36"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringNotEqualsConverter}, ConverterParameter=Home}"
+                                Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="11"
+                                Foreground="White"
+                                Text="Home" />
+                        </StackPanel>
+                    </Button>
+
+                    <!--  ========= KALENDER =========  -->
                     <Button
                         Grid.Column="1"
                         Classes="nav"
-                        Command="{Binding ShowStudyPlanCommand}"
-                        Content="📅" />
+                        Command="{Binding ShowStudyPlanCommand}">
+                        <StackPanel
+                            Width="72"
+                            Height="64"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="4">
+
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="White"
+                                CornerRadius="24"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Kalender}">
+                                <Image
+                                    Width="28"
+                                    Height="28"
+                                    Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+                            </Border>
+
+                            <Image
+                                Width="36"
+                                Height="36"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringNotEqualsConverter}, ConverterParameter=Kalender}"
+                                Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="11"
+                                Foreground="White"
+                                Text="Kalender" />
+                        </StackPanel>
+                    </Button>
+
+                    <!--  ========= CHAT =========  -->
                     <Button
                         Grid.Column="2"
                         Classes="nav"
-                        Command="{Binding ShowChatCommand}"
-                        Content="💬" />
+                        Command="{Binding ShowChatCommand}">
+                        <StackPanel
+                            Width="72"
+                            Height="64"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="4">
+
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="White"
+                                CornerRadius="24"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Chat}">
+                                <Image
+                                    Width="28"
+                                    Height="28"
+                                    Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+                            </Border>
+
+                            <Image
+                                Width="36"
+                                Height="36"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringNotEqualsConverter}, ConverterParameter=Chat}"
+                                Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="11"
+                                Foreground="White"
+                                Text="Chat" />
+                        </StackPanel>
+                    </Button>
+
+                    <!--  ========= SETTINGS =========  -->
                     <Button
                         Grid.Column="3"
                         Classes="nav"
-                        Command="{Binding ShowSettingsCommand}"
-                        Content="⚙️" />
+                        Command="{Binding ShowSettingsCommand}">
+                        <StackPanel
+                            Width="72"
+                            Height="64"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="4">
+
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="White"
+                                CornerRadius="24"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Settings}">
+                                <Image
+                                    Width="28"
+                                    Height="28"
+                                    Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+                            </Border>
+
+                            <Image
+                                Width="36"
+                                Height="36"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource StringNotEqualsConverter}, ConverterParameter=Settings}"
+                                Source="avares://LehrplanGenerator/Assets/Icons/Home.png" />
+
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="11"
+                                Foreground="White"
+                                Text="Settings" />
+                        </StackPanel>
+                    </Button>
 
                 </Grid>
             </Border>
-
         </Grid>
-
     </Grid>
 </UserControl>

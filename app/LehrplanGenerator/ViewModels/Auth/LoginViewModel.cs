@@ -63,8 +63,8 @@ public partial class LoginViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Cancel()
+    private void NavigateToRegister()
     {
-        _navigationService.NavigateTo<Main.MainViewModel>();
+        _navigationService.NavigateTo<RegisterViewModel>();
     }
 }

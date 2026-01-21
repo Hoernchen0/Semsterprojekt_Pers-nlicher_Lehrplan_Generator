@@ -10,16 +10,16 @@ public partial class DashboardView : UserControl
     {
         InitializeComponent();
 
-        // AttachedToVisualTree += (_, _) => UpdateResponsiveLayout();
-        // SizeChanged += (_, _) => UpdateResponsiveLayout();
+        AttachedToVisualTree += (_, _) => UpdateResponsiveLayout();
+        SizeChanged += (_, _) => UpdateResponsiveLayout();
     }
 
-    // private void UpdateResponsiveLayout()
-    // {
-    //     var width = Bounds.Width;
-    //     if (width <= 0) return;
+    private void UpdateResponsiveLayout()
+    {
+        var width = Bounds.Width;
+        if (width <= 0) return;
 
-    //     DesktopLayout.IsVisible = width >= DesktopBreakpoint;
-    //     MobileLayout.IsVisible = width < DesktopBreakpoint;
-    // }
+        DesktopLayout.IsVisible = width >= DesktopBreakpoint;
+        MobileLayout.IsVisible = width < DesktopBreakpoint;
+    }
 }

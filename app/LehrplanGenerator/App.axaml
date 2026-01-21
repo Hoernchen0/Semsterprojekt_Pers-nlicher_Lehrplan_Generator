@@ -5,12 +5,10 @@
     xmlns:local="using:LehrplanGenerator"
     RequestedThemeVariant="Light">
 
-    <!--  DATA TEMPLATES  -->
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
-    <!--  RESOURCES  -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,26 +17,17 @@
         </ResourceDictionary>
     </Application.Resources>
 
-    <!--  STYLES  -->
     <Application.Styles>
 
-        <!--  ✅ FLUENT THEME MIT GRÜNEM ACCENT  -->
         <FluentTheme>
             <FluentTheme.Palettes>
-
-                <!--  LIGHT MODE  -->
                 <ColorPaletteResources x:Key="Light" Accent="#2E7D32" />
-
-                <!--  DARK MODE  -->
                 <ColorPaletteResources x:Key="Dark" Accent="#2E7D32" />
-
             </FluentTheme.Palettes>
         </FluentTheme>
 
-        <!--  Deine Styles  -->
         <StyleInclude Source="avares://LehrplanGenerator/Styles/Controls.axaml" />
         <StyleInclude Source="avares://LehrplanGenerator/Styles/Animations.axaml" />
 
     </Application.Styles>
-
 </Application>
