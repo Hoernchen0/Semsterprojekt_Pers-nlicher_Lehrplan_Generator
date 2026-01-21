@@ -5,96 +5,146 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
     x:DataType="vm:LoginViewModel">
 
-    <!--  ================= PAGE =================  -->
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid>
 
-        <!--  Background Image  -->
-        <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
+        <!--  ================= DESKTOP =================  -->
+        <Grid x:Name="DesktopLayout">
 
-        <!--  Centered Card  -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid
-                Margin="24"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+            <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
 
-                <Border
-                    Width="440"
-                    Padding="40"
-                    Background="{DynamicResource BgSecondary}"
-                    CornerRadius="24">
+            <ScrollViewer>
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                    <StackPanel Spacing="28">
+                    <Border
+                        Width="440"
+                        Padding="40"
+                        Background="{DynamicResource BgSecondary}"
+                        CornerRadius="24">
 
-                        <!--  ================= HEADER =================  -->
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="24">
+
+                            <!--  Header  -->
                             <TextBlock
                                 FontSize="28"
                                 FontWeight="Bold"
-                                Foreground="{DynamicResource TextPrimary}"
                                 Text="Willkommen zurück"
                                 TextAlignment="Center" />
 
-                            <TextBlock
-                                FontSize="14"
-                                Foreground="{DynamicResource TextMuted}"
-                                Text="Melde dich an, um fortzufahren"
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
+                            <!--  Form  -->
+                            <TextBox
+                                x:Name="DesktopUsernameBox"
+                                Text="{Binding Username}"
+                                Watermark="E-Mail oder Telefonnummer" />
 
-                        <!--  ================= FORM =================  -->
-                        <StackPanel Spacing="16">
+                            <TextBox
+                                x:Name="DesktopPasswordBox"
+                                PasswordChar="*"
+                                Text="{Binding Password}"
+                                Watermark="Passwort" />
 
-                            <StackPanel Spacing="6">
+                            <!--  Primary  -->
+                            <Button
+                                Classes="primary"
+                                Command="{Binding LoginCommand}"
+                                Content="Anmelden" />
+
+                            <!--  Secondary / Navigation  -->
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="4">
+
                                 <TextBlock
                                     FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextPrimary}"
-                                    Text="Benutzername" />
-                                <TextBox Text="{Binding Username}" Watermark="Benutzername" />
-                            </StackPanel>
+                                    Foreground="{DynamicResource TextSecondary}"
+                                    Text="Noch kein Konto?" />
 
-                            <StackPanel Spacing="6">
-                                <TextBlock
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextPrimary}"
-                                    Text="Passwort" />
-                                <TextBox
-                                    PasswordChar="*"
-                                    Text="{Binding Password}"
-                                    Watermark="Passwort" />
+                                <Button
+                                    MinHeight="0"
+                                    Padding="0"
+                                    Classes="link"
+                                    Command="{Binding NavigateToRegisterCommand}"
+                                    Content="Jetzt registrieren"
+                                    FontSize="13" />
                             </StackPanel>
 
                         </StackPanel>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
 
-                        <!--  ================= PRIMARY ACTION =================  -->
+        <!--  ================= MOBILE =================  -->
+        <Grid x:Name="MobileLayout" IsVisible="False">
+
+            <Image
+                IsHitTestVisible="False"
+                Source="avares://LehrplanGenerator/Assets/Images/test.jpg"
+                Stretch="UniformToFill" />
+
+            <Border Background="#88000000" IsHitTestVisible="False" />
+
+            <Grid RowDefinitions="*,Auto">
+
+                <Border
+                    x:Name="MobileSheet"
+                    Grid.Row="1"
+                    Padding="24"
+                    Background="{DynamicResource BgSecondary}"
+                    CornerRadius="24,24,0,0">
+
+                    <Border.RenderTransform>
+                        <TranslateTransform />
+                    </Border.RenderTransform>
+
+                    <StackPanel Spacing="16">
+
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Text="Willkommen zurück" />
+
+                        <TextBox
+                            x:Name="MobileUsernameBox"
+                            Text="{Binding Username}"
+                            Watermark="E-Mail oder Telefonnummer" />
+
+                        <TextBox
+                            x:Name="MobilePasswordBox"
+                            PasswordChar="*"
+                            Text="{Binding Password}"
+                            Watermark="Passwort" />
+
                         <Button
+                            Height="48"
                             Classes="primary"
                             Command="{Binding LoginCommand}"
                             Content="Anmelden" />
 
-                        <!--  ================= SECONDARY ACTION =================  -->
-                        <Button
+                        <!--  Navigation  -->
+                        <StackPanel
                             HorizontalAlignment="Center"
-                            Classes="link"
-                            Command="{Binding CancelCommand}">
-                            <TextBlock Text="Abbrechen" />
-                        </Button>
+                            Orientation="Horizontal"
+                            Spacing="4">
 
-                        <!--  ================= RESULT =================  -->
-                        <TextBlock
-                            FontSize="13"
-                            Foreground="{DynamicResource TextMuted}"
-                            Text="{Binding Result}"
-                            TextAlignment="Center"
-                            TextWrapping="Wrap" />
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource TextSecondary}"
+                                Text="Noch kein Konto?" />
+
+                            <Button
+                                MinHeight="0"
+                                Padding="0"
+                                Classes="link"
+                                Command="{Binding NavigateToRegisterCommand}"
+                                Content="Jetzt registrieren"
+                                FontSize="13" />
+                        </StackPanel>
 
                     </StackPanel>
                 </Border>
             </Grid>
-        </ScrollViewer>
+        </Grid>
 
     </Grid>
 </UserControl>

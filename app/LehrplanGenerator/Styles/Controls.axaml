@@ -11,12 +11,13 @@
         <Setter Property="CaretBrush" Value="{DynamicResource TextPrimary}" />
     </Style>
 
-    <!--  🔥 FOCUS = GRÜN (nicht lila)  -->
+    <!--  Fokus = Grün  -->
     <Style Selector="TextBox:focus">
         <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
     </Style>
 
-    <!--  ================= BUTTONS =================  -->
+
+    <!--  ================= BUTTONS (GLOBAL) =================  -->
     <Style Selector="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -25,6 +26,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
     </Style>
 
+    <!--  Primary Button  -->
     <Style Selector="Button.primary">
         <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
         <Setter Property="Foreground" Value="{DynamicResource TextOnAccent}" />
@@ -39,12 +41,14 @@
         <Setter Property="Background" Value="{DynamicResource AccentPrimaryPressed}" />
     </Style>
 
+
     <!--  ================= PROGRESS BAR =================  -->
     <Style Selector="ProgressBar">
         <Setter Property="Foreground" Value="{DynamicResource AccentPrimary}" />
         <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
         <Setter Property="CornerRadius" Value="6" />
     </Style>
+
 
     <!--  ================= LISTBOX =================  -->
     <Style Selector="ListBox">
@@ -57,7 +61,7 @@
         <Setter Property="Padding" Value="0" />
     </Style>
 
-    <!--  ❌ Default Lila komplett killen  -->
+    <!--  Default Selection entfernen  -->
     <Style Selector="ListBoxItem:selected">
         <Setter Property="Background" Value="Transparent" />
     </Style>
@@ -70,11 +74,44 @@
         <Setter Property="Background" Value="Transparent" />
     </Style>
 
-    <!--  ✅ UNSER aktiver Lernplan  -->
+    <!--  Aktiver Lernplan  -->
     <Style Selector="ListBoxItem:selected Border">
         <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="Background" Value="{DynamicResource AccentPrimarySoft}" />
+    </Style>
+
+
+    <!--  ================= BOTTOM NAV (MOBILE) =================  -->
+
+    <!--  Basis  -->
+    <Style Selector="Button.nav">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccent}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <!--  Inaktiv  -->
+    <Style Selector="Button.nav.inactive">
+        <Setter Property="Opacity" Value="0.6" />
+    </Style>
+
+    <!--  Aktiv: Kreis-Hintergrund  -->
+    <Style Selector="Button.nav.active Border">
+        <Setter Property="Background" Value="#33FFFFFF" />
+    </Style>
+
+    <!--  Hover / Pressed  -->
+    <Style Selector="Button.nav:pointerover">
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+    <Style Selector="Button.nav:pressed">
+        <Setter Property="Opacity" Value="0.7" />
     </Style>
 
 </Styles>
