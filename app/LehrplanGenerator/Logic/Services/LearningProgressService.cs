@@ -85,7 +85,17 @@ public class LearningProgressService
         }
         catch (DbUpdateException ex)
         {
-            Console.WriteLine(ex.InnerException?.Message);
+            await tx.RollbackAsync();
+            Console.WriteLine($"❌ DB Error: {ex.Message}");
+            Console.WriteLine($"❌ Inner Exception: {ex.InnerException?.Message}");
+            Console.WriteLine($"❌ Stack Trace: {ex.StackTrace}");
+            throw new Exception($"Database error: {ex.InnerException?.Message ?? ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            await tx.RollbackAsync();
+            Console.WriteLine($"❌ General Error: {ex.Message}");
+            Console.WriteLine($"❌ Stack Trace: {ex.StackTrace}");
             throw;
         }
     }

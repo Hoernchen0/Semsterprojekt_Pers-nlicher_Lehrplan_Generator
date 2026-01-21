@@ -76,19 +76,6 @@
                                 Classes="send"
                                 Command="{Binding SendCommand}"
                                 Content="↑" />
-
-                            <Button Grid.Row="3"
-                Content="Lernplan erstellen"
-                HorizontalAlignment="Center"
-                HorizontalContentAlignment ="Center"
-                VerticalContentAlignment ="Center"
-                Background="#fbfbff"
-                Foreground="Black"
-                BorderBrush="#0d0d0e"
-                BorderThickness="6"
-                CornerRadius="20"
-
-                IsEnabled="{Binding !IsSending}"/>
                         </Grid>
 
                     </StackPanel>

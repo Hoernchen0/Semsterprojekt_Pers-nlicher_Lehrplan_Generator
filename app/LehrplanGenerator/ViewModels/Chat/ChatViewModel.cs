@@ -220,6 +220,8 @@ public partial class ChatViewModel : ViewModelBase
     [ObservableProperty]
     private bool isCreatingPlan;
 
+
+
     [RelayCommand]
     private async Task CreateNewPlan()
     {
@@ -241,42 +243,8 @@ public partial class ChatViewModel : ViewModelBase
 
         try
         {
-            Console.WriteLine($"📋 Starte KI-Lernplan-Generierung aus Chat...");
-
-            // Nutze den Chat-Kontext: Nimm die letzte User-Nachricht als Prompt
-            string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
-                "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
-                "Das Studium beginnt morgen.";
-
-            // Wenn es aktuelle Chat-Messages gibt, nutze die letzte User-Nachricht
-            if (Messages.Count > 0)
-            {
-                var lastUserMessage = Messages.LastOrDefault(m => m.Sender == "User");
-                if (lastUserMessage != null)
-                {
-                    prompt = lastUserMessage.FullText;
-                    Console.WriteLine($"📝 Nutze Chat-Kontext: {prompt}");
-                }
-            }
-
-            // Frage KI um einen Plan zu erstellen
-            var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
-
-            if (string.IsNullOrEmpty(planResponse))
-            {
-                Messages.Add(new ChatMessage
-                {
-                    Sender = "System",
-                    FullText = "Fehler bei der KI-Generierung",
-                    DisplayedText = "Fehler bei der KI-Generierung"
-                });
-                return;
-            }
-
-            Console.WriteLine($"🤖 KI hat Lernplan geplant");
-
-            // Generiere den StudyPlan
-            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
+          // Generiere den StudyPlan
+            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
 
             if (studyPlan == null)
             {
@@ -288,24 +256,19 @@ public partial class ChatViewModel : ViewModelBase
                 });
                 return;
             }
-
-            Console.WriteLine($"📊 StudyPlan generiert mit {studyPlan.Days.Count} Tagen");
-
             // Speichere den Plan in der Datenbank
             await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
-
-            Console.WriteLine($"✅ Lernplan gespeichert: {studyPlan.Topic}");
 
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                FullText = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen.",
-                DisplayedText = $"✅ Lernplan erfolgreich erstellt!\n📚 Thema: {studyPlan.Topic}\n📅 Tage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen."
+                FullText = $"Lernplan erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen.",
+                DisplayedText = $"Lernplan erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen."
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
+            Console.WriteLine($"Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
             Messages.Add(new ChatMessage
             {
                 Sender = "System",

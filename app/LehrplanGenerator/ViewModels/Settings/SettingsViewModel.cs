@@ -15,8 +15,8 @@ public partial class SettingsViewModel : ViewModelBase
 
     private readonly UserCredentialStore _store;
 
-    public string CurrentUserDisplayName => _appState.CurrentUserDisplayName;
-    public string CurrentUsername => _appState.CurrentUsername;
+    public string? CurrentUserDisplayName => _appState.CurrentUserDisplayName;
+    public string? CurrentUsername => _appState.CurrentUsername;
 
 
     public SettingsViewModel(
@@ -53,6 +53,9 @@ public partial class SettingsViewModel : ViewModelBase
     [RelayCommand]
     private void EditProfile()
     {
+        if (_appState.CurrentUsername == null)
+            return;
+
         var lifetime = Avalonia.Application.Current?.ApplicationLifetime
             as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
 
@@ -79,7 +82,11 @@ public partial class SettingsViewModel : ViewModelBase
         {
             DataContext = vm
         };
-        window.ShowDialog(mainWindow);
+
+        if (mainWindow != null)
+        {
+            window.ShowDialog(mainWindow);
+        }
     }
 
 
@@ -87,6 +94,9 @@ public partial class SettingsViewModel : ViewModelBase
     [RelayCommand]
     private void EditPassword()
     {
+        if (_appState.CurrentUsername == null)
+            return;
+
         var lifetime = Avalonia.Application.Current?.ApplicationLifetime
             as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
 
@@ -106,7 +116,10 @@ public partial class SettingsViewModel : ViewModelBase
             DataContext = vm
         };
 
-        window.ShowDialog(mainWindow);
+        if (mainWindow != null)
+        {
+            window.ShowDialog(mainWindow);
+        }
     }
 
 
