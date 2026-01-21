@@ -174,4 +174,40 @@ public class LearningProgressService
             .OrderBy(lp => lp.PlannedStart)
             .FirstOrDefaultAsync();
     }
+
+    // =========================
+    // DELETE STUDY PLAN
+    // =========================
+    public async Task DeleteStudyPlanAsync(Guid studyPlanId)
+    {
+        await using var tx = await _db.Database.BeginTransactionAsync();
+
+        try
+        {
+            // Lösche alle zugehörigen LearningProgress-Einträge
+            var units = await _db.LearningProgress
+                .Where(lp => lp.StudyPlanId == studyPlanId)
+                .ToListAsync();
+
+            _db.LearningProgress.RemoveRange(units);
+
+            // Lösche den StudyPlan selbst
+            var plan = await _db.StudyPlans.FindAsync(studyPlanId);
+            if (plan != null)
+            {
+                _db.StudyPlans.Remove(plan);
+            }
+
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            Console.WriteLine($"✅ StudyPlan {studyPlanId} gelöscht");
+        }
+        catch (Exception ex)
+        {
+            await tx.RollbackAsync();
+            Console.WriteLine($"❌ Fehler beim Löschen des StudyPlans: {ex.Message}");
+            throw;
+        }
+    }
 }
