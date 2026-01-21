@@ -53,9 +53,13 @@
                                 Content="📎" />
                             <TextBox
                                 Grid.Column="2"
-                                AcceptsReturn="True"
+                                AcceptsReturn="False"
                                 Text="{Binding InputText}"
-                                Watermark="Stelle eine Frage…" />
+                                Watermark="Stelle eine Frage…">
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                                </TextBox.KeyBindings>
+                            </TextBox>
                             <Button
                                 Grid.Column="3"
                                 Classes="send"
@@ -101,6 +105,22 @@
                                         <md:MarkdownScrollViewer Markdown="{Binding DisplayedText}" />
                                     </Border>
 
+                                    <Border
+                                        Padding="12,8"
+                                        HorizontalAlignment="Center"
+                                        Background="#FEF3C7"
+                                        BorderBrush="#FCD34D"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        IsVisible="{Binding IsSystem}">
+                                        <TextBlock
+                                            Foreground="#92400E"
+                                            FontSize="13"
+                                            Text="{Binding DisplayedText}"
+                                            TextAlignment="Center"
+                                            TextWrapping="Wrap" />
+                                    </Border>
+
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -131,7 +151,11 @@
                             Grid.Column="2"
                             AcceptsReturn="True"
                             Text="{Binding InputText}"
-                            Watermark="Nachricht schreiben…" />
+                            Watermark="Nachricht schreiben…">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
                         <Button
                             Grid.Column="3"
                             Classes="send"
