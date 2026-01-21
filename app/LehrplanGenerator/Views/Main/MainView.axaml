@@ -1,89 +1,157 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Main"
-             mc:Ignorable="d"
-             x:Class="LehrplanGenerator.Views.Main.MainView"
-             x:DataType="vm:MainViewModel">
+<UserControl
+        x:Class="LehrplanGenerator.Views.Main.MainView"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LehrplanGenerator.ViewModels.Main"
+        x:DataType="vm:MainViewModel">
 
-    <Grid>
+        <Grid>
 
-        <!-- Hintergrundbild -->
-        <Image Source="avares://LehrplanGenerator/Assets/Images/login_background.png"
-               Stretch="UniformToFill"/>
+                <!--  ================= DESKTOP LAYOUT =================  -->
+                <Grid x:Name="DesktopLayout" IsVisible="True">
 
-        <!-- Dunkles Overlay für Kontrast -->
-        <Border Background="#7A000000"/>
+                        <Image
+                                IsHitTestVisible="False"
+                                Source="avares://LehrplanGenerator/Assets/Images/login_background.png"
+                                Stretch="UniformToFill" />
 
-        <!-- ZENTRIERTER CONTENT -->
-        <Grid HorizontalAlignment="Center"
-              VerticalAlignment="Center">
+                        <Border Background="#66000000" IsHitTestVisible="False" />
 
-            <StackPanel Spacing="36"
-                        HorizontalAlignment="Center">
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Border
+                                        MaxWidth="920"
+                                        Padding="48"
+                                        Background="White"
+                                        CornerRadius="28">
 
-                <!-- HEADER -->
-                <StackPanel Spacing="12"
-                            HorizontalAlignment="Center">
+                                        <StackPanel HorizontalAlignment="Center" Spacing="28">
 
-                    <TextBlock Text="{Binding Greeting}"
-                               FontSize="36"
-                               FontWeight="SemiBold"
-                               Foreground="#F8FAFC"
-                               TextAlignment="Center"/>
+                                                <TextBlock
+                                                        FontSize="40"
+                                                        FontWeight="Bold"
+                                                        Foreground="#020617"
+                                                        Text="KI-gestützter Lehrplangenerator"
+                                                        TextAlignment="Center"
+                                                        TextWrapping="Wrap" />
 
-                    <TextBlock Text="Erstelle einen Account, um personalisierte Lerninhalte zu sehen"
-                               FontSize="15"
-                               Foreground="#CBD5E1"
-                               TextAlignment="Center"
-                               TextWrapping="Wrap"
-                               Width="520"/>
-                </StackPanel>
+                                                <TextBlock
+                                                        FontSize="18"
+                                                        Foreground="#334155"
+                                                        Text="Plane dein Studium so, wie es zu dir passt"
+                                                        TextAlignment="Center"
+                                                        TextWrapping="Wrap" />
 
-                <!-- ACTIONS -->
-                <StackPanel Spacing="18"
-                            HorizontalAlignment="Center">
+                                                <Grid
+                                                        Width="360"
+                                                        ColumnDefinitions="*,*"
+                                                        ColumnSpacing="16">
 
-                    <!-- LOGIN -->
-                    <Button Content="Login"
-                            Width="320"
-                            Height="50"
-                            FontSize="15"
-                            FontWeight="Medium"
-                            Background="#1D4ED8"
-                            Foreground="White"
-                            CornerRadius="14"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Theme="{x:Null}"
-                            Command="{Binding LoginCommand}"/>
+                                                        <Button
+                                                                Grid.Column="0"
+                                                                Height="48"
+                                                                Background="#1D4ED8"
+                                                                Command="{Binding RegisterCommand}"
+                                                                CornerRadius="24">
 
-                    <!-- REGISTRIEREN -->
-                    <Button Content="Registrieren"
-                            Width="320"
-                            Height="50"
-                            FontSize="15"
-                            FontWeight="Medium"
-                            Background="#E5E7EB"
-                            Foreground="#020617"
-                            BorderBrush="#CBD5E1"
-                            BorderThickness="1"
-                            CornerRadius="14"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Theme="{x:Null}"
-                            Command="{Binding RegisterCommand}"/>
+                                                                <TextBlock
+                                                                        FontSize="14"
+                                                                        FontWeight="SemiBold"
+                                                                        Foreground="White"
+                                                                        Text="Jetzt starten" />
+                                                        </Button>
 
-                </StackPanel>
+                                                        <Button
+                                                                Grid.Column="1"
+                                                                Height="48"
+                                                                Background="#F1F5F9"
+                                                                Command="{Binding LoginCommand}"
+                                                                CornerRadius="24">
 
-                <!-- FOOTER -->
-                <TextBlock Text="© 2026 • Lernplattform"
-                           FontSize="11"
-                           Foreground="#CBD5E1"
-                           HorizontalAlignment="Center"/>
+                                                                <TextBlock
+                                                                        FontSize="14"
+                                                                        FontWeight="Medium"
+                                                                        Foreground="#1D4ED8"
+                                                                        Text="Anmelden" />
+                                                        </Button>
 
-            </StackPanel>
+                                                </Grid>
+
+                                        </StackPanel>
+                                </Border>
+                        </Grid>
+
+                </Grid>
+
+                <!--  ================= MOBILE LAYOUT =================  -->
+                <Grid x:Name="MobileLayout" IsVisible="False">
+
+                        <!--  Background  -->
+                        <Image
+                                IsHitTestVisible="False"
+                                Source="avares://LehrplanGenerator/Assets/Images/login_background.png"
+                                Stretch="UniformToFill" />
+
+                        <!--  Stronger overlay for mobile  -->
+                        <Border Background="#88000000" IsHitTestVisible="False" />
+
+                        <!--  Centered Card  -->
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+
+                                <Border
+                                        MaxWidth="380"
+                                        Margin="16"
+                                        Padding="20"
+                                        HorizontalAlignment="Center"
+                                        Background="White"
+                                        CornerRadius="24">
+
+                                        <StackPanel Spacing="18">
+
+                                                <TextBlock
+                                                        FontSize="22"
+                                                        FontWeight="Bold"
+                                                        Foreground="#020617"
+                                                        Text="KI-gestützter Lehrplangenerator"
+                                                        TextWrapping="Wrap" />
+
+                                                <TextBlock
+                                                        FontSize="14"
+                                                        Foreground="#475569"
+                                                        Text="Plane dein Studium so, wie es zu dir passt"
+                                                        TextWrapping="Wrap" />
+
+                                                <Button
+                                                        Height="44"
+                                                        Background="#1D4ED8"
+                                                        Command="{Binding RegisterCommand}"
+                                                        CornerRadius="22">
+
+                                                        <TextBlock
+                                                                FontSize="14"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="White"
+                                                                Text="Jetzt starten" />
+                                                </Button>
+
+                                                <Button
+                                                        Height="44"
+                                                        Background="#F1F5F9"
+                                                        Command="{Binding LoginCommand}"
+                                                        CornerRadius="22">
+
+                                                        <TextBlock
+                                                                FontSize="14"
+                                                                FontWeight="Medium"
+                                                                Foreground="#1D4ED8"
+                                                                Text="Anmelden" />
+                                                </Button>
+
+                                        </StackPanel>
+                                </Border>
+
+                        </Grid>
+
+                </Grid>
+
         </Grid>
-    </Grid>
 </UserControl>

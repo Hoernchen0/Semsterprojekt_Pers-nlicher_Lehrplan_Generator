@@ -1,102 +1,130 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
-             x:Class="LehrplanGenerator.Views.Auth.RegisterView"
-             x:DataType="vm:RegisterViewModel"
-             Background="#FFFFFF">
+<UserControl
+    x:Class="LehrplanGenerator.Views.Auth.RegisterView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
+    x:DataType="vm:RegisterViewModel">
 
-    <!-- Root -->
-    <Grid HorizontalAlignment="Center"
-          VerticalAlignment="Center">
+    <!--  Page Background  -->
+    <Grid>
 
-        <!-- Content -->
-        <StackPanel Spacing="28"
-                    Width="360"
-                    HorizontalAlignment="Center">
+        <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
 
-            <!-- Header -->
-            <StackPanel Spacing="6">
-                <TextBlock Text="Account erstellen"
-                           FontSize="26"
-                           FontWeight="SemiBold"
-                           Foreground="#020617"
-                           TextAlignment="Center"/>
+        <!--  Centered Card  -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid
+                Margin="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
 
-                <TextBlock Text="Erstelle deinen persönlichen Zugang"
-                           FontSize="14"
-                           Foreground="#64748B"
-                           TextAlignment="Center"/>
-            </StackPanel>
+                <Border
+                    Width="440"
+                    Padding="40"
+                    Background="{DynamicResource BgSecondary}"
+                    CornerRadius="24">
 
-            <!-- Form -->
-            <StackPanel Spacing="14">
+                    <StackPanel Spacing="28">
 
-                <TextBox Text="{Binding FirstName}"
-                         Watermark="Vorname"
-                         Height="42"
-                         FontSize="14"/>
+                        <!--  Header  -->
+                        <StackPanel Spacing="8">
+                            <TextBlock
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="Konto erstellen"
+                                TextAlignment="Center" />
 
-                <TextBox Text="{Binding LastName}"
-                         Watermark="Nachname"
-                         Height="42"
-                         FontSize="14"/>
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="{DynamicResource TextSecondary}"
+                                Text="Erstelle dein Konto für deinen persönlichen Lehrplan"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
 
-                <TextBox Text="{Binding Username}"
-                         Watermark="Benutzername"
-                         Height="42"
-                         FontSize="14"/>
+                        <!--  Form  -->
+                        <StackPanel Spacing="16">
 
-                <TextBox Text="{Binding Password}"
-                         Watermark="Passwort"
-                         PasswordChar="*"
-                         Height="42"
-                         FontSize="14"/>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="Vorname" />
+                                <TextBox Text="{Binding FirstName}" Watermark="Vorname" />
+                            </StackPanel>
 
-            </StackPanel>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="Nachname" />
+                                <TextBox Text="{Binding LastName}" Watermark="Nachname" />
+                            </StackPanel>
 
-            <!-- Error / Feedback -->
-            <TextBlock Text="{Binding ErrorMessage}"
-                       FontSize="13"
-                       Foreground="#DC2626"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap"/>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="Benutzername" />
+                                <TextBox Text="{Binding Username}" Watermark="Benutzername" />
+                            </StackPanel>
 
-            <!-- ACTIONS – GLEICHES SYSTEM WIE LOGIN -->
-            <StackPanel Spacing="12"
-                        HorizontalAlignment="Center">
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="Passwort" />
+                                <TextBox
+                                    PasswordChar="*"
+                                    Text="{Binding Password}"
+                                    Watermark="Mindestens 8 Zeichen" />
+                            </StackPanel>
 
-                <!-- REGISTRIEREN -->
-                <Border Width="240"
-                        Height="44"
-                        Background="#E5E7EB"
-                        CornerRadius="12"
-                        Padding="1">
+                        </StackPanel>
 
-                    <Button Content="Registrieren"
-                            Width="240"
-                            Height="44"
-                            Foreground="#020617"
-                            FontWeight="SemiBold"
-                            Command="{Binding RegisterCommand}"/>
+                        <!--  Error  -->
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource TextError}"
+                            Text="{Binding ErrorMessage}"
+                            TextWrapping="Wrap" />
+
+                        <!--  Primary Action  -->
+                        <Button
+                            Classes="primary"
+                            Command="{Binding RegisterCommand}"
+                            Content="Konto erstellen" />
+
+                        <!--  Secondary Action  -->
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="4">
+
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="13"
+                                Foreground="{DynamicResource TextSecondary}"
+                                Text="Du hast bereits ein Konto?" />
+
+                            <Button
+                                MinHeight="0"
+                                Padding="0"
+                                VerticalAlignment="Center"
+                                Classes="link"
+                                Command="{Binding NavigateToLoginCommand}"
+                                Content="Anmelden"
+                                FontSize="13" />
+                        </StackPanel>
+
+                    </StackPanel>
                 </Border>
-
-                <!-- ZURÜCK -->
-                <Border Width="240"
-                        Height="44"
-                        Background="#E5E7EB"
-                        CornerRadius="12"
-                        Padding="1">
-
-                    <Button Content="Zurück zum Menü"
-                            Width="240"
-                            Height="44"
-                            Foreground="#020617"
-                            FontWeight="SemiBold"
-                            Command="{Binding MenuCommand}"/>
-                </Border>
-
-            </StackPanel>
-
-        </StackPanel>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

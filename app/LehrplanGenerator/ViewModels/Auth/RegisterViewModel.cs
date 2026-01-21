@@ -6,6 +6,8 @@ using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
+using LehrplanGenerator.ViewModels.Guide;
+using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.ViewModels.Shell;
 
 namespace LehrplanGenerator.ViewModels.Auth;
@@ -22,7 +24,10 @@ public partial class RegisterViewModel : ViewModelBase
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
-    public RegisterViewModel(UserCredentialStore store, INavigationService navigationService, AppState appState)
+    public RegisterViewModel(
+        UserCredentialStore store,
+        INavigationService navigationService,
+        AppState appState)
     {
         _store = store;
         _navigationService = navigationService;
@@ -32,32 +37,44 @@ public partial class RegisterViewModel : ViewModelBase
     [RelayCommand]
     private void Register()
     {
-        ErrorMessage = ValidateInput();
-        if (ErrorMessage != null)
-            return;
+        try
+        {
 
-        var userId = Guid.NewGuid();
+            ErrorMessage = ValidateInput();
+            if (ErrorMessage != null)
+            {
+                return;
+            }
 
-        var user = new UserCredential(
-            userId,
-            FirstName,
-            LastName,
-            Username,
-            PasswordHasher.Hash(Password)
-        );
+            var userId = Guid.NewGuid();
 
-        _store.Add(user);
+            var credential = new UserCredential(
+                userId,
+                FirstName,
+                LastName,
+                Username,
+                PasswordHasher.Hash(Password)
+            );
 
-        _appState.CurrentUserId = user.UserId;
-        _appState.CurrentUserDisplayName = $"{user.FirstName} {user.LastName}";
+            _store.Add(credential);
 
-        _navigationService.NavigateTo<ShellViewModel>();
+            _appState.CurrentUserId = credential.UserId;
+            _appState.CurrentUserDisplayName = $"{credential.FirstName} {credential.LastName}";
+
+            _navigationService.NavigateTo<GuideViewModel>();
+        }
+        catch (Exception ex)
+        {
+
+            ErrorMessage = $"Fehler bei der Registrierung: {ex.Message}";
+        }
+
     }
 
     [RelayCommand]
     private void Menu()
     {
-        _navigationService.NavigateTo<LehrplanGenerator.ViewModels.Main.MainViewModel>();
+        _navigationService.NavigateTo<MainViewModel>();
     }
 
     private string? ValidateInput()
@@ -68,7 +85,8 @@ public partial class RegisterViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(LastName) || LastName.Length < 2)
             return "Nachname muss mindestens 2 Zeichen lang sein.";
 
-        if (string.IsNullOrWhiteSpace(Username) || !Username.All(c => char.IsLetterOrDigit(c) || c == '_'))
+        if (string.IsNullOrWhiteSpace(Username) ||
+            !Username.All(c => char.IsLetterOrDigit(c) || c == '_'))
             return "Username darf nur Buchstaben, Zahlen und Unterstriche enthalten.";
 
         if (_store.UsernameExists(Username))
@@ -82,5 +100,11 @@ public partial class RegisterViewModel : ViewModelBase
             return "Passwort: mindestens 8 Zeichen, Groß-/Kleinbuchstabe, Zahl und Sonderzeichen.";
 
         return null;
+    }
+
+    [RelayCommand]
+    private void NavigateToLogin()
+    {
+        _navigationService.NavigateTo<LoginViewModel>();
     }
 }

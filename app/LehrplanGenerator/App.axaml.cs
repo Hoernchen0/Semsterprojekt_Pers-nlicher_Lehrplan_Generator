@@ -4,19 +4,25 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
+
+using LehrplanGenerator.Logic;
 using LehrplanGenerator.Logic.Services;
+using LehrplanGenerator.Logic.State;
+using LehrplanGenerator.Logic.Utils;
+
 using LehrplanGenerator.ViewModels.Windows;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.ViewModels.Auth;
-using LehrplanGenerator.Views.Windows;
-using LehrplanGenerator.ViewModels.Shell;
-using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Settings;
 using LehrplanGenerator.ViewModels.Dashboard;
 using LehrplanGenerator.ViewModels.Chat;
 using LehrplanGenerator.ViewModels.StudyPlan;
-using LehrplanGenerator.Logic;
+using LehrplanGenerator.ViewModels.Guide;
+using LehrplanGenerator.ViewModels.Shell;
+
+using LehrplanGenerator.Views.Windows;
 
 namespace LehrplanGenerator;
 
@@ -26,36 +32,68 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        AvaloniaXamlLoader.Load(this);
+        try
+        {
+            AvaloniaXamlLoader.Load(this);
 
+            var services1 = new ServiceCollection();
+            ConfigureServices(services1);
+            Services = services1.BuildServiceProvider();
+
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"   Inner: {ex.InnerException.Message}");
+            }
+            throw; // Re-throw so app shows error
+        }
+        // ===============================
+        // THEME BINDING (WICHTIG!)
+        // ===============================
+        RequestedThemeVariant = ThemeManager.Instance.ThemeVariant;
+
+        ThemeManager.Instance.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ThemeManager.ThemeVariant))
+            {
+                RequestedThemeVariant = ThemeManager.Instance.ThemeVariant;
+            }
+        };
+
+
+        // ===============================
+        // DEPENDENCY INJECTION
+        // ===============================
         var services = new ServiceCollection();
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
-        
-        // Initialisiere die Datenbank (erstelle Tabellen, falls nicht vorhanden)
+
         ServiceExtensions.InitializeDatabase(Services);
     }
 
     private void ConfigureServices(IServiceCollection services)
     {
-        // Registriere SQLite-basierte Datenbank Services (alle Nutzerdaten, Chats, Tabellen)
         services.AddLehrplanServices();
 
-        // Services
+        // Core
         services.AddSingleton<AppState>();
         services.AddSingleton<ViewLocator>();
         services.AddSingleton<INavigationService, NavigationService>();
-        
-        // UserCredentialStore wird jetzt über IUserRepository mit SQLite befüllt
         services.AddSingleton<UserCredentialStore>();
 
-        // ViewModels
+        // Root
         services.AddSingleton<MainWindowViewModel>();
+
+        // Screens
         services.AddTransient<MainViewModel>();
-        services.AddTransient<RegisterViewModel>();
         services.AddTransient<LoginViewModel>();
+        services.AddTransient<RegisterViewModel>();
+        services.AddTransient<GuideViewModel>();
         services.AddTransient<ShellViewModel>();
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<StudySessionViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<ChatViewModel>();
         services.AddTransient<StudyPlanViewModel>();
@@ -65,18 +103,23 @@ public partial class App : Application
     {
         DisableAvaloniaDataAnnotationValidation();
 
+        var mainVm = Services.GetRequiredService<MainWindowViewModel>();
+
+        var navigationService = Services.GetRequiredService<INavigationService>();
+        navigationService.SetMainViewModel(mainVm);
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
+                DataContext = mainVm
             };
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime single)
         {
-            singleViewPlatform.MainView = new Views.Main.MainView
+            single.MainView = new MainHostView
             {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
+                DataContext = mainVm
             };
         }
 
@@ -85,12 +128,12 @@ public partial class App : Application
 
     private void DisableAvaloniaDataAnnotationValidation()
     {
-        var dataValidationPluginsToRemove =
-            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
+        var plugins =
+            BindingPlugins.DataValidators
+                .OfType<DataAnnotationsValidationPlugin>()
+                .ToArray();
 
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
+        foreach (var plugin in plugins)
             BindingPlugins.DataValidators.Remove(plugin);
-        }
     }
 }

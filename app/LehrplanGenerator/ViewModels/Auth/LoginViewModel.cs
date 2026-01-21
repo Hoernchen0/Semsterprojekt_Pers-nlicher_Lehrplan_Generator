@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -29,27 +30,36 @@ public partial class LoginViewModel : ViewModelBase
     [RelayCommand]
     private void Login()
     {
-        var cred = _store.GetByUsername(Username);
-
-        if (cred == null)
+        try
         {
-            Result = "Benutzername oder Passwort falsch";
-            return;
-        }
+            var cred = _store.GetByUsername(Username);
 
-        var hashed = PasswordHasher.Hash(Password);
-        if (hashed != cred.PasswordHash)
+            if (cred == null)
+            {
+                Result = "Benutzername oder Passwort falsch";
+                return;
+            }
+
+            var hashed = PasswordHasher.Hash(Password);
+            if (hashed != cred.PasswordHash)
+            {
+                Result = "Benutzername oder Passwort falsch";
+                return;
+            }
+
+            _appState.CurrentUserId = cred.UserId;
+            _appState.CurrentUserDisplayName = $"{cred.FirstName} {cred.LastName}";
+
+            Result = "Login erfolgreich";
+            Console.WriteLine($"✓ Login erfolgreich für {Username}");
+
+            _navigationService.NavigateTo<ShellViewModel>();
+        }
+        catch (Exception ex)
         {
-            Result = "Benutzername oder Passwort falsch";
-            return;
+            Result = $"Fehler beim Login: {ex.Message}";
+            Console.WriteLine($"❌ FEHLER beim Login: {ex}");
         }
-
-        _appState.CurrentUserId = cred.UserId;
-        _appState.CurrentUserDisplayName = $"{cred.FirstName} {cred.LastName}";
-
-        Result = "Login erfolgreich";
-
-        _navigationService.NavigateTo<ShellViewModel>();
     }
 
     [RelayCommand]

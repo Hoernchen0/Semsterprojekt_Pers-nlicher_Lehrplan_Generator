@@ -1,0 +1,88 @@
+<UserControl
+    x:Class="LehrplanGenerator.Views.Dashboard.StudySessionView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
+    x:DataType="vm:StudySessionViewModel">
+
+    <Grid Background="{DynamicResource BgPrimary}">
+
+        <Border
+            Padding="40"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="{DynamicResource BgSecondary}"
+            BorderBrush="{DynamicResource BorderSubtle}"
+            BorderThickness="1"
+            CornerRadius="24">
+
+            <StackPanel HorizontalAlignment="Center" Spacing="28">
+
+                <TextBlock
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource TextPrimary}"
+                    Text="{Binding Title}"
+                    TextAlignment="Center" />
+
+                <Grid Width="220" Height="220">
+
+                    <!--  Hintergrund  -->
+                    <Ellipse Stroke="{DynamicResource BorderSubtle}" StrokeThickness="14" />
+
+                    <!--  Fortschritt  -->
+                    <Ellipse
+                        RenderTransformOrigin="0.5,0.5"
+                        Stroke="{DynamicResource HFU.Green}"
+                        StrokeDashArray="603"
+                        StrokeDashOffset="{Binding ProgressDashOffset}"
+                        StrokeThickness="14">
+
+                        <Ellipse.RenderTransform>
+                            <RotateTransform Angle="-90" />
+                        </Ellipse.RenderTransform>
+
+                    </Ellipse>
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="36"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Text="{Binding RemainingTimeText}" />
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Spacing="14">
+
+                    <Button
+                        Width="120"
+                        Height="44"
+                        Background="{DynamicResource BorderSubtle}"
+                        Command="{Binding PauseCommand}"
+                        Content="Pause"
+                        IsVisible="{Binding IsRunning}" />
+
+                    <Button
+                        Width="120"
+                        Height="44"
+                        Background="{DynamicResource HFU.Green}"
+                        Command="{Binding StartCommand}"
+                        Content="Weiter"
+                        Foreground="White"
+                        IsVisible="{Binding IsPaused}" />
+
+                    <Button
+                        Width="120"
+                        Height="44"
+                        Background="{DynamicResource HFU.GreenHover}"
+                        Command="{Binding FinishCommand}"
+                        Content="Fertig"
+                        Foreground="White" />
+
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

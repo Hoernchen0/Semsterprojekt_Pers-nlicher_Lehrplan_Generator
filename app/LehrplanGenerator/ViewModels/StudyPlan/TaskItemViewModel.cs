@@ -1,30 +1,23 @@
-using System.ComponentModel;
 using LehrplanGenerator.Logic.Models;
+using System;
 
 namespace LehrplanGenerator.ViewModels.StudyPlan;
 
 public class TaskItemViewModel : ViewModelBase
 {
+    public Guid Id { get; }
     public string Title { get; }
-    public string Time => $"{StartTime} – {EndTime}";
-    public string StartTime { get; }
-    public string EndTime { get; }
+    public string Time { get; }
     public string Description { get; }
+    public bool IsDone { get; }
 
-    private bool _isDone;
-    public bool IsDone
+    public TaskItemViewModel(LearningProgressEntity entity)
     {
-        get => _isDone;
-        set => SetProperty(ref _isDone, value);
-    }
-
-    public TaskItemViewModel(TaskItem task)
-    {
-        Title = task.Title;
-        StartTime = task.StartTime;
-        EndTime = task.EndTime;
-        Description = task.Description;
-        _isDone = task.IsDone;
-
+        Id = entity.Id;
+        Title = entity.ModuleName;
+        Description = entity.Chapter;
+        Time =
+            $"{entity.PlannedStart.ToLocalTime():HH:mm} – {entity.PlannedEnd.ToLocalTime():HH:mm}";
+        IsDone = entity.IsCompleted;
     }
 }

@@ -21,7 +21,7 @@ public class StudyPlanGeneratorService
     {
         var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
         var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-        
+
         if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(apiKey))
         {
             _client = null;
@@ -58,13 +58,13 @@ public class StudyPlanGeneratorService
 
         var systemMessage = new Message(Role.System,
             "day soll das Format dd.MM.yyyy haben und start_time und end_time das Format HH:mm. " +
-            $"Der erste Tag darf nicht vor dem heutigen Datum liegen: {heute}, gib den Lernplan ausschließlich im JSON Format zurück. " );
+            $"Der erste Tag darf nicht vor dem heutigen Datum liegen: {heute}, gib den Lernplan ausschließlich im JSON Format zurück. ");
 
         var messages = new List<Message> { systemMessage };
         messages.AddRange(_conversation);
 
-try
-    {
+        try
+        {
             // Typisierte Response abrufen
             var (studyPlan, chatResponse) = await _client.ChatEndpoint.GetCompletionAsync<StudyPlan>(
                 new ChatRequest(messages, model: ModelName) //automatische json deserialisierung
@@ -76,13 +76,15 @@ try
                 return null;
             }
 
-       
-        return studyPlan;
-    }    catch (Exception ex){
-        Console.WriteLine($"API error: {ex.Message}");
-        return null;
-    }
-    
+
+            return studyPlan;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"API error: {ex.Message}");
+            return null;
+        }
+
     }
 
     public async Task<bool> UploadPdfAsync(string pdfPath)
@@ -107,11 +109,11 @@ try
             }
 
             // Füge den extrahierten Text als Nachricht zur Konversation hinzu
-            _conversation.Add(new Message(Role.User, 
+            _conversation.Add(new Message(Role.User,
                 $"Ich habe die PDF-Datei '{fileName}' hochgeladen. Hier ist der Inhalt:\n\n{extractedText}\n\n" +
                 "Bitte nutze diesen Inhalt als Grundlage für Zusammenfassungen und den Lernplan."));
-            
-            _conversation.Add(new Message(Role.System, 
+
+            _conversation.Add(new Message(Role.System,
                 "Nutze den bereitgestellten PDF-Inhalt als Grundlage für Zusammenfassungen und den Lernplan."
             ));
 
@@ -133,7 +135,7 @@ try
             using (var pdfDocument = new PdfDocument(pdfReader))
             {
                 var textBuilder = new System.Text.StringBuilder();
-                
+
                 for (int i = 1; i <= pdfDocument.GetNumberOfPages(); i++)
                 {
                     var page = pdfDocument.GetPage(i);
@@ -141,7 +143,7 @@ try
                     textBuilder.AppendLine(pageText);
                     textBuilder.AppendLine(); // Leerzeile zwischen Seiten
                 }
-                
+
                 return textBuilder.ToString();
             }
         }
@@ -151,35 +153,29 @@ try
             throw;
         }
     }
-public async Task<string?> AskGptAsync(string userInput)
-{
-    // Wenn keine KI konfiguriert ist, gib eine Fehler zurück
-    if (_client == null)
+    public async Task<string?> AskGptAsync(string userInput)
     {
-        return "Fehler: Azure OpenAI ist nicht konfiguriert. Bitte stelle sicher, dass AZURE_OPENAI_ENDPOINT und OPENAI_API_KEY gesetzt sind.";
+        // Nachricht als User-Message hinzufügen
+        _conversation.Add(new Message(Role.User, userInput));
+
+        try
+        {
+            // Response von der API abrufen
+            var chatResponse = await _client.ChatEndpoint.GetCompletionAsync(
+                new ChatRequest(_conversation, model: ModelName)
+            );
+
+            var assistantMessage = chatResponse.FirstChoice.Message;
+
+            // Komplette Message hinzufügen
+            _conversation.Add(assistantMessage);
+
+            return assistantMessage.Content.ToString();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"API error: {ex.Message}");
+            return null;
+        }
     }
-
-    // Nachricht als User-Message hinzufügen
-    _conversation.Add(new Message(Role.User, userInput));
-
-    try
-    {
-        // Response von der API abrufen
-        var chatResponse = await _client.ChatEndpoint.GetCompletionAsync(
-            new ChatRequest(_conversation, model: ModelName)
-        );
-
-        var assistantMessage = chatResponse.FirstChoice.Message;
-        
-        // Komplette Message hinzufügen
-        _conversation.Add(assistantMessage);
-
-        return assistantMessage.Content.ToString();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"API error: {ex.Message}");
-        return null;
-    }
-}
 }
