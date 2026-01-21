@@ -23,6 +23,10 @@ public partial class StudyPlanViewModel : ViewModelBase
     private readonly LearningProgressService _learningProgressService;
     private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
 
+    // =================================================
+    // DATA
+    // =================================================
+
     [ObservableProperty]
     private ObservableCollection<StudyPlanEntity> studyPlans = new();
 
@@ -42,7 +46,7 @@ public partial class StudyPlanViewModel : ViewModelBase
     private string? errorMessage;
 
     // =================================================
-    // 🔥 NEU: VIEW MODE
+    // VIEW MODE
     // =================================================
 
     [ObservableProperty]
@@ -55,6 +59,23 @@ public partial class StudyPlanViewModel : ViewModelBase
         ViewMode == StudyPlanViewMode.List ? "Kalender" : "Liste";
 
     // =================================================
+    // POPUP (für Kalender)
+    // =================================================
+
+    [ObservableProperty]
+    private bool isPopupOpen;
+
+    [ObservableProperty]
+    private DayPlanViewModel? popupDay;
+
+
+
+
+    public CalendarViewModel Calendar { get; }
+
+    // =================================================
+    // CTOR
+    // =================================================
 
     public StudyPlanViewModel(
         AppState appState,
@@ -64,8 +85,15 @@ public partial class StudyPlanViewModel : ViewModelBase
         _appState = appState;
         _learningProgressService = learningProgressService;
         _studyPlanGeneratorService = studyPlanGeneratorService;
+
         _ = LoadPlansAsync();
+        Calendar = new CalendarViewModel(OpenDayPopup, this);
+
     }
+
+    // =================================================
+    // LOAD PLANS
+    // =================================================
 
     private async Task LoadPlansAsync()
     {
@@ -108,12 +136,13 @@ public partial class StudyPlanViewModel : ViewModelBase
         foreach (var day in result.GroupedDays)
         {
             Days.Add(new DayPlanViewModel(
-            DateTime.Parse(day.Key).ToString("dd.MM.yyyy"),
-            day.Value.Select(lp => new TaskItemViewModel(lp))
+                DateTime.Parse(day.Key).ToString("dd.MM.yyyy"),
+                day.Value.Select(lp => new TaskItemViewModel(lp))
             ));
         }
 
         SelectedDay = Days.FirstOrDefault();
+        Calendar.GenerateMonth();
     }
 
     // =================================================
@@ -139,8 +168,27 @@ public partial class StudyPlanViewModel : ViewModelBase
     }
 
     // =================================================
+    // POPUP COMMANDS
+    // =================================================
+
+    [RelayCommand]
+    private void OpenDayPopup(DayPlanViewModel day)
+    {
+        PopupDay = day;
+        IsPopupOpen = true;
+    }
+
+    [RelayCommand]
+    private void ClosePopup()
+    {
+        IsPopupOpen = false;
+        PopupDay = null;
+    }
+
+    // =================================================
     // CREATE NEW STUDY PLAN
     // =================================================
+
     [RelayCommand]
     private async Task CreateNewPlan()
     {
@@ -155,26 +203,19 @@ public partial class StudyPlanViewModel : ViewModelBase
 
         try
         {
-            Console.WriteLine($"📋 Starte KI-Lernplan-Generierung...");
-
-            // Nutze den Chat-Kontext wenn vorhanden, sonst Standard-Prompt
             string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
                 "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
                 "Das Studium beginnt morgen.";
 
-            // Wenn es aktuelle Chat-Messages gibt, nutze diese als Kontext
             if (_appState.ChatMessages.Count > 0)
             {
                 var lastUserMessage = _appState.ChatMessages
                     .LastOrDefault(m => m.Sender == "User");
-                
+
                 if (lastUserMessage != null)
-                {
                     prompt = lastUserMessage.FullText;
-                }
             }
 
-            // Frage KI um einen Plan zu erstellen
             var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
 
             if (string.IsNullOrEmpty(planResponse))
@@ -184,9 +225,6 @@ public partial class StudyPlanViewModel : ViewModelBase
                 return;
             }
 
-            Console.WriteLine($"🤖 KI hat Lernplan geplant");
-
-            // Generiere den StudyPlan
             var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
 
             if (studyPlan == null)
@@ -196,21 +234,16 @@ public partial class StudyPlanViewModel : ViewModelBase
                 return;
             }
 
-            Console.WriteLine($"📊 StudyPlan generiert mit {studyPlan.Days.Count} Tagen");
+            await _learningProgressService.SaveStudyPlanAsync(
+                _appState.CurrentUserId.Value,
+                studyPlan
+            );
 
-            // Speichere den Plan in der Datenbank
-            await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
-
-            Console.WriteLine($"✅ Lernplan gespeichert: {studyPlan.Topic}");
-
-            // Lade die Plans neu
             await LoadPlansAsync();
-
             ErrorMessage = null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
             ErrorMessage = $"Fehler: {ex.Message}";
         }
         finally

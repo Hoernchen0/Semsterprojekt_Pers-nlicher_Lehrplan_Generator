@@ -97,6 +97,8 @@ public partial class App : Application
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<ChatViewModel>();
         services.AddTransient<StudyPlanViewModel>();
+        services.AddTransient<CalendarViewModel>();
+        
     }
 
     public override void OnFrameworkInitializationCompleted()

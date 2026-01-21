@@ -22,6 +22,10 @@ public class DayPlanViewModel : ViewModelBase
 
     public bool IsDone => Tasks.All(t => t.IsDone);
 
+    public bool IsCurrentMonth { get; set; }
+
+    public bool HasTasks => Tasks != null && Tasks.Count > 0;
+    
     public DayPlanViewModel(string date, IEnumerable<TaskItemViewModel> tasks)
     {
         Date = date;
