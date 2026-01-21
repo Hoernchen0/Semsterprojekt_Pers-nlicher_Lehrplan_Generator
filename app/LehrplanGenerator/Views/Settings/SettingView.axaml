@@ -167,11 +167,14 @@
                             FontWeight="SemiBold"
                             Text="Datenschutz und Sicherheit" />
 
-                        <TextBlock Foreground="{DynamicResource TextMuted}" Text="Alle Daten werden DSGVO-konform verarbeitet." />
+                        <TextBlock Foreground="{DynamicResource TextMuted}" />
 
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <Button Content="Daten exportieren" />
-                            <Button Content="Chat-Verlauf löschen" />
+                            <Button 
+                                Background="#FEE2E2"
+                                Content="Aktuellen Chat löschen"
+                                Command="{Binding DeleteCurrentChatCommand}"
+                                Foreground="#991B1B" />
                         </StackPanel>
 
                     </StackPanel>

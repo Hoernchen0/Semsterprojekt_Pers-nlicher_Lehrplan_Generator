@@ -141,6 +141,33 @@ public class ChatServiceDb
     }
 
     // =========================
+    // DELETE SESSION
+    // =========================
+    public async Task DeleteSessionAsync(Guid sessionId, Guid userId)
+    {
+        var session = await _chatRepository.GetSessionAsync(sessionId);
+        if (session == null || session.UserId != userId)
+            throw new InvalidOperationException("Keine Berechtigung für diese Session");
+
+        await _chatRepository.DeleteSessionAsync(sessionId);
+        
+        if (_currentSessionId == sessionId)
+            _currentSessionId = Guid.Empty;
+    }
+
+    public async Task DeleteSessionAsync(Guid sessionId)
+    {
+        var session = await _chatRepository.GetSessionAsync(sessionId);
+        if (session == null)
+            throw new InvalidOperationException("Session nicht gefunden");
+
+        await _chatRepository.DeleteSessionAsync(sessionId);
+        
+        if (_currentSessionId == sessionId)
+            _currentSessionId = Guid.Empty;
+    }
+
+    // =========================
     // STATE
     // =========================
     public Guid GetCurrentSessionId() => _currentSessionId;
