@@ -27,8 +27,8 @@ public partial class AppState : ObservableObject
     [ObservableProperty]
     private string? currentUsername;
 
-
-    // (optional, falls du später eine Plan-Liste brauchst)
+    [ObservableProperty]
+    private Guid? currentSessionId;
     public ObservableCollection<StudyPlanEntity> StudyPlans { get; }
         = new ObservableCollection<StudyPlanEntity>();
 

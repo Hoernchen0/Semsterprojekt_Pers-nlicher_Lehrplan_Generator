@@ -5,6 +5,7 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.Models.Chat;
 using LehrplanGenerator.Logic.AI;
+using LehrplanGenerator.Data;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
@@ -24,19 +25,74 @@ public partial class ChatViewModel : ViewModelBase
     private readonly AppState _appState;
     private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
     private readonly LearningProgressService _learningProgressService;
+    private readonly ChatServiceDb _chatServiceDb;
+    private Guid? _lastUserId;
 
     public ChatViewModel(
         INavigationService navigationService, 
         AppState appState,
         StudyPlanGeneratorService studyPlanGeneratorService,
-        LearningProgressService learningProgressService)
+        LearningProgressService learningProgressService,
+        ChatServiceDb chatServiceDb)
     {
         _navigationService = navigationService;
         _appState = appState;
         _studyPlanGeneratorService = studyPlanGeneratorService;
         _learningProgressService = learningProgressService;
+        _chatServiceDb = chatServiceDb;
+        _lastUserId = _appState.CurrentUserId;
 
         Messages.CollectionChanged += OnMessagesChanged;
+        _appState.PropertyChanged += OnAppStatePropertyChanged;
+        InitializeAsync();
+    }
+
+    private void OnAppStatePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AppState.CurrentUserId) && _appState.CurrentUserId != _lastUserId)
+        {
+            _lastUserId = _appState.CurrentUserId;
+            // Reload chat when user changes
+            if (_appState.CurrentUserId.HasValue)
+            {
+                _ = ReloadChatAsync();
+            }
+        }
+    }
+
+    private async void InitializeAsync()
+    {
+        if (_appState.CurrentUserId.HasValue)
+        {
+            await LoadUserChatAsync();
+        }
+    }
+
+    public async Task ReloadChatAsync()
+    {
+        Messages.Clear();
+        _appState.CurrentSessionId = null;
+        if (_appState.CurrentUserId.HasValue)
+        {
+            await LoadUserChatAsync();
+        }
+    }
+
+    private async Task LoadUserChatAsync()
+    {
+        if (_appState.CurrentUserId == null) return;
+        var sessions = (await _chatServiceDb.GetUserSessionsAsync(_appState.CurrentUserId.Value))
+            .OrderByDescending(s => s.UpdatedAt)
+            .ToList();
+        if (sessions.Count == 0) return;
+        var lastSession = sessions.First();
+        _appState.CurrentSessionId = lastSession.SessionId;
+        var messages = await _chatServiceDb.GetSessionMessagesAsync(lastSession.SessionId, _appState.CurrentUserId.Value);
+        Messages.Clear();
+        foreach (var msg in messages)
+        {
+            Messages.Add(new ChatMessage { Sender = msg.Sender, FullText = msg.Text, DisplayedText = msg.Text });
+        }
     }
 
     // =========================
@@ -155,15 +211,37 @@ public partial class ChatViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(InputText))
             return;
 
+        // Ensure we have a session - create one if needed
+        if (_appState.CurrentSessionId == null && _appState.CurrentUserId.HasValue)
+        {
+            var session = await _chatServiceDb.CreateSessionAsync(
+                _appState.CurrentUserId.Value,
+                "Chat Session",
+                "");
+            _appState.CurrentSessionId = session.SessionId;
+        }
+
         var userText = InputText.Trim();
         InputText = string.Empty;
 
-        Messages.Add(new ChatMessage
+        var userMessage = new ChatMessage
         {
             Sender = "User",
             FullText = userText,
             DisplayedText = userText
-        });
+        };
+
+        Messages.Add(userMessage);
+
+        // Save user message to database
+        if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+        {
+            await _chatServiceDb.SaveMessageAsync(
+                _appState.CurrentSessionId.Value,
+                _appState.CurrentUserId.Value,
+                "User",
+                userText);
+        }
 
         IsSending = true;
 
@@ -181,6 +259,17 @@ public partial class ChatViewModel : ViewModelBase
                 };
 
                 Messages.Add(aiMessage);
+                
+                // Save AI message to database
+                if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+                {
+                    await _chatServiceDb.SaveMessageAsync(
+                        _appState.CurrentSessionId.Value,
+                        _appState.CurrentUserId.Value,
+                        "AI",
+                        response);
+                }
+
                 await TypeTextAsync(aiMessage);
             }
         }
@@ -276,15 +365,6 @@ public partial class ChatViewModel : ViewModelBase
         {
             IsCreatingPlan = false;
         }
-    }
-
-    // =========================
-    // Delete Chat
-    // =========================
-    [RelayCommand]
-    private void DeleteChat()
-    {
-        Messages.Clear();
     }
 
 }

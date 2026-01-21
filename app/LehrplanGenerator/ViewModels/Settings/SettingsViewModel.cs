@@ -5,6 +5,7 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.Views.Settings;
+using LehrplanGenerator.Data;
 using System;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ public partial class SettingsViewModel : ViewModelBase
     private readonly UserCredentialStore _store;
     private readonly ChatBufferService _chatBufferService;
     private readonly ExportService _exportService;
+    private readonly ChatServiceDb _chatServiceDb;
 
     public string? CurrentUserDisplayName => _appState.CurrentUserDisplayName;
     public string? CurrentUsername => _appState.CurrentUsername;
@@ -27,13 +29,15 @@ public partial class SettingsViewModel : ViewModelBase
         AppState appState,
         UserCredentialStore store,
         ChatBufferService chatBufferService,
-        ExportService exportService)
+        ExportService exportService,
+        ChatServiceDb chatServiceDb)
     {
         _navigationService = navigationService;
         _appState = appState;
         _store = store;
         _chatBufferService = chatBufferService;
         _exportService = exportService;
+        _chatServiceDb = chatServiceDb;
 
         ThemeManager.Instance.PropertyChanged += (_, __) =>
         {
@@ -156,6 +160,28 @@ public partial class SettingsViewModel : ViewModelBase
     {
         _chatBufferService.ClearChatBuffer();
         Console.WriteLine($"✓ Chat-Buffer gelöscht ({_chatBufferService.GetBufferMessageCount()} Nachrichten)");
+    }
+
+    [RelayCommand]
+    private async Task DeleteCurrentChat()
+    {
+        if (_appState.CurrentUserId == null || _appState.CurrentSessionId == null)
+        {
+            Console.WriteLine("❌ Kein aktiver Chat zum Löschen");
+            return;
+        }
+
+        try
+        {
+            await _chatServiceDb.DeleteSessionAsync(_appState.CurrentSessionId.Value, _appState.CurrentUserId.Value);
+            _appState.ChatMessages.Clear();
+            _appState.CurrentSessionId = null;
+            Console.WriteLine("✓ Chat erfolgreich gelöscht");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Fehler beim Löschen des Chats: {ex.Message}");
+        }
     }
 
     // =====================

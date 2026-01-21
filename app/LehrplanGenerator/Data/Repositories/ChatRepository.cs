@@ -15,6 +15,7 @@ public interface IChatRepository
     Task<ChatMessageEntity> SaveMessageAsync(Guid sessionId, Guid userId, string sender, string text);
     Task<IEnumerable<ChatMessageEntity>> GetSessionMessagesAsync(Guid sessionId);
     Task<ChatSessionEntity> UpdateSessionAsync(ChatSessionEntity session);
+    Task DeleteSessionAsync(Guid sessionId);
 }
 
 public class ChatRepository : IChatRepository
@@ -113,5 +114,24 @@ public class ChatRepository : IChatRepository
         _context.ChatSessions.Update(session);
         await _context.SaveChangesAsync();
         return session;
+    }
+
+    public async Task DeleteSessionAsync(Guid sessionId)
+    {
+        var session = await _context.ChatSessions
+            .Include(s => s.Messages)
+            .FirstOrDefaultAsync(s => s.SessionId == sessionId);
+
+        if (session != null)
+        {
+            // Lösche alle Nachrichten der Session
+            _context.ChatMessages.RemoveRange(session.Messages);
+            
+            // Lösche die Session
+            _context.ChatSessions.Remove(session);
+            
+            await _context.SaveChangesAsync();
+            Console.WriteLine($"✓ Chat-Session und {session.Messages.Count} Nachrichten gelöscht");
+        }
     }
 }

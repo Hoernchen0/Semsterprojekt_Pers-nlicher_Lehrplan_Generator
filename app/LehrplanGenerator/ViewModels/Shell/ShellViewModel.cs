@@ -99,6 +99,8 @@ public partial class ShellViewModel : ViewModelBase
     [RelayCommand]
     private void Logout()
     {
+        _appState.ChatMessages.Clear();
+        _appState.CurrentSessionId = null;
         _appState.CurrentUserId = null;
         _appState.CurrentUserDisplayName = null;
         _navigationService.NavigateTo<MainViewModel>();
