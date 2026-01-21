@@ -51,11 +51,11 @@
 
                         <Separator />
 
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <Button Content="Profil bearbeiten" 
-                            Command="{Binding EditProfileCommand}"/>
-                            <Button Content="Passwort ändern" 
-                            Command="{Binding EditPasswordCommand}"/>
+                        <StackPanel 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Spacing="12">
                             <Button
                                 Background="#FEE2E2"
                                 Command="{Binding LogOutCommand}"
@@ -136,11 +136,34 @@
                             <Button
                                 Padding="14,10"
                                 HorizontalAlignment="Left"
-                                Background="{DynamicResource HFU.Green}"
                                 Command="{Binding ToggleThemeCommand}"
                                 Content="{Binding ThemeButtonText}"
                                 CornerRadius="999"
-                                Foreground="White" />
+                                Foreground="White">
+
+                                <Button.Styles>
+                                    <!-- Normal -->
+                                    <Style Selector="Button">
+                                        <Setter Property="Background" Value="{DynamicResource HFU.Green}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource HFU.Green}" />
+                                    </Style>
+
+                                    <!-- Hover -->
+                                    <Style Selector="Button:pointerover">
+                                        <Setter Property="Background" Value="{DynamicResource HFU.Green}" />
+                                    </Style>
+
+                                    <!-- Pressed -->
+                                    <Style Selector="Button:pressed">
+                                        <Setter Property="Background" Value="#1B5E20" />
+                                    </Style>
+
+                                    <!-- Disabled -->
+                                    <Style Selector="Button:disabled">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
 
                             <TextBlock
                                 FontSize="13"
@@ -169,7 +192,11 @@
 
                         <TextBlock Foreground="{DynamicResource TextMuted}" />
 
-                        <StackPanel Orientation="Horizontal" Spacing="12">
+                        <StackPanel 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Spacing="8">
                             <Button 
                                 Background="#FEE2E2"
                                 Content="Aktuellen Chat löschen"
