@@ -46,14 +46,16 @@
 
                         <StackPanel Spacing="8">
                             <TextBlock Foreground="{DynamicResource TextMuted}" Text="Name" />
-                            <TextBlock FontWeight="SemiBold" Text="Oliver Jehle" />
+                            <TextBlock FontWeight="SemiBold"  Text="{Binding CurrentUserDisplayName}"  />
                         </StackPanel>
 
                         <Separator />
 
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <Button Content="Profil bearbeiten" />
-                            <Button Content="Passwort ändern" />
+                            <Button Content="Profil bearbeiten" 
+                            Command="{Binding EditProfileCommand}"/>
+                            <Button Content="Passwort ändern" 
+                            Command="{Binding EditPasswordCommand}"/>
                             <Button
                                 Background="#FEE2E2"
                                 Command="{Binding LogOutCommand}"

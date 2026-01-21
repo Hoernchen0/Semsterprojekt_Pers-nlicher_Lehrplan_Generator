@@ -51,8 +51,8 @@
                                     FontSize="13"
                                     FontWeight="SemiBold"
                                     Foreground="{DynamicResource TextPrimary}"
-                                    Text="E-Mail oder Telefonnummer" />
-                                <TextBox Text="{Binding Username}" Watermark="E-Mail oder Telefonnummer" />
+                                    Text="Benutzername" />
+                                <TextBox Text="{Binding Username}" Watermark="Benutzername" />
                             </StackPanel>
 
                             <StackPanel Spacing="6">

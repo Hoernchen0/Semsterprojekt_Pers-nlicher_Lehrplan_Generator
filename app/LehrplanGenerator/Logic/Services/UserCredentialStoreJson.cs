@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LehrplanGenerator.Data.Repositories;
 using LehrplanGenerator.Logic.Models;
+using LehrplanGenerator.Logic.Utils;
 
 namespace LehrplanGenerator.Logic.Services;
 
@@ -38,6 +39,7 @@ public class UserCredentialStore
         // Synchrones Wrapper für async Methode
         AddAsync(user).GetAwaiter().GetResult();
     }
+
 
     public async Task AddAsync(UserCredential user)
     {
@@ -106,5 +108,40 @@ public class UserCredentialStore
         // Hinweis: Diese Methode ist deprecated - nutze async Version stattdessen
         throw new NotImplementedException("Nutze GetAllAsync stattdessen oder verwende die Repository direkt");
     }
+
+    public void UpdateUsername(string oldUsername, string newUsername)
+    {
+        UpdateUsernameAsync(oldUsername, newUsername).GetAwaiter().GetResult();
+    }
+
+    public async Task UpdateUsernameAsync(string oldUsername, string newUsername)
+    {
+        var entity = await _repository.GetByUsernameAsync(oldUsername);
+        if (entity == null)
+            throw new InvalidOperationException("User not found.");
+
+        entity.Username = newUsername;
+
+        await _repository.UpdateAsync(entity);
+    }
+
+
+     public void UpdatePassword(string oldUsername, string newPassword)
+    {
+        UpdatePasswordAsync(oldUsername, newPassword).GetAwaiter().GetResult();
+    }
+
+    public async Task UpdatePasswordAsync(string oldUsername, string newPassword)
+    {
+        var entity = await _repository.GetByUsernameAsync(oldUsername);
+        if (entity == null)
+            throw new InvalidOperationException("User not found.");
+
+        entity.PasswordHash = PasswordHasher.Hash(newPassword);
+
+        await _repository.UpdateAsync(entity);
+    }
+
+
 }
 

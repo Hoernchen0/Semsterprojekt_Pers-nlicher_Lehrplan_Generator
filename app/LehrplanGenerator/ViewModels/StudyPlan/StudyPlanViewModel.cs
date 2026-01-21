@@ -104,8 +104,8 @@ public partial class StudyPlanViewModel : ViewModelBase
         foreach (var day in result.GroupedDays)
         {
             Days.Add(new DayPlanViewModel(
-                day.Key,
-                day.Value.Select(lp => new TaskItemViewModel(lp))
+            DateTime.Parse(day.Key).ToString("dd.MM.yyyy"),
+            day.Value.Select(lp => new TaskItemViewModel(lp))
             ));
         }
 
