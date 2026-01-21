@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
-using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.Views.Settings;
 
