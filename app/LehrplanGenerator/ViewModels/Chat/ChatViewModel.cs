@@ -220,8 +220,6 @@ public partial class ChatViewModel : ViewModelBase
     [ObservableProperty]
     private bool isCreatingPlan;
 
-
-
     [RelayCommand]
     private async Task CreateNewPlan()
     {
@@ -243,8 +241,7 @@ public partial class ChatViewModel : ViewModelBase
 
         try
         {
-          // Generiere den StudyPlan
-            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
+            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
 
             if (studyPlan == null)
             {
@@ -256,19 +253,18 @@ public partial class ChatViewModel : ViewModelBase
                 });
                 return;
             }
-            // Speichere den Plan in der Datenbank
+
             await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
 
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                FullText = $"Lernplan erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen.",
-                DisplayedText = $"Lernplan erfolgreich erstellt!\nThema: {studyPlan.Topic}\nTage: {studyPlan.Days.Count}\n\nDu kannst den Plan jetzt in der Lernplan-View sehen."
+                FullText = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)",
+                DisplayedText = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)"
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
@@ -281,4 +277,14 @@ public partial class ChatViewModel : ViewModelBase
             IsCreatingPlan = false;
         }
     }
+
+    // =========================
+    // Delete Chat
+    // =========================
+    [RelayCommand]
+    private void DeleteChat()
+    {
+        Messages.Clear();
+    }
+
 }

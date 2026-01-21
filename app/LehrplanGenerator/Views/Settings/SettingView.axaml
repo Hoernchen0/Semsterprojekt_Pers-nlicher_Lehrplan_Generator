@@ -170,8 +170,12 @@
                         <TextBlock Foreground="{DynamicResource TextMuted}" Text="Alle Daten werden DSGVO-konform verarbeitet." />
 
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <Button Content="Daten exportieren" />
-                            <Button Content="Chat-Verlauf löschen" />
+                            <Button 
+                                Content="Daten exportieren"
+                                Command="{Binding ExportDataCommand}" />
+                            <Button 
+                                Content="Chat-Verlauf löschen"
+                                Command="{Binding ClearChatBufferCommand}" />
                         </StackPanel>
 
                     </StackPanel>

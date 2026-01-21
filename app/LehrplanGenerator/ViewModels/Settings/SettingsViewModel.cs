@@ -5,6 +5,8 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.ViewModels.Main;
 using LehrplanGenerator.Views.Settings;
+using System;
+using System.Threading.Tasks;
 
 namespace LehrplanGenerator.ViewModels.Settings;
 
@@ -12,21 +14,26 @@ public partial class SettingsViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
-
     private readonly UserCredentialStore _store;
+    private readonly ChatBufferService _chatBufferService;
+    private readonly ExportService _exportService;
 
     public string? CurrentUserDisplayName => _appState.CurrentUserDisplayName;
     public string? CurrentUsername => _appState.CurrentUsername;
 
 
     public SettingsViewModel(
-    INavigationService navigationService,
-    AppState appState,
-    UserCredentialStore store)
+        INavigationService navigationService,
+        AppState appState,
+        UserCredentialStore store,
+        ChatBufferService chatBufferService,
+        ExportService exportService)
     {
         _navigationService = navigationService;
         _appState = appState;
         _store = store;
+        _chatBufferService = chatBufferService;
+        _exportService = exportService;
 
         ThemeManager.Instance.PropertyChanged += (_, __) =>
         {
@@ -138,5 +145,40 @@ public partial class SettingsViewModel : ViewModelBase
         _appState.CurrentUserDisplayName = null;
 
         _navigationService.NavigateTo<MainViewModel>();
+    }
+
+    // =====================
+    // CHAT BUFFER
+    // =====================
+
+    [RelayCommand]
+    private void ClearChatBuffer()
+    {
+        _chatBufferService.ClearChatBuffer();
+        Console.WriteLine($"✓ Chat-Buffer gelöscht ({_chatBufferService.GetBufferMessageCount()} Nachrichten)");
+    }
+
+    // =====================
+    // EXPORT DATEN
+    // =====================
+
+    [RelayCommand]
+    private async Task ExportDataAsync()
+    {
+        if (_appState.CurrentUserId == null)
+        {
+            Console.WriteLine("❌ Kein Benutzer angemeldet!");
+            return;
+        }
+
+        try
+        {
+            var filePath = await _exportService.SaveExportToFileAsync(_appState.CurrentUserId.Value);
+            Console.WriteLine($"✓ Export erfolgreich: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Fehler beim Export: {ex.Message}");
+        }
     }
 }
