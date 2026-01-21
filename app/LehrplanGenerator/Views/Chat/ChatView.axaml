@@ -2,6 +2,7 @@
     x:Class="LehrplanGenerator.Views.Chat.ChatView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
     xmlns:models="using:LehrplanGenerator.Models.Chat"
     xmlns:vm="using:LehrplanGenerator.ViewModels.Chat"
     x:DataType="vm:ChatViewModel">
@@ -110,10 +111,8 @@
                                     BorderThickness="1"
                                     CornerRadius="16"
                                     IsVisible="{Binding IsAi}">
-                                    <TextBlock
-                                        Foreground="{DynamicResource TextPrimary}"
-                                        Text="{Binding DisplayedText}"
-                                        TextWrapping="Wrap" />
+                                    <md:MarkdownScrollViewer 
+                                        Markdown="{Binding DisplayedText}" />
                                 </Border>
 
                                 <Border

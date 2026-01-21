@@ -36,13 +36,13 @@ public class StudyPlanGeneratorService
         {
             new Message(Role.System, "Hilf dem Nutzer einen Lernplan zu erstellen und"
                                                    + "seine Fragen zu Themen zu beantworten."
-                                 + "Du darfst nicht einfach im Chat den Lernplan ausgeben..."
+                                 + "Du darfst den Lernplan unter keinen Umständen im Chat den ausgeben..."
                                 +"Du kannst ihn auch fragen welche Themen er besonders "
                                 +  "intensiv wiederholen will, das ist sehr wichtig für die richtige Zeitaufteilung"
                                 +  "im Lernplan. Für die Erstellung ist auch wichtig zu fragen zu welchen Zeiten"
                                 +  "der Nutzer lernen möchte. Plane die Themen über die Zeit so, "
                                 +  "dass Wiederholungen für schwierige Themen vorgesehen sind. Lege zuerst die Themen an,"
-                               +   " die für das Verständnis der anderen Themen am wichtigsten sind.")
+                               +   " die für das Verständnis der anderen Themen am wichtigsten sind. Überfordere den Nutzer nicht und halte dich kurz")
         };
     }
 
@@ -155,6 +155,12 @@ public class StudyPlanGeneratorService
     }
     public async Task<string?> AskGptAsync(string userInput)
     {
+        if (_client == null)
+        {
+            Console.WriteLine("Fehler: Azure OpenAI ist nicht konfiguriert.");
+            return null;
+        }
+
         // Nachricht als User-Message hinzufügen
         _conversation.Add(new Message(Role.User, userInput));
 
