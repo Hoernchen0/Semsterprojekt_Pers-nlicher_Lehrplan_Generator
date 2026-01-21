@@ -18,7 +18,9 @@ public partial class StudySessionViewModel : ViewModelBase
     private TimeSpan _total;
     private TimeSpan _remaining;
 
-    private const double CircleLength = 603; // korrekt berechnet
+    private Guid _unitId;
+
+    private const double CircleLength = 603;
 
     [ObservableProperty] private string title = "";
     [ObservableProperty] private string remainingTimeText = "00:00";
@@ -36,6 +38,8 @@ public partial class StudySessionViewModel : ViewModelBase
 
     public void Init(LearningProgressEntity unit)
     {
+        _unitId = unit.Id;
+
         Title = $"{unit.Subject} – {unit.ModuleName}";
 
         _total = unit.PlannedEnd.TimeOfDay - unit.PlannedStart.TimeOfDay;
@@ -93,7 +97,7 @@ public partial class StudySessionViewModel : ViewModelBase
     private async Task FinishAsync()
     {
         _timer.Stop();
-        await _learningProgressService.MarkCompletedAsync(Guid.NewGuid());
+        await _learningProgressService.MarkCompletedAsync(_unitId);
         _navigationService.NavigateTo<ShellViewModel>();
     }
 }
