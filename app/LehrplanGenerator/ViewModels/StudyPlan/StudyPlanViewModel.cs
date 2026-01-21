@@ -157,12 +157,25 @@ public partial class StudyPlanViewModel : ViewModelBase
         {
             Console.WriteLine($"📋 Starte KI-Lernplan-Generierung...");
 
-            // Frage KI um einen Plan zu erstellen
-            var planResponse = await _studyPlanGeneratorService.AskGptAsync(
-                "Erstelle einen Lernplan für Softwareentwicklung. " +
+            // Nutze den Chat-Kontext wenn vorhanden, sonst Standard-Prompt
+            string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
                 "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
-                "Das Studium beginnt morgen."
-            );
+                "Das Studium beginnt morgen.";
+
+            // Wenn es aktuelle Chat-Messages gibt, nutze diese als Kontext
+            if (_appState.ChatMessages.Count > 0)
+            {
+                var lastUserMessage = _appState.ChatMessages
+                    .LastOrDefault(m => m.Sender == "User");
+                
+                if (lastUserMessage != null)
+                {
+                    prompt = lastUserMessage.FullText;
+                }
+            }
+
+            // Frage KI um einen Plan zu erstellen
+            var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
 
             if (string.IsNullOrEmpty(planResponse))
             {
