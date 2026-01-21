@@ -3,10 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.Models;
+using LehrplanGenerator.ViewModels.Chat;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using LehrplanGenerator.ViewModels.Shell;
 
 namespace LehrplanGenerator.ViewModels.Dashboard;
 
@@ -30,11 +33,12 @@ public partial class DashboardViewModel : ViewModelBase
     // STUDY PLANS
     // =====================
 
-    public ObservableCollection<StudyPlanEntity> ActiveStudyPlans { get; }
-        = new();
+    public ObservableCollection<StudyPlanEntity> ActiveStudyPlans { get; } = new();
 
     [ObservableProperty]
     private StudyPlanEntity? selectedStudyPlan;
+
+    public bool HasNoStudyPlans => ActiveStudyPlans.Count == 0;
 
     // =====================
     // DASHBOARD DATA
@@ -48,6 +52,40 @@ public partial class DashboardViewModel : ViewModelBase
 
     [ObservableProperty]
     private string nextUnitTime = string.Empty;
+
+    [ObservableProperty]
+    private bool hasNextUnit;
+
+    // =====================
+    // COMMANDS
+    // =====================
+
+    [RelayCommand]
+    private void CreateStudyPlan()
+    {
+        _appState.Shell?.ShowChatCommand.Execute(null);
+    }
+
+
+    [RelayCommand]
+    private async Task ContinueLearningAsync()
+    {
+        if (_appState.CurrentStudyPlanId == null)
+            return;
+
+        var next = await _learningProgressService
+            .GetNextUnitAsync(_appState.CurrentStudyPlanId.Value);
+
+        if (next == null)
+            return;
+
+        _appState.CurrentStudySession = next;
+
+        _navigationService.NavigateTo<StudySessionViewModel>(vm =>
+        {
+            vm.Init(next);
+        });
+    }
 
     // =====================
     // CONSTRUCTOR
@@ -65,14 +103,8 @@ public partial class DashboardViewModel : ViewModelBase
         RefreshHeader();
         _ = LoadStudyPlansAsync();
 
-        _appState.PropertyChanged += (_, __) =>
-        {
-            RefreshHeader();
-        };
-
+        _appState.PropertyChanged += (_, __) => RefreshHeader();
     }
-
-
 
     private void RefreshHeader()
     {
@@ -96,14 +128,15 @@ public partial class DashboardViewModel : ViewModelBase
         foreach (var plan in plans.Where(p => p.IsActive))
             ActiveStudyPlans.Add(plan);
 
-        // Auto-Select: zuletzt aktiver oder erster Plan
+        OnPropertyChanged(nameof(HasNoStudyPlans));
+
         SelectedStudyPlan =
             ActiveStudyPlans.FirstOrDefault(p => p.Id == _appState.CurrentStudyPlanId)
             ?? ActiveStudyPlans.FirstOrDefault();
     }
 
     // =====================
-    // REACT TO SELECTION
+    // SELECTION
     // =====================
 
     partial void OnSelectedStudyPlanChanged(StudyPlanEntity? value)
@@ -129,11 +162,13 @@ public partial class DashboardViewModel : ViewModelBase
 
         if (next == null)
         {
+            HasNextUnit = false;
             NextUnitTitle = "Alles erledigt 🎉";
             NextUnitTime = string.Empty;
             return;
         }
 
+        HasNextUnit = true;
         NextUnitTitle = $"{next.Subject} – {next.ModuleName}";
         NextUnitTime =
             $"{next.PlannedStart:dd.MM HH:mm} – {next.PlannedEnd:HH:mm}";
@@ -142,32 +177,8 @@ public partial class DashboardViewModel : ViewModelBase
     private void ResetDashboard()
     {
         ProgressPercent = 0;
+        HasNextUnit = false;
         NextUnitTitle = "Kein Lernplan ausgewählt";
         NextUnitTime = string.Empty;
-    }
-
-    // =====================
-    // CONTINUE LEARNING
-    // =====================
-
-    [RelayCommand]
-    private async Task ContinueLearningAsync()
-    {
-        if (_appState.CurrentStudyPlanId == null)
-            return;
-
-        var next =
-            await _learningProgressService
-                .GetNextUnitAsync(_appState.CurrentStudyPlanId.Value);
-
-        if (next == null)
-            return;
-
-        _appState.CurrentStudySession = next;
-
-        _navigationService.NavigateTo<StudySessionViewModel>(vm =>
-        {
-            vm.Init(next);
-        });
     }
 }

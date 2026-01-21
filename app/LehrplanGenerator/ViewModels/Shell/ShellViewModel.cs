@@ -35,6 +35,7 @@ public partial class ShellViewModel : ViewModelBase
         _store = store;
         _navigationService = navigationService;
         _appState = appState;
+        _appState.Shell = this;
 
         if (!string.IsNullOrWhiteSpace(_appState.CurrentUserDisplayName))
         {
