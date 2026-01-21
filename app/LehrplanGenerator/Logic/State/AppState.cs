@@ -22,13 +22,11 @@ public partial class AppState : ObservableObject
     // STUDY PLAN STATE
     // =========================
     [ObservableProperty]
-    private Guid? _currentChatSessionId; // Aktuelle Chat-Session für Datenbank-Persistierung
-
-    [ObservableProperty]
-    private StudyPlan? _currentStudyPlan;
-
-    [ObservableProperty]
     private Guid? currentStudyPlanId;
+
+    [ObservableProperty]
+    private string? currentUsername;
+
 
     // (optional, falls du später eine Plan-Liste brauchst)
     public ObservableCollection<StudyPlanEntity> StudyPlans { get; }

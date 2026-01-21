@@ -5,6 +5,7 @@ using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.Logic.Utils;
 using LehrplanGenerator.ViewModels.Main;
+using LehrplanGenerator.Views.Settings;
 
 namespace LehrplanGenerator.ViewModels.Settings;
 
@@ -13,19 +14,27 @@ public partial class SettingsViewModel : ViewModelBase
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
 
+    private readonly UserCredentialStore _store;
+
+    public string CurrentUserDisplayName => _appState.CurrentUserDisplayName;
+    public string CurrentUsername => _appState.CurrentUsername;
+
+
     public SettingsViewModel(
-        INavigationService navigationService,
-        AppState appState)
+    INavigationService navigationService,
+    AppState appState,
+    UserCredentialStore store)
     {
         _navigationService = navigationService;
         _appState = appState;
+        _store = store;
 
-        // Theme-Änderungen an UI weiterreichen
         ThemeManager.Instance.PropertyChanged += (_, __) =>
         {
             OnPropertyChanged(nameof(ThemeButtonText));
         };
     }
+
 
     // =====================
     // THEME
@@ -41,6 +50,70 @@ public partial class SettingsViewModel : ViewModelBase
     {
         ThemeManager.Instance.Toggle();
     }
+
+    [RelayCommand]
+    private void EditProfile()
+    {
+        var lifetime = Avalonia.Application.Current?.ApplicationLifetime
+            as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+
+        var mainWindow = lifetime?.MainWindow;
+
+        UsernameModificationView? window = null;
+
+        var vm = new UsernameModificationViewModel(
+            _appState.CurrentUsername,
+            _store,
+            _appState,
+            result =>
+            {
+                if (result != null)
+                {
+                    OnPropertyChanged(nameof(CurrentUserDisplayName));
+                    OnPropertyChanged(nameof(CurrentUsername));
+                }
+
+                window?.Close();
+            });
+
+        window = new UsernameModificationView
+        {
+            DataContext = vm
+        };
+        window.ShowDialog(mainWindow);
+    }
+
+
+
+    [RelayCommand]
+    private void EditPassword()
+    {
+        var lifetime = Avalonia.Application.Current?.ApplicationLifetime
+            as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+
+        var mainWindow = lifetime?.MainWindow;
+
+        PasswordModificationView? window = null;
+
+        var vm = new PasswordModificationViewModel(
+            _appState.CurrentUsername,
+            _store,
+            _appState,
+            _ => window?.Close()
+        );
+
+        window = new PasswordModificationView
+        {
+            DataContext = vm
+        };
+
+        window.ShowDialog(mainWindow);
+    }
+
+
+
+
+
 
     // =====================
     // ACCOUNT
