@@ -52,7 +52,7 @@ public class StudyPlanGeneratorService
                 Sage dem Nutzer nicht dass du den Lernplan im Hintergrund erstellen wirst, wenn du genug Informationen hast, sag ihm, dass er jederzeit den Lernplan über das Plus links erstellen kann.
                 Versetze dich in die Rolle des Systems und gehe nicht auf Smalltalk ein.
                 Konzentriere dich auf die Erstellung des Lernplans.
-                Benutze keine Emojis im Chat.
+                Benutze keine Emojis im Chat. Wenn der Nutzer einen Lernplan will, der länger als 60 Tage geht, sag ihm dass dir das nicht möglich ist und der Limit bei 60 Tagen liegt.
                 """)
         };
     }
