@@ -5,84 +5,182 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Dashboard"
     x:DataType="vm:StudySessionViewModel">
 
-    <Grid Background="{DynamicResource BgPrimary}">
+    <!--  ================= ROOT =================  -->
+    <ScrollViewer Background="{DynamicResource BgPrimary}">
 
-        <Border
-            Padding="40"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Background="{DynamicResource BgSecondary}"
-            BorderBrush="{DynamicResource BorderSubtle}"
-            BorderThickness="1"
-            CornerRadius="24">
+        <!--  OUTER PADDING (Mobile + Desktop safe)  -->
+        <Border Padding="24">
 
-            <StackPanel HorizontalAlignment="Center" Spacing="28">
+            <!--  CONTENT CONTAINER  -->
+            <StackPanel
+                MaxWidth="520"
+                HorizontalAlignment="Center"
+                Spacing="28">
 
-                <TextBlock
-                    FontSize="20"
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource TextPrimary}"
-                    Text="{Binding Title}"
-                    TextAlignment="Center" />
-
-                <Grid Width="220" Height="220">
-
-                    <!--  Hintergrund  -->
-                    <Ellipse Stroke="{DynamicResource BorderSubtle}" StrokeThickness="14" />
-
-                    <!--  Fortschritt  -->
-                    <Ellipse
-                        RenderTransformOrigin="0.5,0.5"
-                        Stroke="{DynamicResource HFU.Green}"
-                        StrokeDashArray="603"
-                        StrokeDashOffset="{Binding ProgressDashOffset}"
-                        StrokeThickness="14">
-
-                        <Ellipse.RenderTransform>
-                            <RotateTransform Angle="-90" />
-                        </Ellipse.RenderTransform>
-
-                    </Ellipse>
+                <!--  ================= TITLE =================  -->
+                <StackPanel Spacing="6">
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Text="{Binding Title}"
+                        TextAlignment="Center" />
 
                     <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontSize="36"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource TextPrimary}"
-                        Text="{Binding RemainingTimeText}" />
-                </Grid>
+                        FontSize="14"
+                        Foreground="{DynamicResource TextMuted}"
+                        Text="{Binding SessionStateText}"
+                        TextAlignment="Center" />
+                </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Spacing="14">
+                <!--  ================= TIMER CARD =================  -->
+                <Border
+                    Padding="24"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource BgSecondary}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="999">
+
+                    <Grid Width="220" Height="220">
+
+                        <!--  Background Ring  -->
+                        <Ellipse Stroke="{DynamicResource BorderSubtle}" StrokeThickness="14" />
+
+                        <!--  Progress Ring  -->
+                        <Ellipse
+                            RenderTransformOrigin="0.5,0.5"
+                            Stroke="{DynamicResource HFU.Green}"
+                            StrokeDashArray="603"
+                            StrokeDashOffset="{Binding ProgressDashOffset}"
+                            StrokeThickness="14">
+
+                            <Ellipse.RenderTransform>
+                                <RotateTransform Angle="-90" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+
+                        <!--  Time  -->
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="36"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextPrimary}"
+                            Text="{Binding RemainingTimeText}" />
+                    </Grid>
+                </Border>
+
+                <!--  ================= CONTROLS =================  -->
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical"
+                    Spacing="12">
 
                     <Button
-                        Width="120"
-                        Height="44"
-                        Background="{DynamicResource BorderSubtle}"
+                        MinWidth="180"
+                        Padding="20,10"
                         Command="{Binding PauseCommand}"
                         Content="Pause"
-                        IsVisible="{Binding IsRunning}" />
+                        CornerRadius="999"
+                        Foreground="White"
+                        IsEnabled="{Binding IsRunning}">
+
+                        <Button.Styles>
+                            <!--  Normal  -->
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+                            </Style>
+
+                            <!--  Hover  -->
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                            </Style>
+
+                            <!--  Pressed  -->
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                                <Setter Property="Opacity" Value="0.9" />
+                            </Style>
+
+                            <!--  Disabled  -->
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
 
                     <Button
-                        Width="120"
-                        Height="44"
-                        Background="{DynamicResource HFU.Green}"
+                        MinWidth="180"
+                        Padding="20,10"
                         Command="{Binding StartCommand}"
                         Content="Weiter"
+                        CornerRadius="999"
                         Foreground="White"
-                        IsVisible="{Binding IsPaused}" />
+                        IsEnabled="{Binding IsPaused}">
+
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+                            </Style>
+
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                            </Style>
+
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                                <Setter Property="Opacity" Value="0.9" />
+                            </Style>
+
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+
+
 
                     <Button
-                        Width="120"
-                        Height="44"
-                        Background="{DynamicResource HFU.GreenHover}"
+                        MinWidth="180"
+                        Padding="20,10"
                         Command="{Binding FinishCommand}"
                         Content="Fertig"
-                        Foreground="White" />
+                        CornerRadius="999"
+                        Foreground="White">
+
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimary}" />
+                            </Style>
+
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                            </Style>
+
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="{DynamicResource AccentPrimary}" />
+                                <Setter Property="Opacity" Value="0.9" />
+                            </Style>
+
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
 
                 </StackPanel>
 
+                <!--  ================= BOTTOM SPACER (Mobile Gesture Bar) =================  -->
+                <Border Height="32" />
+
             </StackPanel>
         </Border>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

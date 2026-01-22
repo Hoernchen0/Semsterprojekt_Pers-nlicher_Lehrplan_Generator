@@ -36,6 +36,10 @@ public partial class StudySessionViewModel : ViewModelBase
         _navigationService = navigationService;
     }
 
+    public string SessionStateText =>
+    IsRunning ? "Lernsitzung läuft"
+    : IsPaused ? "Pause"
+    : "Bereit";
     public void Init(LearningProgressEntity unit)
     {
         _unitId = unit.Id;
@@ -82,6 +86,7 @@ public partial class StudySessionViewModel : ViewModelBase
     {
         IsRunning = true;
         IsPaused = false;
+        OnPropertyChanged(nameof(SessionStateText));
         _timer.Start();
     }
 
@@ -90,12 +95,18 @@ public partial class StudySessionViewModel : ViewModelBase
     {
         IsRunning = false;
         IsPaused = true;
+        OnPropertyChanged(nameof(SessionStateText));
         _timer.Stop();
     }
 
     [RelayCommand]
     private async Task FinishAsync()
     {
+        IsRunning = false;
+        IsPaused = false;
+
+        OnPropertyChanged(nameof(SessionStateText));
+
         _timer.Stop();
         await _learningProgressService.MarkCompletedAsync(_unitId);
         _navigationService.NavigateTo<ShellViewModel>();
