@@ -30,6 +30,8 @@ public partial class ChatView : UserControl
         AttachedToVisualTree += OnAttached;
         DetachedFromVisualTree += OnDetached;
         SizeChanged += (_, _) => UpdateResponsiveLayout();
+
+
     }
 
     private void OnAttached(object? sender, EventArgs e)
@@ -42,6 +44,8 @@ public partial class ChatView : UserControl
 
         foreach (var m in _vm.Messages)
             m.PropertyChanged += OnMessagePropertyChanged;
+
+        Dispatcher.UIThread.Post(ScrollToBottom, DispatcherPriority.Render);
 
         if (!IsAndroid)
             return;

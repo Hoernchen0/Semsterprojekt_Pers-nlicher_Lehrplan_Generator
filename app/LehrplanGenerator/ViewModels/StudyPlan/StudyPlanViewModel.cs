@@ -3,11 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 using LehrplanGenerator.Logic.Services;
 using LehrplanGenerator.Logic.State;
 using LehrplanGenerator.Logic.Models;
-using LehrplanGenerator.Logic.AI;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using LehrplanGenerator.Logic.AI;
 
 namespace LehrplanGenerator.ViewModels.StudyPlan;
 
@@ -23,6 +23,7 @@ public partial class StudyPlanViewModel : ViewModelBase
     private readonly AppState _appState;
     private readonly LearningProgressService _learningProgressService;
     private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
+    private StudyPlanViewMode _lastViewMode;
 
     // =================================================
     // DATA
@@ -60,18 +61,18 @@ public partial class StudyPlanViewModel : ViewModelBase
     public bool IsCalendarView => ViewMode == StudyPlanViewMode.Calendar;
     public bool IsDayDetailView => ViewMode == StudyPlanViewMode.DayDetail;
 
-
     public string CurrentViewModeLabel =>
-            ViewMode == StudyPlanViewMode.List ? "Kalender" :
-            ViewMode == StudyPlanViewMode.Calendar ? "Liste" :
-            "Zurück";
+        ViewMode switch
+        {
+            StudyPlanViewMode.List => "Kalender",
+            StudyPlanViewMode.Calendar => "Liste",
+            StudyPlanViewMode.DayDetail => "Zurück",
+            _ => ""
+        };
 
     // =================================================
-    // POPUP (für Kalender)
+    // CALENDAR
     // =================================================
-
-    [ObservableProperty]
-    private bool isPopupOpen;
 
     [ObservableProperty]
     private DayPlanViewModel? selectedCalendarDay;
@@ -91,9 +92,8 @@ public partial class StudyPlanViewModel : ViewModelBase
         _learningProgressService = learningProgressService;
         _studyPlanGeneratorService = studyPlanGeneratorService;
 
-        _ = LoadPlansAsync();
         Calendar = new CalendarViewModel(OpenDayView, this);
-
+        _ = LoadPlansAsync();
     }
 
     // =================================================
@@ -102,11 +102,11 @@ public partial class StudyPlanViewModel : ViewModelBase
 
     private async Task LoadPlansAsync()
     {
-        IsLoading = true;
-        ErrorMessage = null;
-
         if (_appState.CurrentUserId == null)
             return;
+
+        IsLoading = true;
+        ErrorMessage = null;
 
         StudyPlans.Clear();
 
@@ -163,56 +163,65 @@ public partial class StudyPlanViewModel : ViewModelBase
     [RelayCommand]
     private void ToggleViewMode()
     {
-        ViewMode = ViewMode == StudyPlanViewMode.List
-            ? StudyPlanViewMode.Calendar
-            : StudyPlanViewMode.List;
+        ViewMode = ViewMode switch
+        {
+            StudyPlanViewMode.List => StudyPlanViewMode.Calendar,
+            StudyPlanViewMode.Calendar => StudyPlanViewMode.List,
+            StudyPlanViewMode.DayDetail => StudyPlanViewMode.Calendar,
+            _ => StudyPlanViewMode.List
+        };
 
-        OnPropertyChanged(nameof(IsListView));
-        OnPropertyChanged(nameof(IsCalendarView));
-        OnPropertyChanged(nameof(CurrentViewModeLabel));
-        OnPropertyChanged(nameof(IsDayDetailView));
+        SelectedCalendarDay = null;
+
+        NotifyViewModeChanged();
     }
 
-
-
     // =================================================
-    // POPUP COMMANDS
+    // CALENDAR / DAY DETAIL
     // =================================================
 
     [RelayCommand]
     private void OpenDayView(DayPlanViewModel day)
     {
+        _lastViewMode = ViewMode;
         SelectedCalendarDay = day;
         ViewMode = StudyPlanViewMode.DayDetail;
-
-        OnPropertyChanged(nameof(IsCalendarView));
-        OnPropertyChanged(nameof(IsDayDetailView));
+        NotifyViewModeChanged();
     }
+
     [RelayCommand]
-    private void BackToCalendar()
+    private void BackFromDayDetail()
     {
-        ViewMode = StudyPlanViewMode.Calendar;
         SelectedCalendarDay = null;
 
+        ViewMode = _lastViewMode switch
+        {
+            StudyPlanViewMode.List => StudyPlanViewMode.List,
+            StudyPlanViewMode.Calendar => StudyPlanViewMode.Calendar,
+            _ => StudyPlanViewMode.List
+        };
+
+        NotifyViewModeChanged();
+    }
+
+
+    private void NotifyViewModeChanged()
+    {
+        OnPropertyChanged(nameof(IsListView));
         OnPropertyChanged(nameof(IsCalendarView));
         OnPropertyChanged(nameof(IsDayDetailView));
+        OnPropertyChanged(nameof(CurrentViewModeLabel));
     }
 
     // =================================================
-    // CREATE NEW STUDY PLAN
+    // CREATE STUDY PLAN
     // =================================================
 
     [RelayCommand]
     private async Task CreateNewPlan()
     {
-        if (IsCreatingPlan)
+        if (IsCreatingPlan || _appState.CurrentUserId == null)
             return;
-
-        if (_appState.CurrentUserId == null)
-        {
-            ErrorMessage = "Fehler: Kein Benutzer angemeldet!";
-            return;
-        }
 
         IsCreatingPlan = true;
         IsLoading = true;
@@ -220,7 +229,6 @@ public partial class StudyPlanViewModel : ViewModelBase
 
         try
         {
-            // Generiere den StudyPlan
             var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
 
             if (studyPlan == null)
@@ -229,18 +237,14 @@ public partial class StudyPlanViewModel : ViewModelBase
                 return;
             }
 
-            // Speichere den Plan in der Datenbank
-            await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
+            await _learningProgressService
+                .SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
 
-            // Lade die Pläne neu, um den neuen Plan anzuzeigen
             await LoadPlansAsync();
-
-            ErrorMessage = null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fehler beim Erstellen des Lernplans: {ex.Message}\n{ex.StackTrace}");
-            ErrorMessage = $"Fehler: {ex.Message}";
+            ErrorMessage = ex.Message;
         }
         finally
         {
@@ -252,70 +256,34 @@ public partial class StudyPlanViewModel : ViewModelBase
     // =================================================
     // DELETE STUDY PLAN
     // =================================================
+
     [RelayCommand]
     private async Task DeleteStudyPlan()
     {
         if (SelectedStudyPlan == null)
-        {
-            ErrorMessage = "Kein Lernplan ausgewählt!";
             return;
-        }
 
         IsLoading = true;
         ErrorMessage = null;
 
         try
         {
-            string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
-                "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
-                "Das Studium beginnt morgen.";
+            await _learningProgressService
+                .DeleteStudyPlanAsync(SelectedStudyPlan.Id);
 
-            if (_appState.ChatMessages.Count > 0)
-            {
-                var lastUserMessage = _appState.ChatMessages
-                    .LastOrDefault(m => m.Sender == "User");
-
-                if (lastUserMessage != null)
-                    prompt = lastUserMessage.FullText;
-            }
-
-            var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
-
-            if (string.IsNullOrEmpty(planResponse))
-            {
-                ErrorMessage = "Fehler bei der KI-Generierung";
-                IsLoading = false;
-                return;
-            }
-
-            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
-
-            if (studyPlan == null)
-            {
-                ErrorMessage = "Fehler beim Generieren des Lernplans";
-                IsLoading = false;
-                return;
-            }
-
-            await _learningProgressService.SaveStudyPlanAsync(
-                _appState.CurrentUserId.Value,
-                studyPlan
-            );
-
-            await _learningProgressService.DeleteStudyPlanAsync(SelectedStudyPlan.Id);
-
-            // Leere die Tages-Ansicht
             Days.Clear();
             SelectedDay = null;
+            SelectedCalendarDay = null;
+            SelectedStudyPlan = null;
 
-            // Lade die Plans neu
+            ViewMode = StudyPlanViewMode.List;
+            NotifyViewModeChanged();
+
             await LoadPlansAsync();
-            ErrorMessage = null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fehler beim Löschen des Lernplans: {ex.Message}\n{ex.StackTrace}");
-            ErrorMessage = $"Fehler: {ex.Message}";
+            ErrorMessage = ex.Message;
         }
         finally
         {
