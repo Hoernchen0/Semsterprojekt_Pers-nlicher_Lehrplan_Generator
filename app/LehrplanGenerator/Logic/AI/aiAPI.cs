@@ -248,19 +248,4 @@ public class StudyPlanGeneratorService
             return null;
         }
     }
-
-    // Gibt die aktuelle Conversation-History zurück (ohne System-Message)
-    public List<Message> GetConversationHistory()
-    {
-        return _conversation.Where(m => m.Role != Role.System).ToList();
-    }
-
-    // Löscht die Conversation (behält nur System-Message)
-    public void ClearConversation()
-    {
-        var systemMessage = _conversation.FirstOrDefault(m => m.Role == Role.System);
-        _conversation.Clear();
-        if (systemMessage != null)
-            _conversation.Add(systemMessage);
-    }
 }
