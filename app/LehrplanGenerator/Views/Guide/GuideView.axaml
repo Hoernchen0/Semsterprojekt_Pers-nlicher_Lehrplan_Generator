@@ -7,147 +7,198 @@
 
     <Grid>
 
-        <!--  BACKGROUND IMAGE  -->
-        <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
+        <!--  ================= DESKTOP =================  -->
+        <Grid x:Name="DesktopLayout">
 
-        <!--  DARK OVERLAY  -->
-        <Border Background="{DynamicResource OverlayStrong}" />
+            <!--  Background  -->
+            <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
 
-        <!--  CONTENT  -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Border Background="{DynamicResource OverlayStrong}" />
 
-            <Grid
-                Margin="24"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                <StackPanel HorizontalAlignment="Center" Spacing="32">
+                <Grid
+                    Margin="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
 
-                    <!--  HEADER (LOGO + TITLE)  -->
-                    <StackPanel HorizontalAlignment="Center" Spacing="12">
+                    <StackPanel HorizontalAlignment="Center" Spacing="32">
 
+                        <!--  Header  -->
+                        <StackPanel HorizontalAlignment="Center" Spacing="12">
+                            <Border
+                                Width="96"
+                                Height="96"
+                                Background="{DynamicResource BgPrimary}"
+                                CornerRadius="48">
+                                <Image
+                                    Margin="16"
+                                    Source="avares://LehrplanGenerator/Assets/Images/logo.png"
+                                    Stretch="Uniform" />
+                            </Border>
+
+                            <TextBlock
+                                FontSize="26"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource TextOnAccent}"
+                                Text="Lehrplangenerator"
+                                TextAlignment="Center" />
+
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="{DynamicResource TextOnAccentSecondary}"
+                                Text="Grunddaten zum Studium festlegen"
+                                TextAlignment="Center" />
+                        </StackPanel>
+
+                        <!--  Card  -->
                         <Border
-                            Width="96"
-                            Height="96"
-                            Background="{DynamicResource BgPrimary}"
-                            CornerRadius="48">
+                            Width="640"
+                            Padding="40"
+                            Background="{DynamicResource BgSecondary}"
+                            CornerRadius="16">
 
+                            <StackPanel Spacing="26">
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Text="Grunddaten zum Studium"
+                                    TextAlignment="Center" />
+
+                                <!--  Form  -->
+                                <StackPanel Spacing="18">
+
+                                    <!--  Studiengang  -->
+                                    <StackPanel Spacing="6">
+                                        <TextBlock FontWeight="SemiBold" Text="Studiengang *" />
+                                        <ComboBox
+                                            ItemsSource="{Binding StudyPrograms}"
+                                            PlaceholderText="Bitte Studiengang auswählen"
+                                            SelectedItem="{Binding SelectedStudyProgram}" />
+                                        <TextBlock
+                                            Foreground="{DynamicResource TextError}"
+                                            IsVisible="{Binding ShowStudyProgramError}"
+                                            Text="Bitte wähle einen Studiengang aus." />
+                                    </StackPanel>
+
+                                    <!--  Semester  -->
+                                    <StackPanel Spacing="6">
+                                        <TextBlock FontWeight="SemiBold" Text="Aktuelles Semester *" />
+                                        <ComboBox
+                                            ItemsSource="{Binding Semesters}"
+                                            PlaceholderText="Bitte Semester auswählen"
+                                            SelectedItem="{Binding SelectedSemester}" />
+                                        <TextBlock
+                                            Foreground="{DynamicResource TextError}"
+                                            IsVisible="{Binding ShowSemesterError}"
+                                            Text="Bitte wähle dein aktuelles Semester aus." />
+                                    </StackPanel>
+
+                                    <!--  PDF  -->
+                                    <StackPanel Spacing="6">
+                                        <TextBlock FontWeight="SemiBold" Text="Stundenplan (optional)" />
+                                        <Button Classes="secondary" Content="PDF auswählen" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!--  Action  -->
+                                <StackPanel HorizontalAlignment="Right">
+                                    <Button
+                                        Classes="primary"
+                                        Command="{Binding GenerateCommand}"
+                                        Content="Profil vervollständigen" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+        <!--  ================= MOBILE =================  -->
+        <Grid x:Name="MobileLayout">
+
+            <!--  Background  -->
+            <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
+
+            <Border Background="{DynamicResource OverlayStrong}" />
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <StackPanel Margin="16" Spacing="20">
+
+                    <!--  Header kompakt  -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="8">
+                        <Border
+                            Width="72"
+                            Height="72"
+                            Background="{DynamicResource BgPrimary}"
+                            CornerRadius="36">
                             <Image
-                                Margin="16"
+                                Margin="12"
                                 Source="avares://LehrplanGenerator/Assets/Images/logo.png"
                                 Stretch="Uniform" />
                         </Border>
 
                         <TextBlock
-                            FontSize="26"
+                            FontSize="20"
                             FontWeight="Bold"
                             Foreground="{DynamicResource TextOnAccent}"
-                            Text="Lehrplangenerator"
-                            TextAlignment="Center" />
-
-                        <TextBlock
-                            FontSize="14"
-                            Foreground="{DynamicResource TextOnAccentSecondary}"
-                            Text="Grunddaten zum Studium festlegen"
-                            TextAlignment="Center" />
+                            Text="Grunddaten" />
                     </StackPanel>
 
-                    <!--  CARD  -->
+                    <!--  Mobile Card  -->
                     <Border
-                        Width="640"
-                        Padding="40"
+                        Padding="20"
                         Background="{DynamicResource BgSecondary}"
                         CornerRadius="16">
 
-                        <StackPanel Spacing="26">
+                        <StackPanel Spacing="16">
 
-                            <!--  TITLE  -->
                             <TextBlock
-                                FontSize="22"
+                                FontSize="18"
                                 FontWeight="SemiBold"
-                                Foreground="{DynamicResource TextPrimary}"
-                                Text="Grunddaten zum Studium"
-                                TextAlignment="Center" />
+                                Text="Studium konfigurieren" />
 
-                            <!--  FORM  -->
-                            <StackPanel Spacing="18">
+                            <!--  Studiengang  -->
+                            <ComboBox
+                                ItemsSource="{Binding StudyPrograms}"
+                                PlaceholderText="Studiengang auswählen"
+                                SelectedItem="{Binding SelectedStudyProgram}" />
 
-                                <!--  STUDY PROGRAM  -->
-                                <StackPanel Spacing="6">
-                                    <TextBlock
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextPrimary}"
-                                        Text="Studiengang *" />
-
-                                    <ComboBox
-                                        ItemsSource="{Binding StudyPrograms}"
-                                        PlaceholderText="Bitte Studiengang auswählen"
-                                        SelectedItem="{Binding SelectedStudyProgram}" />
-
-                                    <!--  FIELD ERROR  -->
-                                    <TextBlock
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextError}"
-                                        IsVisible="{Binding ShowStudyProgramError}"
-                                        Text="Bitte wähle einen Studiengang aus." />
-                                </StackPanel>
-
-                                <!--  SEMESTER  -->
-                                <StackPanel Spacing="6">
-                                    <TextBlock
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextPrimary}"
-                                        Text="Aktuelles Semester *" />
-
-                                    <ComboBox
-                                        ItemsSource="{Binding Semesters}"
-                                        PlaceholderText="Bitte Semester auswählen"
-                                        SelectedItem="{Binding SelectedSemester}" />
-
-                                    <!--  FIELD ERROR  -->
-                                    <TextBlock
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextError}"
-                                        IsVisible="{Binding ShowSemesterError}"
-                                        Text="Bitte wähle dein aktuelles Semester aus." />
-                                </StackPanel>
-
-                                <!--  OPTIONAL PDF  -->
-                                <StackPanel Spacing="6">
-                                    <TextBlock
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextPrimary}"
-                                        Text="Stundenplan (optional)" />
-
-                                    <Button Classes="secondary" Content="PDF auswählen" />
-                                </StackPanel>
-
-                            </StackPanel>
-
-                            <!--  GLOBAL ERROR (optional)  -->
                             <TextBlock
-                                FontSize="14"
-                                FontWeight="SemiBold"
                                 Foreground="{DynamicResource TextError}"
-                                IsVisible="{Binding HasGlobalError}"
-                                Text="{Binding ErrorMessage}"
-                                TextWrapping="Wrap" />
+                                IsVisible="{Binding ShowStudyProgramError}"
+                                Text="Studiengang fehlt" />
 
-                            <!--  ACTION  -->
-                            <StackPanel HorizontalAlignment="Right">
-                                <Button
-                                    Classes="primary"
-                                    Command="{Binding GenerateCommand}"
-                                    Content="Lehrplan generieren" />
-                            </StackPanel>
+                            <!--  Semester  -->
+                            <ComboBox
+                                ItemsSource="{Binding Semesters}"
+                                PlaceholderText="Semester auswählen"
+                                SelectedItem="{Binding SelectedSemester}" />
 
+                            <TextBlock
+                                Foreground="{DynamicResource TextError}"
+                                IsVisible="{Binding ShowSemesterError}"
+                                Text="Semester fehlt" />
+
+                            <!--  PDF  -->
+                            <Button Classes="secondary" Content="PDF auswählen (optional)" />
+
+                            <!--  Action  -->
+                            <Button
+                                Height="48"
+                                Classes="primary"
+                                Command="{Binding GenerateCommand}"
+                                Content="Profil vervollständigen" />
                         </StackPanel>
                     </Border>
 
+                    <Border Height="24" />
                 </StackPanel>
-            </Grid>
-        </ScrollViewer>
+            </ScrollViewer>
+        </Grid>
+
     </Grid>
 </UserControl>

@@ -12,130 +12,255 @@
         </Style>
     </UserControl.Styles>
 
-    <!--  Page Background  -->
+    <!--  ================= ROOT =================  -->
     <Grid>
 
-        <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
+        <!--  ================= DESKTOP =================  -->
+        <Grid x:Name="DesktopLayout">
 
-        <!--  Centered Card  -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid
-                Margin="24"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+            <!--  Page Background  -->
+            <Grid>
 
+                <Image Source="avares://LehrplanGenerator/Assets/Images/test.jpg" Stretch="UniformToFill" />
+
+                <!--  Centered Card  -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid
+                        Margin="24"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                        <Border
+                            Width="440"
+                            Padding="40"
+                            Background="{DynamicResource BgSecondary}"
+                            CornerRadius="24">
+
+                            <StackPanel Spacing="28">
+
+                                <!--  Header  -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock
+                                        FontSize="28"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource TextPrimary}"
+                                        Text="Konto erstellen"
+                                        TextAlignment="Center" />
+
+                                    <TextBlock
+                                        FontSize="14"
+                                        Foreground="{DynamicResource TextSecondary}"
+                                        Text="Erstelle dein Konto für deinen persönlichen Lehrplan"
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <!--  Form  -->
+                                <StackPanel Spacing="16">
+
+                                    <StackPanel Spacing="6">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource TextPrimary}"
+                                            Text="Vorname" />
+                                        <TextBox Text="{Binding FirstName}" Watermark="Vorname" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="6">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource TextPrimary}"
+                                            Text="Nachname" />
+                                        <TextBox Text="{Binding LastName}" Watermark="Nachname" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="6">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource TextPrimary}"
+                                            Text="Benutzername" />
+                                        <TextBox Text="{Binding Username}" Watermark="Benutzername" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="6">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource TextPrimary}"
+                                            Text="Passwort" />
+                                        <TextBox
+                                            PasswordChar="*"
+                                            Text="{Binding Password}"
+                                            Watermark="Mindestens 8 Zeichen" />
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                                <!--  Error  -->
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource TextError}"
+                                    Text="{Binding ErrorMessage}"
+                                    TextWrapping="Wrap" />
+
+                                <!--  Primary Action  -->
+                                <Button
+                                    Height="44"
+                                    Background="{DynamicResource AccentPrimary}"
+                                    Classes="auth-button"
+                                    Command="{Binding RegisterCommand}"
+                                    Content="Konto erstellen"
+                                    CornerRadius="8"
+                                    Foreground="White" />
+
+                                <!--  Secondary Action  -->
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="4">
+
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontSize="13"
+                                        Foreground="{DynamicResource TextSecondary}"
+                                        Text="Du hast bereits ein Konto?" />
+
+                                    <Button
+                                        MinHeight="0"
+                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        Classes="link"
+                                        Command="{Binding NavigateToLoginCommand}"
+                                        Content="Anmelden"
+                                        FontSize="13" />
+                                </StackPanel>
+
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!--  ================= MOBILE =================  -->
+        <Grid x:Name="MobileLayout">
+
+            <!--  BACKGROUND  -->
+            <Image
+                IsHitTestVisible="False"
+                Source="avares://LehrplanGenerator/Assets/Images/test.jpg"
+                Stretch="UniformToFill" />
+
+            <!--  Dark overlay (optional, kannst du lassen oder entfernen)  -->
+            <Border Background="#88000000" IsHitTestVisible="False" />
+
+            <!--  CONTENT  -->
+            <Grid RowDefinitions="Auto,Auto">
+
+                <!--  PHONE PREVIEW IMAGE (liegt AUF dem Hintergrund)  -->
                 <Border
-                    Width="440"
-                    Padding="40"
+                    Margin="16,32,16,8"
+                    CornerRadius="20"
+                    IsHitTestVisible="False">
+
+                    <Image
+                        MaxHeight="280"
+                        HorizontalAlignment="Center"
+                        Source="avares://LehrplanGenerator/Assets/Images/phone_screen.png"
+                        Stretch="Uniform" />
+                </Border>
+
+                <!--  Bottom Sheet mit Formular  -->
+                <Border
+                    x:Name="MobileSheet"
+                    Grid.Row="1"
+                    Padding="24"
                     Background="{DynamicResource BgSecondary}"
-                    CornerRadius="24">
+                    CornerRadius="24,24,0,0">
 
-                    <StackPanel Spacing="28">
+                    <!--  wichtig für Keyboard-Animation  -->
+                    <Border.RenderTransform>
+                        <TranslateTransform />
+                    </Border.RenderTransform>
 
-                        <!--  Header  -->
-                        <StackPanel Spacing="8">
-                            <TextBlock
-                                FontSize="28"
-                                FontWeight="Bold"
-                                Foreground="{DynamicResource TextPrimary}"
-                                Text="Konto erstellen"
-                                TextAlignment="Center" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                            <TextBlock
-                                FontSize="14"
-                                Foreground="{DynamicResource TextSecondary}"
-                                Text="Erstelle dein Konto für deinen persönlichen Lehrplan"
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <!--  Form  -->
                         <StackPanel Spacing="16">
 
-                            <StackPanel Spacing="6">
+                            <!--  Header  -->
+                            <StackPanel Spacing="4">
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="Konto erstellen" />
+
                                 <TextBlock
                                     FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextPrimary}"
-                                    Text="Vorname" />
+                                    Foreground="{DynamicResource TextSecondary}"
+                                    Text="Erstelle dein Konto für deinen persönlichen Lehrplan"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <!--  Form  -->
+                            <StackPanel Spacing="12">
                                 <TextBox Text="{Binding FirstName}" Watermark="Vorname" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="6">
-                                <TextBlock
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextPrimary}"
-                                    Text="Nachname" />
                                 <TextBox Text="{Binding LastName}" Watermark="Nachname" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="6">
-                                <TextBlock
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextPrimary}"
-                                    Text="Benutzername" />
                                 <TextBox Text="{Binding Username}" Watermark="Benutzername" />
-                            </StackPanel>
-
-                            <StackPanel Spacing="6">
-                                <TextBlock
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextPrimary}"
-                                    Text="Passwort" />
                                 <TextBox
                                     PasswordChar="*"
                                     Text="{Binding Password}"
                                     Watermark="Mindestens 8 Zeichen" />
                             </StackPanel>
 
-                        </StackPanel>
-
-                        <!--  Error  -->
-                        <TextBlock
-                            FontSize="13"
-                            Foreground="{DynamicResource TextError}"
-                            Text="{Binding ErrorMessage}"
-                            TextWrapping="Wrap" />
-
-                        <!--  Primary Action  -->
-                        <Button
-                            Classes="auth-button"
-                            Background="{DynamicResource AccentPrimary}"
-                            Foreground="White"
-                            Height="44"
-                            CornerRadius="8"
-                            Command="{Binding RegisterCommand}"
-                            Content="Konto erstellen" />
-
-                        <!--  Secondary Action  -->
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal"
-                            Spacing="4">
-
+                            <!--  Error  -->
                             <TextBlock
-                                VerticalAlignment="Center"
                                 FontSize="13"
-                                Foreground="{DynamicResource TextSecondary}"
-                                Text="Du hast bereits ein Konto?" />
+                                Foreground="{DynamicResource TextError}"
+                                Text="{Binding ErrorMessage}"
+                                TextWrapping="Wrap" />
 
+                            <!--  Primary Action  -->
                             <Button
-                                MinHeight="0"
-                                Padding="0"
-                                VerticalAlignment="Center"
-                                Classes="link"
-                                Command="{Binding NavigateToLoginCommand}"
-                                Content="Anmelden"
-                                FontSize="13" />
-                        </StackPanel>
+                                Height="48"
+                                Background="{DynamicResource AccentPrimary}"
+                                Classes="auth-button"
+                                Command="{Binding RegisterCommand}"
+                                Content="Konto erstellen"
+                                CornerRadius="8"
+                                Foreground="White" />
 
-                    </StackPanel>
+                            <!--  Secondary Action  -->
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="4">
+
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource TextSecondary}"
+                                    Text="Bereits registriert?" />
+
+                                <Button
+                                    MinHeight="0"
+                                    Padding="0"
+                                    Classes="link"
+                                    Command="{Binding NavigateToLoginCommand}"
+                                    Content="Anmelden"
+                                    FontSize="13" />
+                            </StackPanel>
+
+                            <!--  Abstand zur Android Navbar  -->
+                            <Border Height="24" />
+
+                        </StackPanel>
+                    </ScrollViewer>
                 </Border>
             </Grid>
-        </ScrollViewer>
+        </Grid>
+
     </Grid>
 </UserControl>
