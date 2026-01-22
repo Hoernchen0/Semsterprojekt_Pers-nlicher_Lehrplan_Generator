@@ -14,7 +14,8 @@ namespace LehrplanGenerator.ViewModels.StudyPlan;
 public enum StudyPlanViewMode
 {
     List,
-    Calendar
+    Calendar,
+    DayDetail
 }
 
 public partial class StudyPlanViewModel : ViewModelBase
@@ -22,6 +23,10 @@ public partial class StudyPlanViewModel : ViewModelBase
     private readonly AppState _appState;
     private readonly LearningProgressService _learningProgressService;
     private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
+
+    // =================================================
+    // DATA
+    // =================================================
 
     [ObservableProperty]
     private ObservableCollection<StudyPlanEntity> studyPlans = new();
@@ -45,7 +50,7 @@ public partial class StudyPlanViewModel : ViewModelBase
     private bool isCreatingPlan;
 
     // =================================================
-    // 🔥 NEU: VIEW MODE
+    // VIEW MODE
     // =================================================
 
     [ObservableProperty]
@@ -53,10 +58,28 @@ public partial class StudyPlanViewModel : ViewModelBase
 
     public bool IsListView => ViewMode == StudyPlanViewMode.List;
     public bool IsCalendarView => ViewMode == StudyPlanViewMode.Calendar;
+    public bool IsDayDetailView => ViewMode == StudyPlanViewMode.DayDetail;
+
 
     public string CurrentViewModeLabel =>
-        ViewMode == StudyPlanViewMode.List ? "Kalender" : "Liste";
+            ViewMode == StudyPlanViewMode.List ? "Kalender" :
+            ViewMode == StudyPlanViewMode.Calendar ? "Liste" :
+            "Zurück";
 
+    // =================================================
+    // POPUP (für Kalender)
+    // =================================================
+
+    [ObservableProperty]
+    private bool isPopupOpen;
+
+    [ObservableProperty]
+    private DayPlanViewModel? selectedCalendarDay;
+
+    public CalendarViewModel Calendar { get; }
+
+    // =================================================
+    // CTOR
     // =================================================
 
     public StudyPlanViewModel(
@@ -67,8 +90,15 @@ public partial class StudyPlanViewModel : ViewModelBase
         _appState = appState;
         _learningProgressService = learningProgressService;
         _studyPlanGeneratorService = studyPlanGeneratorService;
+
         _ = LoadPlansAsync();
+        Calendar = new CalendarViewModel(OpenDayView, this);
+
     }
+
+    // =================================================
+    // LOAD PLANS
+    // =================================================
 
     private async Task LoadPlansAsync()
     {
@@ -111,12 +141,13 @@ public partial class StudyPlanViewModel : ViewModelBase
         foreach (var day in result.GroupedDays)
         {
             Days.Add(new DayPlanViewModel(
-            DateTime.Parse(day.Key).ToString("dd.MM.yyyy"),
-            day.Value.Select(lp => new TaskItemViewModel(lp))
+                DateTime.Parse(day.Key).ToString("dd.MM.yyyy"),
+                day.Value.Select(lp => new TaskItemViewModel(lp))
             ));
         }
 
         SelectedDay = Days.FirstOrDefault();
+        Calendar.GenerateMonth();
     }
 
     // =================================================
@@ -139,13 +170,38 @@ public partial class StudyPlanViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsListView));
         OnPropertyChanged(nameof(IsCalendarView));
         OnPropertyChanged(nameof(CurrentViewModeLabel));
+        OnPropertyChanged(nameof(IsDayDetailView));
     }
 
 
 
     // =================================================
+    // POPUP COMMANDS
+    // =================================================
+
+    [RelayCommand]
+    private void OpenDayView(DayPlanViewModel day)
+    {
+        SelectedCalendarDay = day;
+        ViewMode = StudyPlanViewMode.DayDetail;
+
+        OnPropertyChanged(nameof(IsCalendarView));
+        OnPropertyChanged(nameof(IsDayDetailView));
+    }
+    [RelayCommand]
+    private void BackToCalendar()
+    {
+        ViewMode = StudyPlanViewMode.Calendar;
+        SelectedCalendarDay = null;
+
+        OnPropertyChanged(nameof(IsCalendarView));
+        OnPropertyChanged(nameof(IsDayDetailView));
+    }
+
+    // =================================================
     // CREATE NEW STUDY PLAN
     // =================================================
+
     [RelayCommand]
     private async Task CreateNewPlan()
     {
@@ -210,15 +266,50 @@ public partial class StudyPlanViewModel : ViewModelBase
 
         try
         {
+            string prompt = "Erstelle einen Lernplan für Softwareentwicklung. " +
+                "Plane die nächsten 5-7 Tage mit jeweils 3-4 Lerneinheiten à 50 Minuten mit 10 Minuten Pausen. " +
+                "Das Studium beginnt morgen.";
+
+            if (_appState.ChatMessages.Count > 0)
+            {
+                var lastUserMessage = _appState.ChatMessages
+                    .LastOrDefault(m => m.Sender == "User");
+
+                if (lastUserMessage != null)
+                    prompt = lastUserMessage.FullText;
+            }
+
+            var planResponse = await _studyPlanGeneratorService.AskGptAsync(prompt);
+
+            if (string.IsNullOrEmpty(planResponse))
+            {
+                ErrorMessage = "Fehler bei der KI-Generierung";
+                IsLoading = false;
+                return;
+            }
+
+            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
+
+            if (studyPlan == null)
+            {
+                ErrorMessage = "Fehler beim Generieren des Lernplans";
+                IsLoading = false;
+                return;
+            }
+
+            await _learningProgressService.SaveStudyPlanAsync(
+                _appState.CurrentUserId.Value,
+                studyPlan
+            );
+
             await _learningProgressService.DeleteStudyPlanAsync(SelectedStudyPlan.Id);
-            
+
             // Leere die Tages-Ansicht
             Days.Clear();
             SelectedDay = null;
-            
+
             // Lade die Plans neu
             await LoadPlansAsync();
-
             ErrorMessage = null;
         }
         catch (Exception ex)

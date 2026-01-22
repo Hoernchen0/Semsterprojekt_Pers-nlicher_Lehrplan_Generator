@@ -1,9 +1,16 @@
 <UserControl
+
     x:Class="LehrplanGenerator.Views.StudyPlan.StudyPlanView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:LehrplanGenerator.ViewModels.StudyPlan"
     x:DataType="vm:StudyPlanViewModel">
+
+<UserControl.Resources>
+    <vm:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
+    <vm:TaskCountToBrushConverter x:Key="TaskCountToBrushConverter" />
+</UserControl.Resources>
+
 
     <Grid Background="{DynamicResource BgPrimary}" RowDefinitions="Auto,*">
 
@@ -40,21 +47,19 @@
                 Command="{Binding ToggleViewModeCommand}">
                 <TextBlock Text="{Binding CurrentViewModeLabel}" />
             </Button>
-
         </Grid>
 
-        <!--  CONTENT  -->
+        <!-- CONTENT -->
         <Grid Grid.Row="1">
 
-            <!--  LIST VIEW  -->
+            <!-- LIST VIEW -->
             <Grid
                 Margin="32"
                 ColumnDefinitions="300,*"
                 IsVisible="{Binding IsListView}">
 
-                <!--  LEFT  -->
+                <!-- LEFT SIDE -->
                 <StackPanel Grid.Column="0" Spacing="16">
-
                     <ComboBox ItemsSource="{Binding StudyPlans}" SelectedItem="{Binding SelectedStudyPlan}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -75,16 +80,15 @@
                                         <TextBlock
                                             FontSize="12"
                                             Foreground="{DynamicResource TextMuted}"
-                                            Text="{Binding Tasks.Count}" />
+                                            Text="{Binding TasksCountLabel}" />
                                     </StackPanel>
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-
                 </StackPanel>
 
-                <!--  RIGHT  -->
+                <!-- RIGHT SIDE -->
                 <Border
                     Grid.Column="1"
                     Margin="16,0,0,0"
@@ -95,7 +99,6 @@
                     CornerRadius="16">
 
                     <StackPanel Spacing="16">
-
                         <TextBlock
                             FontSize="20"
                             FontWeight="Bold"
@@ -125,43 +128,155 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-
                     </StackPanel>
                 </Border>
 
             </Grid>
 
-            <!--  CALENDAR VIEW  -->
-            <ScrollViewer Padding="32" IsVisible="{Binding IsCalendarView}">
-                <ItemsControl ItemsSource="{Binding Days}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="7" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+           <!-- CONTENT -->
+<Grid Grid.Row="1">
 
+    <Border Background="{DynamicResource BgSecondary}"
+            BorderBrush="{DynamicResource BorderSubtle}"
+            BorderThickness="1"
+            CornerRadius="16"
+            Padding="12"
+            Margin="0,16,0,16"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Stretch"
+            MinWidth="300"      
+            MaxWidth="800"      
+            IsVisible="{Binding IsCalendarView}">
+
+        <Grid RowDefinitions="Auto,*">
+    <!-- MONATSNAVIGATION -->
+    <StackPanel 
+        Grid.Row="0"
+        Orientation="Horizontal"
+        HorizontalAlignment="Center"
+        Spacing="12"
+        Margin="0,8,0,4">
+        
+        <Button Content="◀" Command="{Binding Calendar.PreviousMonthCommand}"
+        VerticalAlignment="Center"
+        VerticalContentAlignment="Center"/>
+        
+        <TextBlock FontSize="18"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Text="{Binding Calendar.CurrentMonth, StringFormat='{}{0:MMMM yyyy}'}" />
+        
+        <Button Content="▶" Command="{Binding Calendar.NextMonthCommand}"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"/>
+    </StackPanel>
+
+    <!-- CALENDAR VIEW -->
+    <ScrollViewer 
+        Grid.Row="1"
+        Padding="0" 
+        IsVisible="{Binding IsCalendarView}">
+
+        <Border Padding="16,0">
+        
+        <ItemsControl ItemsSource="{Binding Calendar.Days}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="7" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:DayPlanViewModel">
+                  <Button Margin="1" Padding="4"
+                    MinWidth="40"    
+                    MinHeight="40"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{Binding ., Converter={StaticResource TaskCountToBrushConverter}}"
+                    Opacity="{Binding IsCurrentMonth, Converter={StaticResource BoolToOpacityConverter}}"
+                    Command="{Binding $parent[UserControl].DataContext.OpenDayViewCommand}"
+                    CommandParameter="{Binding}">
+
+    <StackPanel>
+        <TextBlock FontWeight="Bold" Text="{Binding DayNumber}" />
+        <TextBlock FontSize="11" Foreground="{DynamicResource TextMuted}" Text="{Binding Tasks.Count}" />
+    </StackPanel>
+</Button>
+
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        </Border>
+    </ScrollViewer>
+
+ </Grid>
+    </Border>
+
+</Grid>
+
+<!-- DAY DETAIL VIEW -->
+<Grid Grid.Row="1"
+      Margin="16"
+      IsVisible="{Binding IsDayDetailView}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                Padding="0"
+                Margin="0">
+        <Border Background="{DynamicResource BgSecondary}"
+                Padding="16"
+                CornerRadius="16">
+        
+
+           <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>   
+                    <RowDefinition Height="*"/>      
+                </Grid.RowDefinitions>
+
+                <!-- Kopfzeile -->
+                <StackPanel Grid.Row="0" Spacing="8">
+                    <Button Content="← Zurück"
+                            HorizontalAlignment="Left"
+                            Command="{Binding BackToCalendarCommand}" />
+
+                    <TextBlock FontSize="22"
+                               FontWeight="Bold"
+                               Text="{Binding SelectedCalendarDay.DisplayDate}" />
+                </StackPanel>
+
+                <!-- Tasks scrollbar-fähig -->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedCalendarDay.Tasks}">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:DayPlanViewModel">
-                            <Button
-                                Margin="4"
-                                Padding="12"
-                                Classes="secondary"
-                                Command="{Binding $parent[UserControl].DataContext.SelectDayCommand}"
-                                CommandParameter="{Binding}">
+                        <DataTemplate x:DataType="vm:TaskItemViewModel">
+                            <Border Padding="12"
+                                    Margin="0,0,0,8"
+                                    Background="{DynamicResource BgPrimary}"
+                                    CornerRadius="8">
+
                                 <StackPanel>
-                                    <TextBlock FontWeight="Bold" Text="{Binding DayNumber}" />
-                                    <TextBlock
-                                        FontSize="11"
-                                        Foreground="{DynamicResource TextMuted}"
-                                        Text="{Binding Tasks.Count}" />
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                                    <TextBlock Text="{Binding Time}"
+                                               Foreground="{DynamicResource TextMuted}" />
+                                    <TextBlock Text="{Binding Description}"
+                                               TextWrapping="Wrap" />
                                 </StackPanel>
-                            </Button>
+
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </ScrollViewer>
+
+            </Grid>
+
+        </Border>
+    </ScrollViewer>
+</Grid>
+
+            
 
         </Grid>
-
     </Grid>
 </UserControl>

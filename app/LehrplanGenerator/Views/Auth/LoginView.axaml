@@ -5,6 +5,13 @@
     xmlns:vm="using:LehrplanGenerator.ViewModels.Auth"
     x:DataType="vm:LoginViewModel">
 
+    <UserControl.Styles>
+        <Style Selector="Button.auth-button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#3E8F45" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid>
 
         <!--  ================= DESKTOP =================  -->
@@ -44,7 +51,11 @@
 
                             <!--  Primary  -->
                             <Button
-                                Classes="primary"
+                                Classes="auth-button"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Height="44"
+                                CornerRadius="8"
                                 Command="{Binding LoginCommand}"
                                 Content="Anmelden" />
 
@@ -117,7 +128,10 @@
 
                         <Button
                             Height="48"
-                            Classes="primary"
+                            Classes="auth-button"
+                            Background="{DynamicResource AccentPrimary}"
+                            Foreground="White"
+                            CornerRadius="8"
                             Command="{Binding LoginCommand}"
                             Content="Anmelden" />
 
