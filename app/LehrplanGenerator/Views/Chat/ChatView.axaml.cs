@@ -1,4 +1,5 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Platform;
 using Avalonia.Media;
@@ -15,6 +16,8 @@ public partial class ChatView : UserControl
     private const double DesktopBreakpoint = 720;
     private const double AndroidKeyboardOffset = 300;
 
+
+    private readonly TranslateTransform _inputTransform = new();
     private ChatViewModel? _vm;
     private IInputPane? _inputPane;
     private readonly TranslateTransform _mobileTransform = new();
@@ -43,7 +46,8 @@ public partial class ChatView : UserControl
         if (!IsAndroid)
             return;
 
-        MobileLayout.RenderTransform = _mobileTransform;
+        MobileScroll.RenderTransform = _mobileTransform;
+        MobileInput.RenderTransform = _inputTransform;
 
         var top = TopLevel.GetTopLevel(this);
         _inputPane = top?.InputPane;
@@ -66,22 +70,28 @@ public partial class ChatView : UserControl
 
     private void OnInputPaneStateChanged(object? sender, InputPaneStateEventArgs e)
     {
-        if (_vm?.HasMessages != true)
-            return;
-
         Dispatcher.UIThread.Post(() =>
         {
-            _mobileTransform.Y =
-                e.NewState == InputPaneState.Open
-                    ? -AndroidKeyboardOffset
-                    : 0;
+            if (e.NewState == InputPaneState.Open)
+            {
+                _mobileTransform.Y = -AndroidKeyboardOffset;
+                _inputTransform.Y = -AndroidKeyboardOffset;
+            }
+            else
+            {
+                _mobileTransform.Y = 0;
+                _inputTransform.Y = 0;
+            }
 
-            MobileScroll?.ScrollToEnd();
+            ScrollToBottom();
         }, DispatcherPriority.Render);
     }
 
     private void OnMessagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        => ScrollToBottom();
+    {
+        if (e.Action == NotifyCollectionChangedAction.Add)
+            ScrollToBottom();
+    }
 
     private void OnMessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -93,11 +103,18 @@ public partial class ChatView : UserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
-            MobileScroll?.ScrollToEnd();
-            ChatScrollViewer?.ScrollToEnd();
-        });
-    }
+            if (MobileScroll == null)
+                return;
 
+            if (MobileScroll.Extent.Height <= MobileScroll.Viewport.Height)
+                return;
+
+            MobileScroll.Offset = new Vector(
+                0,
+                MobileScroll.Extent.Height - MobileScroll.Viewport.Height
+            );
+        }, DispatcherPriority.Render);
+    }
     private void UpdateResponsiveLayout()
     {
         var width = Bounds.Width;

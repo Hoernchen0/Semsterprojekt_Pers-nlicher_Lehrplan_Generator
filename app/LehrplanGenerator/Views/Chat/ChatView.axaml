@@ -44,20 +44,31 @@
                             <Button
                                 Grid.Column="0"
                                 Classes="secondary"
-                                Command="{Binding CreateNewPlanCommand}"
-                                Content="➕" />
+                                Command="{Binding CreateNewPlanCommand}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="+" />
+                            </Button>
                             <Button
                                 Grid.Column="1"
                                 Classes="secondary"
-                                Command="{Binding UploadCommand}"
-                                Content="📎" />
+                                Command="{Binding UploadCommand}">
+                                <Image
+                                    Width="20"
+                                    Height="20"
+                                    Source="avares://LehrplanGenerator/Assets/Icons/clip.png" />
+                            </Button>
                             <TextBox
                                 Grid.Column="2"
                                 AcceptsReturn="False"
                                 Text="{Binding InputText}"
                                 Watermark="Stelle eine Frage…">
                                 <TextBox.KeyBindings>
-                                    <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                                    <KeyBinding Command="{Binding SendCommand}" Gesture="Enter" />
                                 </TextBox.KeyBindings>
                             </TextBox>
                             <Button
@@ -114,8 +125,8 @@
                                         CornerRadius="12"
                                         IsVisible="{Binding IsSystem}">
                                         <TextBlock
-                                            Foreground="#92400E"
                                             FontSize="13"
+                                            Foreground="#92400E"
                                             Text="{Binding DisplayedText}"
                                             TextAlignment="Center"
                                             TextWrapping="Wrap" />
@@ -140,20 +151,31 @@
                         <Button
                             Grid.Column="0"
                             Classes="secondary"
-                            Command="{Binding CreateNewPlanCommand}"
-                            Content="➕" />
+                            Command="{Binding CreateNewPlanCommand}">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="22"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="+" />
+                        </Button>
                         <Button
                             Grid.Column="1"
                             Classes="secondary"
-                            Command="{Binding UploadCommand}"
-                            Content="📎" />
+                            Command="{Binding UploadCommand}">
+                            <Image
+                                Width="20"
+                                Height="20"
+                                Source="avares://LehrplanGenerator/Assets/Icons/clip.png" />
+                        </Button>
                         <TextBox
                             Grid.Column="2"
                             AcceptsReturn="True"
                             Text="{Binding InputText}"
                             Watermark="Nachricht schreiben…">
                             <TextBox.KeyBindings>
-                                <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+                                <KeyBinding Command="{Binding SendCommand}" Gesture="Enter" />
                             </TextBox.KeyBindings>
                         </TextBox>
                         <Button
@@ -197,14 +219,25 @@
                             <Button
                                 Grid.Column="0"
                                 Classes="secondary"
-                                Command="{Binding CreateNewPlanCommand}"
-                                Content="➕" />
+                                Command="{Binding CreateNewPlanCommand}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="22"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimary}"
+                                    Text="+" />
+                            </Button>
 
                             <Button
                                 Grid.Column="1"
                                 Classes="secondary"
-                                Command="{Binding UploadCommand}"
-                                Content="📎" />
+                                Command="{Binding UploadCommand}">
+                                <Image
+                                    Width="20"
+                                    Height="20"
+                                    Source="avares://LehrplanGenerator/Assets/Icons/clip.png" />
+                            </Button>
 
                             <TextBox
                                 Grid.Column="2"
@@ -227,51 +260,56 @@
             <!--  ================= CHAT STATE =================  -->
             <Grid IsVisible="{Binding HasMessages}" RowDefinitions="*,Auto">
 
-                <!--  CHAT  -->
                 <ScrollViewer
                     x:Name="MobileScroll"
                     Grid.Row="0"
-                    Margin="12"
+                    Padding="12,12,12,120"
+                    VerticalAlignment="Stretch"
                     VerticalScrollBarVisibility="Auto">
 
-                    <ItemsControl ItemsSource="{Binding Messages}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:ChatMessage">
-                                <Grid>
+                    <Grid MinHeight="{Binding Bounds.Height, RelativeSource={RelativeSource AncestorType=ScrollViewer}}">
+                        <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding Messages}">
 
-                                    <!--  USER  -->
-                                    <Border
-                                        Padding="14"
-                                        HorizontalAlignment="Right"
-                                        Background="#E5E7EB"
-                                        CornerRadius="16"
-                                        IsVisible="{Binding IsUser}">
-                                        <TextBlock
-                                            Foreground="#020617"
-                                            Text="{Binding DisplayedText}"
-                                            TextWrapping="Wrap" />
-                                    </Border>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:ChatMessage">
+                                    <Grid Margin="0,0,0,12">
 
-                                    <!--  AI  -->
-                                    <Border
-                                        Padding="14"
-                                        HorizontalAlignment="Left"
-                                        Background="{DynamicResource BgSecondary}"
-                                        BorderBrush="{DynamicResource BorderSubtle}"
-                                        BorderThickness="1"
-                                        CornerRadius="16"
-                                        IsVisible="{Binding IsAi}">
-                                        <md:MarkdownScrollViewer Markdown="{Binding DisplayedText}" />
-                                    </Border>
+                                        <!--  USER  -->
+                                        <Border
+                                            Padding="14"
+                                            HorizontalAlignment="Right"
+                                            Background="#E5E7EB"
+                                            CornerRadius="16"
+                                            IsVisible="{Binding IsUser}">
+                                            <TextBlock
+                                                Foreground="#020617"
+                                                Text="{Binding DisplayedText}"
+                                                TextWrapping="Wrap" />
+                                        </Border>
 
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                        <!--  AI  -->
+                                        <Border
+                                            Padding="14"
+                                            HorizontalAlignment="Left"
+                                            Background="{DynamicResource BgSecondary}"
+                                            BorderBrush="{DynamicResource BorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="16"
+                                            IsVisible="{Binding IsAi}">
+                                            <md:MarkdownScrollViewer Markdown="{Binding DisplayedText}" />
+                                        </Border>
+
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Border Height="80" />
+                    </Grid>
                 </ScrollViewer>
 
                 <!--  INPUT FIXIERT ÜBER TASKLEISTE  -->
                 <Border
+                    x:Name="MobileInput"
                     Grid.Row="1"
                     MaxWidth="380"
                     Margin="12,12,12,96"
@@ -287,14 +325,25 @@
                         <Button
                             Grid.Column="0"
                             Classes="secondary"
-                            Command="{Binding CreateNewPlanCommand}"
-                            Content="➕" />
+                            Command="{Binding CreateNewPlanCommand}">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="22"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimary}"
+                                Text="+" />
+                        </Button>
 
                         <Button
                             Grid.Column="1"
                             Classes="secondary"
-                            Command="{Binding UploadCommand}"
-                            Content="📎" />
+                            Command="{Binding UploadCommand}">
+                            <Image
+                                Width="20"
+                                Height="20"
+                                Source="avares://LehrplanGenerator/Assets/Icons/clip.png" />
+                        </Button>
 
                         <TextBox
                             Grid.Column="2"
