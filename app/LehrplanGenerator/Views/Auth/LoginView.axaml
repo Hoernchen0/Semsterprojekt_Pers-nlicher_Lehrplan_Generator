@@ -41,7 +41,7 @@
                             <TextBox
                                 x:Name="DesktopUsernameBox"
                                 Text="{Binding Username}"
-                                Watermark="E-Mail oder Telefonnummer" />
+                                Watermark="Benutzername" />
 
                             <TextBox
                                 x:Name="DesktopPasswordBox"
@@ -51,13 +51,13 @@
 
                             <!--  Primary  -->
                             <Button
-                                Classes="auth-button"
-                                Background="{DynamicResource AccentPrimary}"
-                                Foreground="White"
                                 Height="44"
-                                CornerRadius="8"
+                                Background="{DynamicResource AccentPrimary}"
+                                Classes="auth-button"
                                 Command="{Binding LoginCommand}"
-                                Content="Anmelden" />
+                                Content="Anmelden"
+                                CornerRadius="8"
+                                Foreground="White" />
 
                             <!--  Secondary / Navigation  -->
                             <StackPanel
@@ -118,7 +118,7 @@
                         <TextBox
                             x:Name="MobileUsernameBox"
                             Text="{Binding Username}"
-                            Watermark="E-Mail oder Telefonnummer" />
+                            Watermark="Benutzername" />
 
                         <TextBox
                             x:Name="MobilePasswordBox"
@@ -128,12 +128,12 @@
 
                         <Button
                             Height="48"
-                            Classes="auth-button"
                             Background="{DynamicResource AccentPrimary}"
-                            Foreground="White"
-                            CornerRadius="8"
+                            Classes="auth-button"
                             Command="{Binding LoginCommand}"
-                            Content="Anmelden" />
+                            Content="Anmelden"
+                            CornerRadius="8"
+                            Foreground="White" />
 
                         <!--  Navigation  -->
                         <StackPanel
