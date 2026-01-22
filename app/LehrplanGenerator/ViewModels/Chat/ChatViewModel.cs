@@ -133,6 +133,19 @@ public partial class ChatViewModel : ViewModelBase
     {
         try
         {
+            // Ensure we have a session - create one if needed
+            if (_appState.CurrentSessionId == null && _appState.CurrentUserId.HasValue)
+            {
+                var session = await _chatServiceDb.CreateSessionAsync(
+                    _appState.CurrentUserId.Value,
+                    "Chat Session",
+                    "");
+                _appState.CurrentSessionId = session.SessionId;
+                
+                // Initialisiere die AI-Conversation mit der neuen Session
+                await _appState.AiService.InitializeConversationAsync(_appState.CurrentUserId.Value, session.SessionId);
+            }
+
             // StorageProvider vom Hauptfenster holen
             var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             var mainWindow = lifetime?.MainWindow;
