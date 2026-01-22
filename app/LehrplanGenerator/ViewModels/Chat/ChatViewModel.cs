@@ -193,21 +193,43 @@ public partial class ChatViewModel : ViewModelBase
 
             if (success)
             {
+                var successMessage = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!";
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
-                    FullText = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!",
-                    DisplayedText = $"✓ PDF '{selectedFile.Name}' erfolgreich hochgeladen und verarbeitet!"
+                    FullText = successMessage,
+                    DisplayedText = successMessage
                 });
+                
+                // Speichere System-Message in der DB
+                if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+                {
+                    await _chatServiceDb.SaveMessageAsync(
+                        _appState.CurrentSessionId.Value,
+                        _appState.CurrentUserId.Value,
+                        "System",
+                        successMessage);
+                }
             }
             else
             {
+                var errorMessage = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'.";
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
-                    FullText = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'.",
-                    DisplayedText = $"❌ Fehler beim Verarbeiten der PDF '{selectedFile.Name}'."
+                    FullText = errorMessage,
+                    DisplayedText = errorMessage
                 });
+                
+                // Speichere System-Message in der DB
+                if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+                {
+                    await _chatServiceDb.SaveMessageAsync(
+                        _appState.CurrentSessionId.Value,
+                        _appState.CurrentUserId.Value,
+                        "System",
+                        errorMessage);
+                }
             }
         }
         catch (Exception ex)
@@ -356,32 +378,65 @@ public partial class ChatViewModel : ViewModelBase
 
             if (studyPlan == null)
             {
+                var errorMessage = "Fehler beim Generieren des Lernplans";
                 Messages.Add(new ChatMessage
                 {
                     Sender = "System",
-                    FullText = "Fehler beim Generieren des Lernplans",
-                    DisplayedText = "Fehler beim Generieren des Lernplans"
+                    FullText = errorMessage,
+                    DisplayedText = errorMessage
                 });
+                
+                // Speichere System-Message in der DB
+                if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+                {
+                    await _chatServiceDb.SaveMessageAsync(
+                        _appState.CurrentSessionId.Value,
+                        _appState.CurrentUserId.Value,
+                        "System",
+                        errorMessage);
+                }
                 return;
             }
 
             await _learningProgressService.SaveStudyPlanAsync(_appState.CurrentUserId.Value, studyPlan);
 
+            var successMessage = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)";
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                FullText = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)",
-                DisplayedText = $"✓ Lernplan erstellt: {studyPlan.Topic} ({studyPlan.Days.Count} Tage)"
+                FullText = successMessage,
+                DisplayedText = successMessage
             });
+            
+            // Speichere System-Message in der DB
+            if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+            {
+                await _chatServiceDb.SaveMessageAsync(
+                    _appState.CurrentSessionId.Value,
+                    _appState.CurrentUserId.Value,
+                    "System",
+                    successMessage);
+            }
         }
         catch (Exception ex)
         {
+            var errorMessage = $"Fehler: {ex.Message}";
             Messages.Add(new ChatMessage
             {
                 Sender = "System",
-                FullText = $"Fehler: {ex.Message}",
-                DisplayedText = $"Fehler: {ex.Message}"
+                FullText = errorMessage,
+                DisplayedText = errorMessage
             });
+            
+            // Speichere System-Message in der DB
+            if (_appState.CurrentUserId.HasValue && _appState.CurrentSessionId.HasValue)
+            {
+                await _chatServiceDb.SaveMessageAsync(
+                    _appState.CurrentSessionId.Value,
+                    _appState.CurrentUserId.Value,
+                    "System",
+                    errorMessage);
+            }
         }
         finally
         {
