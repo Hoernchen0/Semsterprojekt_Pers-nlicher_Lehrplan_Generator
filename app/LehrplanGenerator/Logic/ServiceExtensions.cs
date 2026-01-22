@@ -52,6 +52,7 @@ public static class ServiceExtensions
         // services.AddScoped<PersistenceService>();
         services.AddScoped<LearningProgressService>();
         services.AddScoped<StudyPlanGeneratorService>();
+        services.AddSingleton<Logic.State.AppState>();
 
         return services;
     }

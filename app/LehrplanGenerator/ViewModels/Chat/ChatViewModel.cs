@@ -23,7 +23,6 @@ public partial class ChatViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly AppState _appState;
-    private readonly StudyPlanGeneratorService _studyPlanGeneratorService;
     private readonly LearningProgressService _learningProgressService;
     private readonly ChatServiceDb _chatServiceDb;
     private Guid? _lastUserId;
@@ -37,7 +36,6 @@ public partial class ChatViewModel : ViewModelBase
     {
         _navigationService = navigationService;
         _appState = appState;
-        _studyPlanGeneratorService = studyPlanGeneratorService;
         _learningProgressService = learningProgressService;
         _chatServiceDb = chatServiceDb;
         _lastUserId = _appState.CurrentUserId;
@@ -87,10 +85,18 @@ public partial class ChatViewModel : ViewModelBase
         if (sessions.Count == 0) return;
         var lastSession = sessions.First();
         _appState.CurrentSessionId = lastSession.SessionId;
+        
+        // Initialisiere die AI-Conversation mit der Session
+        await _appState.AiService.InitializeConversationAsync(_appState.CurrentUserId.Value, lastSession.SessionId);
+        
         var messages = await _chatServiceDb.GetSessionMessagesAsync(lastSession.SessionId, _appState.CurrentUserId.Value);
         Messages.Clear();
         foreach (var msg in messages)
         {
+            // Filtere PDF_Context Messages aus der UI heraus (sind nur für AI-Kontext)
+            if (msg.Sender == "PDF_Context")
+                continue;
+                
             Messages.Add(new ChatMessage { Sender = msg.Sender, FullText = msg.Text, DisplayedText = msg.Text });
         }
     }
@@ -219,6 +225,9 @@ public partial class ChatViewModel : ViewModelBase
                 "Chat Session",
                 "");
             _appState.CurrentSessionId = session.SessionId;
+            
+            // Initialisiere die AI-Conversation mit der neuen Session
+            await _appState.AiService.InitializeConversationAsync(_appState.CurrentUserId.Value, session.SessionId);
         }
 
         var userText = InputText.Trim();
@@ -330,7 +339,7 @@ public partial class ChatViewModel : ViewModelBase
 
         try
         {
-            var studyPlan = await _studyPlanGeneratorService.CreateStudyPlanAsync();
+            var studyPlan = await _appState.AiService.CreateStudyPlanAsync();
 
             if (studyPlan == null)
             {
