@@ -49,6 +49,13 @@
                                 Text="{Binding Password}"
                                 Watermark="Passwort" />
 
+                            <!--  ERROR  -->
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource TextError}"
+                                Text="{Binding Result}"
+                                TextWrapping="Wrap" />
+
                             <!--  Primary  -->
                             <Button
                                 Height="44"
@@ -125,6 +132,13 @@
                             PasswordChar="*"
                             Text="{Binding Password}"
                             Watermark="Passwort" />
+
+                        <!--  ERROR  -->
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource TextError}"
+                            Text="{Binding Result}"
+                            TextWrapping="Wrap" />
 
                         <Button
                             Height="48"
