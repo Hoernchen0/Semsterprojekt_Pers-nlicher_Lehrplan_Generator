@@ -41,7 +41,7 @@
                             <TextBox
                                 x:Name="DesktopUsernameBox"
                                 Text="{Binding Username}"
-                                Watermark="E-Mail oder Telefonnummer" />
+                                Watermark="Benutzername" />
 
                             <TextBox
                                 x:Name="DesktopPasswordBox"
