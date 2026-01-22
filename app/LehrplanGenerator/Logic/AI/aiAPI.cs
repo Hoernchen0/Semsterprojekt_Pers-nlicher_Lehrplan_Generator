@@ -8,17 +8,24 @@ using System.Threading.Tasks;
 using LehrplanGenerator.Logic.Models;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
+using LehrplanGenerator.Logic.Services;
+using System.Linq;
 
 namespace LehrplanGenerator.Logic.AI;
 
 public class StudyPlanGeneratorService
 {
     private readonly OpenAIClient? _client;
+    private readonly ChatServiceDb _chatServiceDb;
     private readonly List<Message> _conversation;
     private const string ModelName = "gpt-5-chat";
+    private Guid? _currentUserId;
+    private Guid? _currentSessionId;
 
-    public StudyPlanGeneratorService()
+    public StudyPlanGeneratorService(ChatServiceDb chatServiceDb)
     {
+        _chatServiceDb = chatServiceDb;
+        
         var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
         var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
@@ -48,6 +55,45 @@ public class StudyPlanGeneratorService
                 Benutze keine Emojis im Chat.
                 """)
         };
+    }
+
+    // Initialisiert die Conversation aus der Datenbank für einen User/Session
+    public async Task InitializeConversationAsync(Guid userId, Guid sessionId)
+    {
+        _currentUserId = userId;
+        _currentSessionId = sessionId;
+
+        // Lade alle Messages aus der Datenbank
+        var dbMessages = await _chatServiceDb.GetSessionMessagesAsync(sessionId, userId);
+        
+        // Behalte nur die System-Prompt-Message aus dem Konstruktor
+        var systemPrompt = _conversation.FirstOrDefault(m => m.Role == Role.System);
+        _conversation.Clear();
+        
+        if (systemPrompt != null)
+            _conversation.Add(systemPrompt);
+
+        // Füge nur User- und AI-Messages zur Conversation hinzu
+        // System-Messages aus der DB werden ignoriert (sind nur für die UI)
+        foreach (var msg in dbMessages.OrderBy(m => m.CreatedAt))
+        {
+            var sender = msg.Sender.ToLower();
+            
+            if (sender == "user")
+            {
+                _conversation.Add(new Message(Role.User, msg.Text));
+            }
+            else if (sender == "ai")
+            {
+                _conversation.Add(new Message(Role.Assistant, msg.Text));
+            }
+            else if (sender == "pdf_context")
+            {
+                // PDF-Kontext wird als User-Message für die AI hinzugefügt
+                _conversation.Add(new Message(Role.User, msg.Text));
+            }
+            // "system" messages werden ignoriert - sind nur UI-Meldungen
+        }
     }
 
     public async Task<StudyPlan?> CreateStudyPlanAsync()
@@ -99,6 +145,13 @@ public class StudyPlanGeneratorService
             return false;
         }
 
+        // Prüfe ob User und Session verfügbar sind
+        if (_currentUserId == null || _currentSessionId == null)
+        {
+            Console.WriteLine("Fehler: Keine aktive Session für PDF-Upload.");
+            return false;
+        }
+
         try
         {
             string fileName = Path.GetFileName(pdfPath);
@@ -112,16 +165,22 @@ public class StudyPlanGeneratorService
                 return false;
             }
 
+            // Formatiere die Nachricht mit dem PDF-Inhalt
+            var pdfMessage = $"Ich habe die PDF-Datei '{fileName}' hochgeladen. Hier ist der Inhalt:\n\n{extractedText}\n\n" +
+                           "Bitte nutze diesen Inhalt als Grundlage für Zusammenfassungen und den Lernplan.";
+
             // Füge den extrahierten Text als Nachricht zur Konversation hinzu
-            _conversation.Add(new Message(Role.User,
-                $"Ich habe die PDF-Datei '{fileName}' hochgeladen. Hier ist der Inhalt:\n\n{extractedText}\n\n" +
-                "Bitte nutze diesen Inhalt als Grundlage für Zusammenfassungen und den Lernplan."));
+            _conversation.Add(new Message(Role.User, pdfMessage));
 
-            _conversation.Add(new Message(Role.System,
-                "Nutze den bereitgestellten PDF-Inhalt als Grundlage für Zusammenfassungen und den Lernplan."
-            ));
+            // Speichere die PDF-Message in der Datenbank mit speziellem Sender "PDF_Context"
+            // Dieser Sender wird beim UI-Laden gefiltert, aber für die AI-Conversation geladen
+            await _chatServiceDb.SaveMessageAsync(
+                _currentSessionId.Value,
+                _currentUserId.Value,
+                "PDF_Context",
+                pdfMessage
+            );
 
-            Console.WriteLine($"PDF-Text erfolgreich extrahiert und zur Konversation hinzugefügt.");
             return true;
         }
         catch (Exception ex)
@@ -157,6 +216,7 @@ public class StudyPlanGeneratorService
             throw;
         }
     }
+    
     public async Task<string?> AskGptAsync(string userInput)
     {
         if (_client == null)

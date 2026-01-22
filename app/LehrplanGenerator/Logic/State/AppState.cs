@@ -5,6 +5,7 @@ using LehrplanGenerator.Logic.AI;
 using LehrplanGenerator.Logic.Models;
 using LehrplanGenerator.Models.Chat;
 using LehrplanGenerator.ViewModels.Shell;
+using LehrplanGenerator.Logic.Services;
 
 namespace LehrplanGenerator.Logic.State;
 
@@ -43,7 +44,6 @@ public partial class AppState : ObservableObject
     // SERVICES
     // =========================
     public StudyPlanGeneratorService AiService { get; }
-        = new StudyPlanGeneratorService();
 
     // =========================
     // DASHBOARD / SESSION
@@ -51,4 +51,9 @@ public partial class AppState : ObservableObject
     public LearningProgressEntity? CurrentStudySession { get; set; }
     public ShellViewModel? Shell { get; set; }
 
+    // Constructor mit Dependency Injection
+    public AppState(StudyPlanGeneratorService aiService)
+    {
+        AiService = aiService;
+    }
 }

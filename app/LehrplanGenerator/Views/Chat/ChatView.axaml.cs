@@ -107,16 +107,29 @@ public partial class ChatView : UserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (MobileScroll == null)
-                return;
+            // Scroll Desktop Chat
+            if (ChatScrollViewer != null && DesktopLayout?.IsVisible == true)
+            {
+                if (ChatScrollViewer.Extent.Height > ChatScrollViewer.Viewport.Height)
+                {
+                    ChatScrollViewer.Offset = new Vector(
+                        0,
+                        ChatScrollViewer.Extent.Height - ChatScrollViewer.Viewport.Height
+                    );
+                }
+            }
 
-            if (MobileScroll.Extent.Height <= MobileScroll.Viewport.Height)
-                return;
-
-            MobileScroll.Offset = new Vector(
-                0,
-                MobileScroll.Extent.Height - MobileScroll.Viewport.Height
-            );
+            // Scroll Mobile Chat
+            if (MobileScroll != null && MobileLayout?.IsVisible == true)
+            {
+                if (MobileScroll.Extent.Height > MobileScroll.Viewport.Height)
+                {
+                    MobileScroll.Offset = new Vector(
+                        0,
+                        MobileScroll.Extent.Height - MobileScroll.Viewport.Height
+                    );
+                }
+            }
         }, DispatcherPriority.Render);
     }
     private void UpdateResponsiveLayout()
