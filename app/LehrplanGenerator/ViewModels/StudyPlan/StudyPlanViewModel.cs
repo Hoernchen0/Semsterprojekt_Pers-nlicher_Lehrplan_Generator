@@ -14,7 +14,8 @@ namespace LehrplanGenerator.ViewModels.StudyPlan;
 public enum StudyPlanViewMode
 {
     List,
-    Calendar
+    Calendar,
+    DayDetail
 }
 
 public partial class StudyPlanViewModel : ViewModelBase
@@ -57,9 +58,13 @@ public partial class StudyPlanViewModel : ViewModelBase
 
     public bool IsListView => ViewMode == StudyPlanViewMode.List;
     public bool IsCalendarView => ViewMode == StudyPlanViewMode.Calendar;
+    public bool IsDayDetailView => ViewMode == StudyPlanViewMode.DayDetail;
+
 
     public string CurrentViewModeLabel =>
-        ViewMode == StudyPlanViewMode.List ? "Kalender" : "Liste";
+            ViewMode == StudyPlanViewMode.List ? "Kalender" :
+            ViewMode == StudyPlanViewMode.Calendar ? "Liste" :
+            "Zurück";
 
     // =================================================
     // POPUP (für Kalender)
@@ -69,10 +74,7 @@ public partial class StudyPlanViewModel : ViewModelBase
     private bool isPopupOpen;
 
     [ObservableProperty]
-    private DayPlanViewModel? popupDay;
-
-
-
+    private DayPlanViewModel? selectedCalendarDay;
 
     public CalendarViewModel Calendar { get; }
 
@@ -90,7 +92,7 @@ public partial class StudyPlanViewModel : ViewModelBase
         _studyPlanGeneratorService = studyPlanGeneratorService;
 
         _ = LoadPlansAsync();
-        Calendar = new CalendarViewModel(OpenDayPopup, this);
+        Calendar = new CalendarViewModel(OpenDayView, this);
 
     }
 
@@ -168,6 +170,7 @@ public partial class StudyPlanViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsListView));
         OnPropertyChanged(nameof(IsCalendarView));
         OnPropertyChanged(nameof(CurrentViewModeLabel));
+        OnPropertyChanged(nameof(IsDayDetailView));
     }
 
 
@@ -177,17 +180,22 @@ public partial class StudyPlanViewModel : ViewModelBase
     // =================================================
 
     [RelayCommand]
-    private void OpenDayPopup(DayPlanViewModel day)
+    private void OpenDayView(DayPlanViewModel day)
     {
-        PopupDay = day;
-        IsPopupOpen = true;
-    }
+        SelectedCalendarDay = day;
+        ViewMode = StudyPlanViewMode.DayDetail;
 
+        OnPropertyChanged(nameof(IsCalendarView));
+        OnPropertyChanged(nameof(IsDayDetailView));
+    }
     [RelayCommand]
-    private void ClosePopup()
+    private void BackToCalendar()
     {
-        IsPopupOpen = false;
-        PopupDay = null;
+        ViewMode = StudyPlanViewMode.Calendar;
+        SelectedCalendarDay = null;
+
+        OnPropertyChanged(nameof(IsCalendarView));
+        OnPropertyChanged(nameof(IsDayDetailView));
     }
 
     // =================================================
@@ -295,11 +303,11 @@ public partial class StudyPlanViewModel : ViewModelBase
             );
 
             await _learningProgressService.DeleteStudyPlanAsync(SelectedStudyPlan.Id);
-            
+
             // Leere die Tages-Ansicht
             Days.Clear();
             SelectedDay = null;
-            
+
             // Lade die Plans neu
             await LoadPlansAsync();
             ErrorMessage = null;
