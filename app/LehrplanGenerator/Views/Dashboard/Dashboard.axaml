@@ -129,6 +129,7 @@
                         </Border>
 
                         <!--  Aktive Lernpläne  -->
+                        
                         <Border
                             Grid.Row="1"
                             Grid.Column="0"
@@ -144,10 +145,13 @@
                                     Text="Aktive Lernpläne" />
 
                                 <ListBox
+                                    Height="300"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     ItemsSource="{Binding ActiveStudyPlans}"
-                                    SelectedItem="{Binding SelectedStudyPlan}">
+                                    SelectedItem="{Binding SelectedStudyPlan}"
+                                   ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
                                     <ListBox.Styles>
                                         <Style Selector="ListBoxItem">

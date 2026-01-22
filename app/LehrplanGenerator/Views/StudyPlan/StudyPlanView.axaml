@@ -65,6 +65,7 @@
                         IsVisible="{Binding IsListView}">
 
                         <!--  LEFT SIDE  -->
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Grid.Column="0" Spacing="16">
                             <ComboBox ItemsSource="{Binding StudyPlans}" SelectedItem="{Binding SelectedStudyPlan}">
                                 <ComboBox.ItemTemplate>
@@ -93,6 +94,8 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
+                        </ScrollViewer>
+
 
                         <!--  RIGHT SIDE  -->
                         <Border
